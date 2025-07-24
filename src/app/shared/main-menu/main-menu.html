@@ -1,0 +1,35 @@
+<nav class="main-menu">
+  <div class="menu-desktop">
+    <div class="menu-left">
+      <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
+      <span class="project-name">ASFA</span>
+      <a (click)="navigate('/dashboard')">Início</a>
+      <a (click)="navigate('/pessoa-idosa/novo')">Cadastrar Pessoa</a>
+      <ng-container *ngIf="userWithRole$ | async as user">
+        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Cadastrar Usuário</a>
+      </ng-container>
+    </div>
+    <div class="menu-right" *ngIf="user$ | async as user">
+      <span class="user-email">{{ user.email }}</span>
+      <a class="logout" (click)="logout()">Logout</a>
+    </div>
+  </div>
+  <div class="menu-mobile">
+    <button class="hamburger" (click)="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-menu-items" [class.open]="menuOpen()">
+      <ng-container *ngIf="user$ | async as user">
+        <div class="mobile-user-info">
+          <span class="user-email">{{ user.email }}</span>
+          <a class="logout" (click)="logout()">Logout</a>
+        </div>
+      </ng-container>
+      <a (click)="navigate('/dashboard')">Início</a>
+      <a (click)="navigate('/pessoa-idosa/novo')">Cadastrar Pessoa</a>
+      <ng-container *ngIf="userWithRole$ | async as user">
+        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Cadastrar Usuário</a>
+      </ng-container>
+    </div>
+  </div>
+</nav>

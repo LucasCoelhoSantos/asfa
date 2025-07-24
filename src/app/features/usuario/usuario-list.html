@@ -1,0 +1,36 @@
+<app-main-menu></app-main-menu>
+<div class="usuarios-list-container">
+  <h2>Usuários do Sistema</h2>
+  <table *ngIf="(usuarios$ | async) as usuarios; else semRegistros">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Papel</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.nome }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>{{ usuario.role === 'admin' ? 'Admin' : 'Usuário' }}</td>
+        <td>
+          <span [class.ativo]="usuario.ativo" [class.inativo]="!usuario.ativo">
+            {{ usuario.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+        <td>
+          <button (click)="editar(usuario.id)">Editar</button>
+          <button *ngIf="!usuario.ativo" (click)="ativar(usuario.id)">Ativar</button>
+          <button *ngIf="usuario.ativo" (click)="desativar(usuario.id)">Desativar</button>
+          <button (click)="remover(usuario.id)">Remover</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-template #semRegistros>
+    <div class="sem-registros">Nenhum usuário cadastrado.</div>
+  </ng-template>
+</div>

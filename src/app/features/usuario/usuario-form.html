@@ -1,0 +1,39 @@
+<app-main-menu></app-main-menu>
+<div class="usuario-form-container">
+  <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Usuário</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nome">Nome</label>
+      <input id="nome" formControlName="nome" />
+      <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">Nome obrigatório.</div>
+    </div>
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input id="email" formControlName="email" type="email" />
+      <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">E-mail obrigatório e válido.</div>
+    </div>
+    <div class="form-group" *ngIf="!editMode">
+      <label for="senha">Senha</label>
+      <input id="senha" formControlName="senha" type="password" />
+      <div class="error" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">Senha obrigatória (mínimo 6 caracteres).</div>
+    </div>
+    <div class="form-group">
+      <label for="role">Papel</label>
+      <select id="role" formControlName="role">
+        <option value="">Selecione</option>
+        <option *ngFor="let r of roles" [value]="r">{{ r === 'admin' ? 'Admin' : 'Usuário' }}</option>
+      </select>
+      <div class="error" *ngIf="form.get('role')?.invalid && form.get('role')?.touched">Campo obrigatório.</div>
+    </div>
+    <div class="form-group" *ngIf="editMode">
+      <label for="ativo">Ativo</label>
+      <input id="ativo" type="checkbox" formControlName="ativo" />
+    </div>
+    <div class="form-actions">
+      <button type="submit" [disabled]="form.invalid || loading">Salvar</button>
+      <button type="button" (click)="voltarParaLista()">Voltar</button>
+    </div>
+    <div class="loading" *ngIf="loading">Salvando...</div>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </form>
+</div>
