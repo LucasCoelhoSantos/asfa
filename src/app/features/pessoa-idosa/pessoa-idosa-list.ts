@@ -69,7 +69,7 @@ export class PessoaIdosaListComponent {
   );
 
   editar(id: string) {
-    this.router.navigate(['/pessoas-idosas', id, 'editar']);
+    this.router.navigate(['/pessoa-idosa', id, 'editar']);
   }
 
   inativar(id: string) {
