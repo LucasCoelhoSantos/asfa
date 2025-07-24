@@ -18,7 +18,7 @@ export class UsuarioListComponent {
   usuarios$ = this.usuarioService.getAll();
 
   editar(id: string) {
-    this.router.navigate(['/usuarios', id, 'editar']);
+    this.router.navigate(['/usuario', id, 'editar']);
   }
 
   ativar(id: string) {
