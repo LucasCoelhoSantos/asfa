@@ -1,0 +1,343 @@
+.pessoa-form-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.7rem;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="email"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 0.95rem;
+  margin-top: 0.2rem;
+}
+
+.loading {
+  color: #3498db;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+fieldset {
+  border: 1px solid #b0bec5;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+legend {
+  font-weight: 600;
+  color: #1976d2;
+  padding: 0 0.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+button[type="submit"] {
+  padding: 0.7rem 2rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button[type="button"] {
+  padding: 0.7rem 2rem;
+  background: #b0bec5;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button[disabled] {
+  background: #b0bec5;
+  cursor: not-allowed;
+}
+
+.dependentes-list {
+  margin-bottom: 1.2rem;
+}
+
+.dependentes-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.dependentes-list th, .dependentes-list td {
+  padding: 0.6rem 0.4rem;
+  text-align: left;
+}
+
+.dependentes-list th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.dependentes-list tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.ativo {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.inativo {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.dependentes-list button {
+  margin-right: 0.5rem;
+  padding: 0.3rem 1rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.98rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dependentes-list button:last-child {
+  margin-right: 0;
+  background: #e74c3c;
+}
+
+.dependentes-list button[disabled] {
+  background: #b0bec5;
+  cursor: not-allowed;
+}
+
+.sem-registros {
+  text-align: center;
+  color: #888;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.dependente-form-modal {
+  background: rgba(255,255,255,0.98);
+  border: 1px solid #b0bec5;
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  text-align: center;
+}
+
+.modal-actions {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.anexos-list {
+  margin-bottom: 1.2rem;
+}
+
+.anexos-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.anexos-list th, .anexos-list td {
+  padding: 0.6rem 0.4rem;
+  text-align: left;
+}
+
+.anexos-list th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.anexos-list tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.ativo {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.inativo {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.anexos-list button {
+  margin-right: 0.5rem;
+  padding: 0.3rem 1rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.98rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.anexos-list button:last-child {
+  margin-right: 0;
+  background: #e74c3c;
+}
+
+.anexos-list button[disabled] {
+  background: #b0bec5;
+  cursor: not-allowed;
+}
+
+.anexos-list input[type="file"] {
+  font-size: 0.98rem;
+  margin-right: 0.5rem;
+}
+
+.file-name {
+  color: #1976d2;
+  font-size: 0.98rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 700px) {
+  .pessoa-form-container {
+    padding: 0.7rem;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 0.7rem;
+    align-items: stretch;
+  }
+  .dependentes-list table, .dependentes-list thead, .dependentes-list tbody, .dependentes-list th, .dependentes-list td, .dependentes-list tr {
+    display: block;
+    width: 100%;
+  }
+  .dependentes-list thead {
+    display: none;
+  }
+  .dependentes-list tr {
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #eee;
+    background: #fff !important;
+  }
+  .dependentes-list td {
+    padding: 0.5rem 0.2rem;
+    text-align: right;
+    position: relative;
+  }
+  .dependentes-list td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: #1976d2;
+    font-size: 0.98rem;
+    padding-left: 0.2rem;
+    text-align: left;
+  }
+  .modal {
+    padding: 1.2rem 0.5rem;
+  }
+  .anexos-list table, .anexos-list thead, .anexos-list tbody, .anexos-list th, .anexos-list td, .anexos-list tr {
+    display: block;
+    width: 100%;
+  }
+  .anexos-list thead {
+    display: none;
+  }
+  .anexos-list tr {
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #eee;
+    background: #fff !important;
+  }
+  .anexos-list td {
+    padding: 0.5rem 0.2rem;
+    text-align: right;
+    position: relative;
+  }
+  .anexos-list td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 600;
+    color: #1976d2;
+    font-size: 0.98rem;
+    padding-left: 0.2rem;
+    text-align: left;
+  }
+}

@@ -1,0 +1,61 @@
+<div class="pessoas-list-container">
+  <h2>Pessoas Idosas Cadastradas</h2>
+  <div class="filtros-container">
+    <input placeholder="Nome" (input)="setFiltroNome(getValue($event))" />
+    <input type="date" placeholder="Data Nasc." (input)="setFiltroDataNascimento(getValue($event))" />
+    <select (change)="setFiltroEstadoCivil(getValue($event))">
+      <option value="">Estado Civil</option>
+      <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
+    </select>
+    <input placeholder="CPF" (input)="setFiltroCpf(getValue($event))" />
+    <input placeholder="RG" (input)="setFiltroRg(getValue($event))" />
+    <input placeholder="CEP" (input)="setFiltroCep(getValue($event))" />
+    <select (change)="setFiltroAtivo(getValue($event))">
+      <option value="">Ativo?</option>
+      <option value="ativo">Ativo</option>
+      <option value="inativo">Inativo</option>
+    </select>
+    <label class="page-size-label">
+      Exibir:
+      <select (change)="setPageSize(+getValue($event))">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
+      </select>
+    </label>
+    <button (click)="exportarPdf()" class="exportar-pdf">Exportar PDF</button>
+  </div>
+  <table *ngIf="(pessoasFiltradas$ | async) as dados; else semRegistros">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Data de Nascimento</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pessoa of dados.pessoas">
+        <td>{{ pessoa.nome }}</td>
+        <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
+            {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+        <td>
+          <button (click)="editar(pessoa.id)">Editar</button>
+          <button (click)="inativar(pessoa.id)" [disabled]="!pessoa.ativo">Inativar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="paginacao" *ngIf="(pessoasFiltradas$ | async) as dados">
+    <ng-container *ngIf="pageSize.value > 0 && dados.total > pageSize.value">
+      <button (click)="setPageIndex(pageIndex.value - 1)" [disabled]="pageIndex.value === 0">Anterior</button>
+      <span>Página {{ pageIndex.value + 1 }} de {{ math.ceil(dados.total / pageSize.value) }}</span>
+      <button (click)="setPageIndex(pageIndex.value + 1)" [disabled]="(pageIndex.value + 1) * pageSize.value >= dados.total">Próxima</button>
+    </ng-container>
+  </div>
+  <ng-template #semRegistros>
+    <div class="sem-registros">Nenhuma pessoa idosa cadastrada.</div>
+  </ng-template>
+</div>

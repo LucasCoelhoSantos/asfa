@@ -1,0 +1,42 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="nome">Nome</label>
+    <input id="nome" formControlName="nome" />
+    <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">Nome obrigatório.</div>
+  </div>
+  <div class="form-group">
+    <label for="dataNascimento">Data de Nascimento</label>
+    <input id="dataNascimento" type="date" formControlName="dataNascimento" />
+    <div class="error" *ngIf="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">Data obrigatória.</div>
+  </div>
+  <div class="form-group">
+    <label for="parentesco">Parentesco</label>
+    <input id="parentesco" formControlName="parentesco" />
+    <div class="error" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">Campo obrigatório.</div>
+  </div>
+  <div class="form-group">
+    <label for="ceinf">CEINF</label>
+    <input id="ceinf" formControlName="ceinf" />
+  </div>
+  <div class="form-group">
+    <label for="ceinfBairro">CEINF Bairro</label>
+    <input id="ceinfBairro" formControlName="ceinfBairro" />
+  </div>
+  <div class="form-group">
+    <label for="programaSaudePastoralCrianca">Programa Saúde Pastoral Criança</label>
+    <input id="programaSaudePastoralCrianca" formControlName="programaSaudePastoralCrianca" />
+  </div>
+  <div class="form-group">
+    <label for="programaSaudePastoralCriancaLocal">Local do Programa</label>
+    <input id="programaSaudePastoralCriancaLocal" formControlName="programaSaudePastoralCriancaLocal" />
+  </div>
+  <div class="form-group">
+    <label>
+      <input type="checkbox" formControlName="ativo" /> Ativo
+    </label>
+  </div>
+  <div class="form-actions">
+    <button type="submit" [disabled]="form.invalid">Salvar</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </div>
+</form>
