@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="./src/app/assets/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
+	<img src="./public/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
 	<h1>ASFA - ASFA - Catholic Association of the Holy Family</h1>
 	<a href="./README.md">[br]</a>
 </div>
