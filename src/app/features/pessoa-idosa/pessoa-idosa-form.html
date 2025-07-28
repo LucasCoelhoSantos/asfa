@@ -6,7 +6,7 @@
     <div class="form-group">
       <label for="nome">Nome</label>
       <input id="nome" formControlName="nome" />
-      <!--<div class="error" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">Nome obrigatório.</div>-->
+      <div class="error" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">Nome obrigatório.</div>
     </div>
     <div class="form-group">
       <label for="dataNascimento">Data de Nascimento</label>
@@ -19,64 +19,31 @@
         <option value="">Selecione</option>
         <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
       </select>
-      <!--<div class="error" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">Campo obrigatório.</div>-->
+      <div class="error" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">Campo obrigatório.</div>
     </div>
     <div class="form-group">
       <label for="cpf">CPF</label>
       <input id="cpf" formControlName="cpf" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" inputmode="numeric" placeholder="000.000.000-00" />
-      <!--<div class="error" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">CPF inválido.</div>
-      <div class="error" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">Campo obrigatório.</div>-->
+      <div class="error" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">CPF inválido.</div>
+      <div class="error" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">Campo obrigatório.</div>
     </div>
     <div class="form-group">
       <label for="rg">RG</label>
       <input id="rg" formControlName="rg" maxlength="12" pattern="\d{1,2}\.\d{3}\.\d{3}-\d{1}" inputmode="numeric" placeholder="00.000.000-0" />
-      <!--<div class="error" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">RG inválido.</div>
-      <div class="error" *ngIf="form.controls['rg'].invalid && form.controls['rg'].touched && !form.controls['rg'].errors?.['rg']">Campo obrigatório.</div>-->
+      <div class="error" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">RG inválido.</div>
+      <div class="error" *ngIf="form.controls['rg'].invalid && form.controls['rg'].touched && !form.controls['rg'].errors?.['rg']">Campo obrigatório.</div>
     </div>
     <div class="form-group">
       <label for="telefone">Telefone/Celular</label>
       <input id="telefone" formControlName="telefone" maxlength="15" pattern="\(\d{2}\) \d{4,5}-\d{4}" inputmode="numeric" placeholder="(00) 00000-0000" />
-      <!--<div class="error" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">Telefone inválido.</div>
-      <div class="error" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">Campo obrigatório.</div>-->
+      <div class="error" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">Telefone inválido.</div>
+      <div class="error" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">Campo obrigatório.</div>
     </div>
-    <fieldset formGroupName="endereco">
-      <legend>Endereço</legend>
-      <div class="form-group cep-group">
-        <label for="cep">CEP</label>
-        <input id="cep" formControlName="cep" maxlength="9" pattern="\d{5}-\d{3}" inputmode="numeric" placeholder="00000-000" />
-        <button type="button" (click)="buscarCep()" [disabled]="cepBuscaLoading">Buscar</button>
-        <div class="loading" *ngIf="cepBuscaLoading">Buscando...</div>
-        <div class="error" *ngIf="cepBuscaErro">{{ cepBuscaErro }}</div>
-        <div class="error" *ngIf="form.get(['endereco', 'cep'])?.errors?.['cep'] && form.get(['endereco', 'cep'])?.touched">CEP inválido.</div>
-      </div>
-      <div class="form-group">
-        <label for="logradouro">Logradouro</label>
-        <input id="logradouro" formControlName="logradouro" />
-      </div>
-      <div class="form-group">
-        <label for="numero">Número</label>
-        <input id="numero" formControlName="numero" />
-      </div>
-      <div class="form-group">
-        <label for="estado">Estado</label>
-        <input id="estado" formControlName="estado" />
-      </div>
-      <div class="form-group">
-        <label for="cidade">Cidade</label>
-        <input id="cidade" formControlName="cidade" />
-      </div>
-      <div class="form-group">
-        <label for="bairro">Bairro</label>
-        <input id="bairro" formControlName="bairro" />
-      </div>
-      <div class="form-group">
-        <label for="moradia">Moradia</label>
-        <select id="moradia" formControlName="moradia">
-          <option value="">Selecione</option>
-          <option *ngFor="let m of moradias" [value]="m">{{ m }}</option>
-        </select>
-      </div>
-    </fieldset>
+    
+    <!-- Endereço -->
+    <ng-container *ngIf="form.get('endereco') as enderecoForm">
+      <app-endereco-form [form]="enderecoForm" (valueChanges)="onEnderecoChange($event)"></app-endereco-form>
+    </ng-container>
 
     <!-- Dependentes -->
     <fieldset>
@@ -132,63 +99,10 @@
     </fieldset>
 
     <!-- Anexos -->
-    <fieldset>
-      <legend>Anexos</legend>
-      <div class="anexos-list">
-        <table>
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>Arquivo</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let tipo of tiposAnexo">
-              <td>{{ tipo.label }}</td>
-              <td>
-                <span [class.ativo]="getAnexoPorTipo(tipo.tipo)" [class.inativo]="!getAnexoPorTipo(tipo.tipo)">
-                  {{ getAnexoPorTipo(tipo.tipo) ? 'Enviado' : 'Não enviado' }}
-                </span>
-              </td>
-              <td>
-                <ng-container *ngIf="getAnexoPorTipo(tipo.tipo) as anexo; else uploadField">
-                  <span class="file-name">{{ anexo.url.split('?')[0].split('/').pop() }}</span>
-                </ng-container>
-                <ng-template #uploadField>
-                  <input type="file" [accept]="'.png,.jpeg,.jpg,.pdf'" (change)="onSelecionarArquivo(tipo.tipo, $event)" [disabled]="anexoUploadLoading" />
-                </ng-template>
-              </td>
-              <td>
-                <ng-container *ngIf="getAnexoPorTipo(tipo.tipo) as anexo; else uploadBtn">
-                  <button type="button" (click)="baixarAnexo(anexo)">Baixar</button>
-                  <button type="button" (click)="confirmarRemoverAnexo(tipo.tipo)">Remover</button>
-                </ng-container>
-                <ng-template #uploadBtn>
-                  <button type="button"
-                          (click)="uploadAnexo(tipo.tipo)"
-                          [disabled]="anexoSelecionadoTipo !== tipo.tipo || !anexoSelecionadoFile || anexoUploadLoading">
-                    Enviar
-                  </button>
-                </ng-template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="error" *ngIf="anexoUploadError">{{ anexoUploadError }}</div>
-        <div class="loading" *ngIf="anexoUploadLoading">Enviando anexo...</div>
-      </div>
-      <app-modal
-        [show]="showRemoveAnexoModal"
-        title="Remover anexo"
-        message="Tem certeza que deseja remover este anexo?"
-        confirmText="Sim"
-        cancelText="Não"
-        (confirm)="removerAnexoConfirmado()"
-        (cancel)="cancelarRemoverAnexo()">
-      </app-modal>
-    </fieldset>
+    <app-anexo-form [anexos]="anexos"
+                   (upload)="onUploadAnexo($event)"
+                   (removerAnexo)="onRemoverAnexo($event)"
+                   (baixarAnexo)="onBaixarAnexo($event)"></app-anexo-form>
 
     <div class="form-actions">
       <button type="submit" [disabled]="form.valid || loading">Salvar</button>

@@ -23,7 +23,13 @@
 .logo {
   height: 38px;
   width: 38px;
-  margin-right: 0.7rem;
+}
+
+.mobile-logo {
+  height: 38px;
+  width: 38px;
+  display: block;
+  margin: 0 auto;
 }
 
 .project-name {
@@ -32,6 +38,16 @@
   color: #1976d2;
   margin-right: 2rem;
   letter-spacing: 1px;
+}
+
+.mobile-project-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1976d2;
+  letter-spacing: 1px;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 1rem;
 }
 
 .menu-left a {

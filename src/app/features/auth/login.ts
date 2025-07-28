@@ -38,7 +38,7 @@ export class LoginComponent {
     const { email, password } = this.form.value;
     this.authService.login(email, password).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/pessoa-idosa']);
       },
       error: (err) => {
         this.error = this.getErrorMessage(err);
@@ -54,7 +54,7 @@ export class LoginComponent {
    * Traduz erros comuns de autenticação para mensagens amigáveis
    */
   getErrorMessage(error: any): string {
-    if (error?.code === 'auth/user-not-found' || error?.code === 'auth/wrong-password') {
+    if (error?.code === 'auth/user-not-found' || error?.code === 'auth/wrong-password' || error?.code === 'auth/invalid-credential' || error?.code === 'auth/invalid-email') {
       return 'E-mail ou senha inválidos.';
     }
     if (error?.code === 'auth/too-many-requests') {

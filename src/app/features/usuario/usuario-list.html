@@ -1,6 +1,7 @@
 <app-main-menu></app-main-menu>
 <div class="usuarios-list-container">
   <h2>Usuários do Sistema</h2>
+  <button (click)="navigate('/usuario/novo')" class="button-add">Adicionar Usuário</button>
   <table *ngIf="(usuarios$ | async) as usuarios; else semRegistros">
     <thead>
       <tr>
@@ -25,7 +26,16 @@
           <button (click)="editar(usuario.id)">Editar</button>
           <button *ngIf="!usuario.ativo" (click)="ativar(usuario.id)">Ativar</button>
           <button *ngIf="usuario.ativo" (click)="desativar(usuario.id)">Desativar</button>
-          <button (click)="remover(usuario.id)">Remover</button>
+          <button (click)="confirmarRemover(usuario.id)">Remover</button>
+          <app-modal
+            [show]="showRemoveModal"
+            title="Remover usuário"
+            message="Tem certeza que deseja remover este usuário?"
+            confirmText="Sim"
+            cancelText="Não"
+            (confirm)="remover()"
+            (cancel)="cancelarRemover()">
+          </app-modal>
         </td>
       </tr>
     </tbody>

@@ -15,6 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    provideFirebaseApp(() => initializeApp({ projectId: "asfa-web-version", appId: "1:119072745721:web:8bcf0adbf5f30c02e55a28", storageBucket: "asfa-web-version.firebasestorage.app", apiKey: "AIzaSyANDtPICJvpq2IuVwgigHKsXk2Tz-63Lcc", authDomain: "asfa-web-version.firebaseapp.com", messagingSenderId: "119072745721", measurementId: "G-K678L55G0D" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideFunctions(() => getFunctions()), provideStorage(() => getStorage()),
+    provideFirebaseApp(() => initializeApp({ projectId: "asfa-web-version", appId: "1:119072745721:web:048ae5a2ec9367afe55a28", storageBucket: "asfa-web-version.firebasestorage.app", apiKey: "AIzaSyANDtPICJvpq2IuVwgigHKsXk2Tz-63Lcc", authDomain: "asfa-web-version.firebaseapp.com", messagingSenderId: "119072745721", measurementId: "G-39ZXG5TTG6" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideFunctions(() => getFunctions()), provideStorage(() => getStorage()),
   ]
 };

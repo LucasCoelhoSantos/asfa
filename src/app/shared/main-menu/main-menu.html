@@ -3,13 +3,13 @@
     <div class="menu-left">
       <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
       <span class="project-name">ASFA</span>
-      <a (click)="navigate('/dashboard')">Início</a>
-      <a (click)="navigate('/pessoa-idosa/novo')">Cadastrar Pessoa</a>
+      <a (click)="navigate('/pessoa-idosa')">Pessoas Idosas</a>
       <ng-container *ngIf="userWithRole$ | async as user">
-        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Cadastrar Usuário</a>
+        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Usuários</a>
       </ng-container>
     </div>
     <div class="menu-right" *ngIf="user$ | async as user">
+      <span class="user-name">Nome usuário</span>
       <span class="user-email">{{ user.email }}</span>
       <a class="logout" (click)="logout()">Logout</a>
     </div>
@@ -19,16 +19,18 @@
       <span></span><span></span><span></span>
     </button>
     <div class="mobile-menu-items" [class.open]="menuOpen()">
+      <img src="asfa-logo.png" alt="Logo ASFA" class="mobile-logo" />
+      <span class="mobile-project-name">ASFA</span>
       <ng-container *ngIf="user$ | async as user">
         <div class="mobile-user-info">
+          <span class="user-name">Nome usuário</span>
           <span class="user-email">{{ user.email }}</span>
           <a class="logout" (click)="logout()">Logout</a>
         </div>
       </ng-container>
-      <a (click)="navigate('/dashboard')">Início</a>
-      <a (click)="navigate('/pessoa-idosa/novo')">Cadastrar Pessoa</a>
+      <a (click)="navigate('/pessoa-idosa')">Pessoas Idosas</a>
       <ng-container *ngIf="userWithRole$ | async as user">
-        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Cadastrar Usuário</a>
+        <a *ngIf="user.role === 'admin'" (click)="navigate('/usuario')">Usuários</a>
       </ng-container>
     </div>
   </div>

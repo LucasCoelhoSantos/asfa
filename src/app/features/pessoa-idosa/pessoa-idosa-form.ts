@@ -4,11 +4,14 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { PessoaIdosaService } from './pessoa-idosa.service';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
-import { PessoaIdosa, Dependente, Anexo } from '../../models/pessoa-idosa.model';
+import { PessoaIdosa, Dependente } from '../../models/pessoa-idosa.model';
 import { firstValueFrom } from 'rxjs';
 import { DependenteFormComponent } from '../../features/dependente/dependente-form';
 import { ModalComponent } from '../../shared/modal/modal';
 import { AnexoService } from './anexo.service';
+import { EnderecoFormComponent } from './endereco-form.component';
+import { AnexoFormComponent } from './anexo-form.component';
+import { cpfValidator, rgValidator, cepValidator, telefoneValidator, dataNascimentoValidator } from './validators.util';
 
 const TIPOS_ANEXO = [
   { tipo: 1, label: 'CPF' },
@@ -20,24 +23,30 @@ const TIPOS_ANEXO = [
 ];
 
 const ESTADOS_CIVIS = [
-  'Solteiro',
-  'Casado',
-  'Viúvo',
-  'Divorciado'
+  'Solteiro(a)',
+  'Casado(a)',
+  'Divorciado(a)',
+  'Viúvo(a)'
 ];
 
 const MORADIAS = [
+  'Própria',
+  'Alugada',
+  'Cedida',
+  'Financiada',
+  /*
   'Casa',
   'Apartamento',
   'Sobrado',
   'Chácara',
   'Fazenda',
+  */
 ];
 
 @Component({
   selector: 'app-pessoas-idosas-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent, EnderecoFormComponent, AnexoFormComponent],
   templateUrl: './pessoa-idosa-form.html',
   styleUrls: ['./pessoa-idosa-form.scss']
 })
@@ -62,7 +71,7 @@ export class PessoaIdosaFormComponent implements OnInit {
   dependenteToRemoveIndex: number | null = null;
 
   // Anexos
-  anexos: Anexo[] = [];
+  anexos: any[] = [];
   tiposAnexo = TIPOS_ANEXO;
   anexoSelecionadoTipo: number | null = null;
   anexoSelecionadoFile: File | null = null;
@@ -81,14 +90,13 @@ export class PessoaIdosaFormComponent implements OnInit {
   constructor() {
     this.form = this.fb.group({
       nome: ['', [Validators.required]],
-      dataNascimento: ['', [Validators.required, this.dataNascimentoValidator]],
+      dataNascimento: ['', [Validators.required, dataNascimentoValidator]],
       estadoCivil: ['', [Validators.required]],
-      cpf: ['', [Validators.required, this.cpfValidator]],
-      rg: ['', [Validators.required, this.rgValidator]],
-      telefone: ['', [Validators.required, this.telefoneValidator]],
-      // ativo removido do formulário
+      cpf: ['', [Validators.required, cpfValidator]],
+      rg: ['', [Validators.required, rgValidator]],
+      telefone: ['', [Validators.required, telefoneValidator]],
       endereco: this.fb.group({
-        cep: ['', [Validators.required, this.cepValidator]],
+        cep: ['', [Validators.required, cepValidator]],
         logradouro: [''],
         numero: [''],
         estado: [''],
@@ -167,7 +175,7 @@ export class PessoaIdosaFormComponent implements OnInit {
   }
 
   // Anexos
-  getAnexoPorTipo(tipo: number): Anexo | undefined {
+  getAnexoPorTipo(tipo: number): any | undefined {
     return this.anexos.find(a => a.tipoAnexo === tipo);
   }
 
@@ -191,7 +199,7 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.anexoUploadError = null;
     try {
       const pessoaId = this.pessoaId || 'novo';
-      const { url, path } = await this.anexoService.uploadAnexo(pessoaId, this.anexoSelecionadoFile);
+      const { url, path } = await this.anexoService.uploadAnexo(pessoaId, tipo, this.anexoSelecionadoFile);
       // Remove anexo antigo desse tipo, se houver
       this.anexos = this.anexos.filter(a => a.tipoAnexo !== tipo);
       this.anexos.push({ tipoAnexo: tipo, url, path });
@@ -203,7 +211,7 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.anexoUploadLoading = false;
   }
 
-  baixarAnexo(anexo: Anexo) {
+  baixarAnexo(anexo: any) {
     window.open(anexo.url, '_blank');
   }
 
@@ -227,53 +235,6 @@ export class PessoaIdosaFormComponent implements OnInit {
   cancelarRemoverAnexo() {
     this.showRemoveAnexoModal = false;
     this.anexoRemoverTipo = null;
-  }
-
-  // Validações customizadas
-  cpfValidator(control: any) {
-    const value = (control.value || '').replace(/\D/g, '');
-    if (!value || value.length !== 11) return { cpf: true };
-    // Validação de CPF (simplificada)
-    let sum = 0;
-    let rest;
-    if (value === "00000000000") return { cpf: true };
-    for (let i = 1; i <= 9; i++) sum = sum + parseInt(value.substring(i - 1, i)) * (11 - i);
-    rest = (sum * 10) % 11;
-    if ((rest === 10) || (rest === 11)) rest = 0;
-    if (rest !== parseInt(value.substring(9, 10))) return { cpf: true };
-    sum = 0;
-    for (let i = 1; i <= 10; i++) sum = sum + parseInt(value.substring(i - 1, i)) * (12 - i);
-    rest = (sum * 10) % 11;
-    if ((rest === 10) || (rest === 11)) rest = 0;
-    if (rest !== parseInt(value.substring(10, 11))) return { cpf: true };
-    return null;
-  }
-
-  rgValidator(control: any) {
-    const value = (control.value || '').replace(/\D/g, '');
-    if (!value || value.length < 5) return { rg: true };
-    return null;
-  }
-
-  cepValidator(control: any) {
-    const value = (control.value || '').replace(/\D/g, '');
-    if (!value || value.length !== 8) return { cep: true };
-    return null;
-  }
-
-  telefoneValidator(control: any) {
-    const value = (control.value || '').replace(/\D/g, '');
-    if (!value || (value.length !== 10 && value.length !== 11)) return { telefone: true };
-    return null;
-  }
-
-  dataNascimentoValidator(control: any) {
-    const value = control.value;
-    if (!value) return { dataNascimento: true };
-    const data = new Date(value);
-    const hoje = new Date();
-    if (data > hoje) return { dataNascimento: true };
-    return null;
   }
 
   // Busca CEP no ViaCEP
@@ -334,5 +295,40 @@ export class PessoaIdosaFormComponent implements OnInit {
 
   public voltarParaLista() {
     this.router.navigate(['/pessoa-idosa']);
+  }
+
+  // Métodos para integração dos componentes filhos
+  onEnderecoChange(value: any) {
+    // Atualiza o form principal se necessário (opcional)
+  }
+
+  async onUploadAnexo(event: { tipoAnexo: number, file: File }) {
+    this.anexoUploadLoading = true;
+    this.anexoUploadError = null;
+    try {
+      const pessoaId = this.pessoaId || 'novo';
+      const { url, path } = await this.anexoService.uploadAnexo(pessoaId, event.tipoAnexo, event.file);
+      // Remove anexo antigo desse tipo, se houver
+      this.anexos = this.anexos.filter(a => a.tipoAnexo !== event.tipoAnexo);
+      this.anexos.push({ tipoAnexo: event.tipoAnexo, url, path });
+    } catch (e: any) {
+      this.anexoUploadError = e.message || 'Erro ao fazer upload.';
+    }
+    this.anexoUploadLoading = false;
+  }
+
+  async onRemoverAnexo(anexo: any) { // Changed from Anexo to any
+    this.anexoUploadLoading = true;
+    try {
+      await this.anexoService.deleteAnexo(anexo.path);
+      this.anexos = this.anexos.filter(a => a.tipoAnexo !== anexo.tipoAnexo);
+    } catch (e) {
+      this.anexoUploadError = 'Erro ao remover anexo.';
+    }
+    this.anexoUploadLoading = false;
+  }
+
+  onBaixarAnexo(anexo: any) { // Changed from Anexo to any
+    window.open(anexo.url, '_blank');
   }
 }
