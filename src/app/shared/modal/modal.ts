@@ -9,11 +9,11 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./modal.scss']
 })
 export class ModalComponent {
+  @Input() show: boolean = false;
   @Input() title: string = '';
   @Input() message: string = '';
   @Input() confirmText: string = 'Confirmar';
   @Input() cancelText: string = 'Cancelar';
-  @Input() show: boolean = false;
 
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();

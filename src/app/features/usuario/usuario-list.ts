@@ -3,20 +3,27 @@ import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
 import { Router } from '@angular/router';
+import { ModalComponent } from '../../shared/modal/modal';
 
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
-  imports: [CommonModule, MainMenuComponent],
+  imports: [CommonModule, MainMenuComponent, ModalComponent],
   templateUrl: './usuario-list.html',
   styleUrls: ['./usuario-list.scss']
 })
 export class UsuarioListComponent {
   private usuarioService = inject(UsuarioService);
   private router = inject(Router);
+  showRemoveModal = false;
+  usuarioRemoverId: string | null = null;
 
   usuarios$ = this.usuarioService.getAll();
 
+  navigate(path: string) {
+    this.router.navigate([path]);
+  }
+  
   editar(id: string) {
     this.router.navigate(['/usuario', id, 'editar']);
   }
@@ -29,9 +36,21 @@ export class UsuarioListComponent {
     this.usuarioService.setAtivo(id, false);
   }
 
-  remover(id: string) {
-    if (confirm('Tem certeza que deseja remover este usuário?')) {
-      this.usuarioService.delete(id);
+  confirmarRemover(id: string) {
+    this.usuarioRemoverId = id;
+    this.showRemoveModal = true;
+  }
+
+  remover() {
+    if (this.usuarioRemoverId !== null) {
+      this.usuarioService.delete(this.usuarioRemoverId);
     }
+    this.showRemoveModal = false;
+    this.usuarioRemoverId = null;
+  }
+
+  cancelarRemover() {
+    this.showRemoveModal = false;
+    this.usuarioRemoverId = null;
   }
 }
