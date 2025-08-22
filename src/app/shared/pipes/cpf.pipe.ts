@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { MaskUtils } from '../utils/mask.utils';
 
 @Pipe({
   name: 'cpf',
@@ -7,11 +8,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class CpfPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    
-    // Remove caracteres não numéricos
-    const cpf = value.replace(/\D/g, '');
-    
-    // Aplica máscara
-    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    return MaskUtils.applyCpfMask(value);
   }
 } 

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collectionData, collection, doc, docData, addDoc, updateDoc, query, where, orderBy, limit, startAfter, QueryConstraint, getDocs, DocumentSnapshot } from '@angular/fire/firestore';
-import { Observable, from, BehaviorSubject, combineLatest, map, switchMap, distinctUntilChanged, debounceTime, of } from 'rxjs';
+import { Observable, from, map } from 'rxjs';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
 
 export interface FiltrosPessoaIdosa {
@@ -32,21 +32,11 @@ export class PessoaIdosaService {
 
   // Cache local para melhorar performance
   private cache = new Map<string, PessoaIdosa>();
-  private filtrosSubject = new BehaviorSubject<FiltrosPessoaIdosa>({});
-  private paginacaoSubject = new BehaviorSubject<{ pageSize: number; lastDoc: DocumentSnapshot | null }>({
-    pageSize: 20,
-    lastDoc: null
-  });
 
   /**
    * Observable reativo das pessoas idosas com filtros aplicados
    */
-  pessoas$ = combineLatest([
-    this.filtrosSubject.asObservable().pipe(debounceTime(300), distinctUntilChanged()),
-    this.paginacaoSubject.asObservable()
-  ]).pipe(
-    switchMap(([filtros, paginacao]) => this.getPaginatedObservable(paginacao.pageSize, paginacao.lastDoc, filtros))
-  );
+  pessoas$: Observable<PaginacaoResult> | null = null;
 
   /**
    * Retorna todas as pessoas idosas ativas (ativo=true) - versão otimizada
@@ -62,7 +52,7 @@ export class PessoaIdosaService {
   getById(id: string): Observable<PessoaIdosa | undefined> {
     // Verifica cache primeiro
     if (this.cache.has(id)) {
-      return of(this.cache.get(id));
+      return from(Promise.resolve(this.cache.get(id)));
     }
 
     const docRef = doc(this.firestore, this.collectionName, id);
@@ -118,24 +108,34 @@ export class PessoaIdosaService {
   }
 
   /**
+   * Ativa uma pessoa idosa
+   */
+  ativar(id: string): Observable<void> {
+    const docRef = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(docRef, { ativo: true })).pipe(
+      map(() => {
+        // Remove do cache para forçar refresh
+        this.cache.delete(id);
+      })
+    );
+  }
+
+  /**
    * Aplica filtros de forma reativa
    */
   aplicarFiltros(filtros: FiltrosPessoaIdosa): void {
-    this.filtrosSubject.next(filtros);
+    // Cria um novo observable com os filtros aplicados
+    this.pessoas$ = from(this.getPaginated(20, null, filtros));
   }
 
   /**
    * Define paginação
    */
   setPaginacao(pageSize: number, lastDoc: DocumentSnapshot | null = null): void {
-    this.paginacaoSubject.next({ pageSize, lastDoc });
-  }
-
-  /**
-   * Busca paginada otimizada com observables
-   */
-  private getPaginatedObservable(pageSize: number, lastDoc: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): Observable<PaginacaoResult> {
-    return from(this.getPaginated(pageSize, lastDoc, filtros));
+    // Se já temos um observable de pessoas, atualiza com nova paginação
+    if (this.pessoas$) {
+      this.pessoas$ = from(this.getPaginated(pageSize, lastDoc, {}));
+    }
   }
 
   /**
@@ -143,11 +143,38 @@ export class PessoaIdosaService {
    */
   private convertToPessoaIdosa(doc: any): PessoaIdosa {
     const data = doc.data();
+    
+    // Função auxiliar para converter data
+    const converterData = (dataField: any, fieldName: string): Date => {
+      if (!dataField) return new Date();
+      
+      // Se já é uma Date
+      if (dataField instanceof Date) return dataField;
+      
+      // Se é um Firebase Timestamp
+      if (dataField && typeof dataField.toDate === 'function') {
+        return dataField.toDate();
+      }
+      
+      // Se é uma string de data
+      if (typeof dataField === 'string') {
+        const parsed = new Date(dataField);
+        return isNaN(parsed.getTime()) ? new Date() : parsed;
+      }
+      
+      // Se é um timestamp numérico
+      if (typeof dataField === 'number') {
+        return new Date(dataField);
+      }
+      
+      return new Date();
+    };
+
     return {
       id: doc.id,
-      dataCadastro: data.dataCadastro?.toDate() || new Date(),
+      dataCadastro: converterData(data.dataCadastro, 'dataCadastro'),
       nome: data.nome || '',
-      dataNascimento: data.dataNascimento?.toDate() || new Date(),
+      dataNascimento: converterData(data.dataNascimento, 'dataNascimento'),
       ativo: data.ativo ?? true,
       estadoCivil: data.estadoCivil || '',
       cpf: data.cpf || '',
@@ -159,6 +186,7 @@ export class PessoaIdosaService {
       prontuarioSaude: data.prontuarioSaude || '',
       aposentadoConsegueSeManterComSuaRenda: data.aposentadoConsegueSeManterComSuaRenda ?? false,
       comoComplementa: data.comoComplementa || '',
+      beneficio: data.beneficio || '',
       observacao: data.observacao || '',
       historicoFamiliarSocial: data.historicoFamiliarSocial || '',
       composicaoFamiliar: data.composicaoFamiliar || {},
@@ -172,25 +200,48 @@ export class PessoaIdosaService {
    * Busca paginada real no Firestore, com filtros otimizados
    */
   private async getPaginated(pageSize: number, lastDoc: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): Promise<PaginacaoResult> {
+    
+    // Se não há filtros específicos, busca todos os registros
+    if (!filtros.nome && !filtros.cpf && !filtros.estadoCivil && filtros.ativo === undefined) {
+      const q = query(this.collectionRef, orderBy('nome'), limit(pageSize + 1));
+      const snap = await getDocs(q);
+      
+      const docs = snap.docs;
+      const hasMore = docs.length > pageSize;
+      const pessoas = (hasMore ? docs.slice(0, pageSize) : docs).map(d => this.convertToPessoaIdosa(d));
+
+      return {
+        pessoas,
+        lastDoc: docs.length > 0 ? docs[docs.length - 1] : null,
+        total: pessoas.length,
+        hasMore
+      };
+    }
+    
     const constraints: QueryConstraint[] = [
-      where('ativo', '==', true),
       orderBy('nome'),
       limit(pageSize + 1) // +1 para verificar se há mais páginas
     ];
 
+    // Aplica filtro de ativo apenas se especificado
+    if (filtros.ativo !== undefined) {
+      constraints.unshift(where('ativo', '==', filtros.ativo));
+    }
+
     if (lastDoc) constraints.push(startAfter(lastDoc));
     
     // Aplica filtros de forma otimizada
-    if (filtros.nome) {
+    if (filtros.nome && filtros.nome.trim()) {
       constraints.push(
         where('nome', '>=', filtros.nome),
         where('nome', '<=', filtros.nome + '\uf8ff')
       );
     }
-    if (filtros.cpf) constraints.push(where('cpf', '==', filtros.cpf));
-    if (filtros.estadoCivil) constraints.push(where('estadoCivil', '==', filtros.estadoCivil));
+    if (filtros.cpf && filtros.cpf.trim()) constraints.push(where('cpf', '==', filtros.cpf));
+    if (filtros.estadoCivil && filtros.estadoCivil.trim()) constraints.push(where('estadoCivil', '==', filtros.estadoCivil));
 
     const q = query(this.collectionRef, ...constraints);
+    
     const snap = await getDocs(q);
     
     const docs = snap.docs;
@@ -203,6 +254,20 @@ export class PessoaIdosaService {
       total: pessoas.length,
       hasMore
     };
+  }
+
+  /**
+   * Método de teste para verificar dados na coleção
+   */
+  testarConexao(): Observable<any> {
+    const q = query(this.collectionRef, limit(5));
+    return from(getDocs(q)).pipe(
+      map(snap => {
+        snap.docs.forEach((doc, index) => {
+        });
+        return snap;
+      })
+    );
   }
 
   /**

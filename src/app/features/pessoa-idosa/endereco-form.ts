@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { MaskDirective } from '../../shared/directives/mask.directive';
+import { MORADIAS_OPTIONS } from '../../shared/constants/app.constants';
 
 interface ViaCepResponse {
   cep: string;
@@ -16,7 +18,7 @@ interface ViaCepResponse {
 @Component({
   selector: 'app-endereco-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MaskDirective],
   template: `
     <div *ngIf="formGroup" [formGroup]="formGroup" class="endereco-form">
       <div class="endereco-grid">
@@ -28,7 +30,7 @@ interface ViaCepResponse {
               formControlName="cep" 
               maxlength="9" 
               placeholder="00000-000"
-              (input)="onCepInput($event)"
+              appMask="cep"
               [class.loading]="cepLoading"
             />
             <button 
@@ -51,11 +53,7 @@ interface ViaCepResponse {
           <label for="moradia">Tipo de Moradia *</label>
           <select id="moradia" formControlName="moradia">
             <option value="">Selecione o tipo</option>
-            <option value="própria">Própria</option>
-            <option value="alugada">Alugada</option>
-            <option value="cedida">Cedida</option>
-            <option value="institucionalizada">Institucionalizada</option>
-            <option value="outro">Outro</option>
+            <option *ngFor="let moradia of moradiasOptions" [value]="moradia">{{ moradia }}</option>
           </select>
         </div>
         
@@ -94,6 +92,7 @@ export class EnderecoFormComponent implements OnInit {
 
   cepLoading = false;
   cepError: string | null = null;
+  moradiasOptions = MORADIAS_OPTIONS;
 
   constructor(private http: HttpClient) {}
 
@@ -104,29 +103,20 @@ export class EnderecoFormComponent implements OnInit {
   ngOnInit() {
     if (this.form) {
       this.form.valueChanges.subscribe(val => this.valueChanges.emit(val));
+      
+      // Listener para CEP completo
+      const cepControl = this.form.get('cep');
+      if (cepControl) {
+        cepControl.valueChanges.subscribe(value => {
+          if (value && value.replace(/\D/g, '').length === 8) {
+            this.buscarCep();
+          }
+        });
+      }
     }
   }
 
-  onCepInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    
-    // Aplica máscara do CEP
-    if (value.length <= 5) {
-      value = value;
-    } else if (value.length <= 8) {
-      value = value.substring(0, 5) + '-' + value.substring(5);
-    } else {
-      value = value.substring(0, 5) + '-' + value.substring(5, 8);
-    }
-    
-    input.value = value;
-    
-    // Busca CEP automaticamente quando tiver 8 dígitos
-    if (value.replace(/\D/g, '').length === 8) {
-      this.buscarCep();
-    }
-  }
+
 
   async buscarCep() {
     if (!this.formGroup) return;
