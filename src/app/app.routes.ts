@@ -1,19 +1,22 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
-import { LoginComponent } from './features/auth/login';
-import { UsuarioListComponent } from './features/usuario/usuario-list';
-import { UsuarioFormComponent } from './features/usuario/usuario-form';
-import { PessoaIdosaListComponent } from './features/pessoa-idosa/pessoa-idosa-list';
-import { PessoaIdosaFormComponent } from './features/pessoa-idosa/pessoa-idosa-form';
+import { RoleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'usuario', component: UsuarioListComponent, canActivate: [AuthGuard] },
-  { path: 'usuario/novo', component: UsuarioFormComponent, canActivate: [AuthGuard] },
-  { path: 'usuario/:id/editar', component: UsuarioFormComponent, canActivate: [AuthGuard] },
-  { path: 'pessoa-idosa', component: PessoaIdosaListComponent, canActivate: [AuthGuard] },
-  { path: 'pessoa-idosa/novo', component: PessoaIdosaFormComponent, canActivate: [AuthGuard] },
-  { path: 'pessoa-idosa/:id/editar', component: PessoaIdosaFormComponent, canActivate: [AuthGuard] },
+  { 
+    path: 'login', 
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+  },
+  { 
+    path: 'usuario', 
+    canActivate: [AuthGuard, RoleGuard(['admin'])],
+    loadChildren: () => import('./features/usuario/usuario.routes').then(m => m.USUARIO_ROUTES)
+  },
+  { 
+    path: 'pessoa-idosa', 
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./features/pessoa-idosa/pessoa-idosa.routes').then(m => m.PESSOA_IDOSA_ROUTES)
+  },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

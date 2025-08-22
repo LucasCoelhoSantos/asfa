@@ -1,0 +1,200 @@
+// Variáveis de cores
+$primary-color: #1976d2;
+$primary-light: #42a5f5;
+$primary-dark: #1565c0;
+$success-color: #388e3c;
+$success-light: #4caf50;
+$danger-color: #e74c3c;
+$warning-color: #ff9800;
+$background-color: #f8f9fa;
+$card-background: #ffffff;
+$text-primary: #2c3e50;
+$text-secondary: #6c757d;
+$text-muted: #9ca3af;
+$border-color: #dee2e6;
+$border-light: #e9ecef;
+$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+$shadow-heavy: 0 8px 25px rgba(0, 0, 0, 0.2);
+
+.endereco-form {
+  width: 100%;
+  
+  .endereco-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    
+    label {
+      color: $text-primary;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      
+      &::after {
+        content: ' *';
+        color: $danger-color;
+        margin-left: 0.25rem;
+        opacity: 0.8;
+      }
+      
+      &:not(:has(+ input[required]))::after {
+        display: none;
+      }
+    }
+    
+    input, select {
+      padding: 0.875rem;
+      border: 2px solid $border-color;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: $text-primary;
+      background: $card-background;
+      transition: all 0.3s ease;
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 48px;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        transform: translateY(-1px);
+      }
+      
+      &:hover {
+        border-color: $primary-light;
+      }
+      
+      &::placeholder {
+        color: $text-muted;
+        opacity: 0.7;
+      }
+      
+      &.ng-invalid.ng-touched {
+        border-color: $danger-color;
+        background: rgba(231, 76, 60, 0.05);
+        
+        &:focus {
+          box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+      }
+      
+      &.loading {
+        background: rgba(25, 118, 210, 0.05);
+        border-color: $primary-color;
+      }
+    }
+    
+    select {
+      cursor: pointer;
+      
+      &:hover {
+        background: rgba(25, 118, 210, 0.02);
+      }
+    }
+  }
+
+  .cep-group {
+    .cep-input-group {
+      position: relative;
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      
+      input {
+        flex: 1;
+        min-width: 0; // Importante para flexbox
+      }
+      
+      .btn-buscar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1rem;
+        background: $primary-color;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        min-width: 100px;
+        flex-shrink: 0; // Evita que o botão encolha
+        
+        &:hover:not(:disabled) {
+          background: $primary-dark;
+          transform: translateY(-1px);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+        
+        .icon {
+          font-size: 1rem;
+        }
+        
+        .loading-spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top: 2px solid white;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+    
+    .error {
+      color: $danger-color;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      
+      &::before {
+        content: '⚠';
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  .logradouro-group {
+    grid-column: span 2;
+    
+    @media (max-width: 1200px) {
+      grid-column: span 1;
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,84 +1,159 @@
 <app-main-menu></app-main-menu>
 <div class="pessoa-form-container">
-  <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Pessoa Idosa</h2>
+  <div class="form-header">
+    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Pessoa Idosa</h2>
+  </div>
+  
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <!-- Campos principais -->
-    <div class="form-group">
-      <label for="nome">Nome</label>
-      <input id="nome" formControlName="nome" />
-      <div class="error" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">Nome obrigatório.</div>
-    </div>
-    <div class="form-group">
-      <label for="dataNascimento">Data de Nascimento</label>
-      <input id="dataNascimento" type="date" formControlName="dataNascimento" />
-      <div class="error" *ngIf="form.controls['dataNascimento'].errors?.['dataNascimento'] && form.controls['dataNascimento'].touched">Data inválida.</div>
-    </div>
-    <div class="form-group">
-      <label for="estadoCivil">Estado Civil</label>
-      <select id="estadoCivil" formControlName="estadoCivil">
-        <option value="">Selecione</option>
-        <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
-      </select>
-      <div class="error" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">Campo obrigatório.</div>
-    </div>
-    <div class="form-group">
-      <label for="cpf">CPF</label>
-      <input id="cpf" formControlName="cpf" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" inputmode="numeric" placeholder="000.000.000-00" />
-      <div class="error" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">CPF inválido.</div>
-      <div class="error" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">Campo obrigatório.</div>
-    </div>
-    <div class="form-group">
-      <label for="rg">RG</label>
-      <input id="rg" formControlName="rg" maxlength="12" pattern="\d{1,2}\.\d{3}\.\d{3}-\d{1}" inputmode="numeric" placeholder="00.000.000-0" />
-      <div class="error" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">RG inválido.</div>
-      <div class="error" *ngIf="form.controls['rg'].invalid && form.controls['rg'].touched && !form.controls['rg'].errors?.['rg']">Campo obrigatório.</div>
-    </div>
-    <div class="form-group">
-      <label for="telefone">Telefone/Celular</label>
-      <input id="telefone" formControlName="telefone" maxlength="15" pattern="\(\d{2}\) \d{4,5}-\d{4}" inputmode="numeric" placeholder="(00) 00000-0000" />
-      <div class="error" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">Telefone inválido.</div>
-      <div class="error" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">Campo obrigatório.</div>
+    <!-- Informações Pessoais -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Informações Pessoais</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nome">Nome Completo *</label>
+          <input id="nome" formControlName="nome" placeholder="Digite o nome completo" />
+          <div class="error" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">
+            Nome obrigatório.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="dataNascimento">Data de Nascimento *</label>
+          <input id="dataNascimento" type="date" formControlName="dataNascimento" />
+          <div class="error" *ngIf="form.controls['dataNascimento'].errors?.['dataNascimento'] && form.controls['dataNascimento'].touched">
+            Data inválida.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="estadoCivil">Estado Civil *</label>
+          <select id="estadoCivil" formControlName="estadoCivil">
+            <option value="">Selecione o estado civil</option>
+            <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
+          </select>
+          <div class="error" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">
+            Campo obrigatório.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="cpf">CPF *</label>
+          <input 
+            id="cpf" 
+            formControlName="cpf" 
+            maxlength="14" 
+            inputmode="numeric" 
+            placeholder="000.000.000-00"
+            (input)="aplicarMascaraCpf($event)"
+          />
+          <div class="error" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">
+            CPF inválido.
+          </div>
+          <div class="error" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">
+            Campo obrigatório.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="rg">RG</label>
+          <input 
+            id="rg" 
+            formControlName="rg" 
+            maxlength="12" 
+            inputmode="numeric" 
+            placeholder="00.000.000-0"
+            (input)="aplicarMascaraRg($event)"
+          />
+          <div class="error" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">
+            RG inválido.
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="telefone">Telefone/Celular *</label>
+          <input 
+            id="telefone" 
+            formControlName="telefone" 
+            maxlength="15" 
+            inputmode="numeric" 
+            placeholder="(00) 00000-0000"
+            (input)="aplicarMascaraTelefone($event)"
+          />
+          <div class="error" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">
+            Telefone inválido.
+          </div>
+          <div class="error" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">
+            Campo obrigatório.
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Endereço -->
-    <ng-container *ngIf="form.get('endereco') as enderecoForm">
-      <app-endereco-form [form]="enderecoForm" (valueChanges)="onEnderecoChange($event)"></app-endereco-form>
-    </ng-container>
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Endereço</h3>
+      </div>
+      <ng-container *ngIf="form.get('endereco') as enderecoForm">
+        <app-endereco-form [form]="enderecoForm" (valueChanges)="onEnderecoChange($event)"></app-endereco-form>
+      </ng-container>
+    </div>
 
     <!-- Dependentes -->
-    <fieldset>
-      <legend>Dependentes</legend>
-      <div class="dependentes-list">
-        <div *ngIf="dependentes.length === 0" class="sem-registros">Nenhum dependente cadastrado.</div>
-        <table *ngIf="dependentes.length > 0">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Data Nasc.</th>
-              <th>Parentesco</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let dep of dependentes; let i = index">
-              <td>{{ dep.nome }}</td>
-              <td>{{ dep.dataNascimento | date:'dd/MM/yyyy' }}</td>
-              <td>{{ dep.parentesco }}</td>
-              <td>
-                <span [class.ativo]="dep.ativo" [class.inativo]="!dep.ativo">
-                  {{ dep.ativo ? 'Ativo' : 'Inativo' }}
-                </span>
-              </td>
-              <td>
-                <button type="button" (click)="editarDependente(i)">Editar</button>
-                <button type="button" (click)="confirmarRemoverDependente(i)">Remover</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button type="button" (click)="abrirNovoDependente()">Adicionar Dependente</button>
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Dependentes</h3>
+        <button type="button" class="btn-add" (click)="abrirNovoDependente()">
+          <span class="icon">+</span>
+          Adicionar Dependente
+        </button>
       </div>
+      
+      <div class="dependentes-content">
+        <div *ngIf="dependentes.length === 0" class="empty-state">
+          <div class="empty-icon">👥</div>
+          <p>Nenhum dependente cadastrado</p>
+          <small>Clique no botão acima para adicionar um dependente</small>
+        </div>
+        
+        <div *ngIf="dependentes.length > 0" class="dependentes-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Data Nasc.</th>
+                <th>Parentesco</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dep of dependentes; let i = index">
+                <td>{{ dep.nome }}</td>
+                <td>{{ dep.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                <td>{{ dep.parentesco }}</td>
+                <td>
+                  <span [class.ativo]="dep.ativo" [class.inativo]="!dep.ativo">
+                    {{ dep.ativo ? 'Ativo' : 'Inativo' }}
+                  </span>
+                </td>
+                <td class="actions">
+                  <button type="button" class="btn-edit" (click)="editarDependente(i)">
+                    <span class="icon">✏️</span>
+                  </button>
+                  <button type="button" class="btn-remove" (click)="confirmarRemoverDependente(i)">
+                    <span class="icon">🗑️</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Modal de dependente -->
       <div *ngIf="showDependenteForm" class="dependente-form-modal">
         <app-dependente-form
           [dependente]="dependenteEditValue"
@@ -86,6 +161,7 @@
           (cancel)="cancelarDependente()">
         </app-dependente-form>
       </div>
+      
       <!-- Modal de confirmação -->
       <app-modal
         [show]="showRemoveModal"
@@ -93,22 +169,41 @@
         message="Tem certeza que deseja remover este dependente?"
         confirmText="Sim"
         cancelText="Não"
-        (confirm)="removerDependenteConfirmado()"
+        (confirm)="removerDependente()"
         (cancel)="cancelarRemoverDependente()">
       </app-modal>
-    </fieldset>
+    </div>
 
     <!-- Anexos -->
-    <app-anexo-form [anexos]="anexos"
-                   (upload)="onUploadAnexo($event)"
-                   (removerAnexo)="onRemoverAnexo($event)"
-                   (baixarAnexo)="onBaixarAnexo($event)"></app-anexo-form>
-
-    <div class="form-actions">
-      <button type="submit" [disabled]="form.valid || loading">Salvar</button>
-      <button type="button" (click)="voltarParaLista()">Voltar</button>
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Documentos e Anexos</h3>
+      </div>
+      <app-anexo-form 
+        #anexoForm
+        [anexos]="anexos"
+        (upload)="onUploadAnexo($event)"
+        (removerAnexo)="onRemoverAnexo($event)"
+        (baixarAnexo)="onBaixarAnexo($event)">
+      </app-anexo-form>
     </div>
-    <div class="loading" *ngIf="loading">Salvando...</div>
-    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <!-- Ações do formulário -->
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="voltarParaLista()">
+        <span class="icon">←</span>
+        Voltar
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
+        <span class="icon" *ngIf="!loading">💾</span>
+        <span class="loading-spinner" *ngIf="loading"></span>
+        {{ loading ? 'Salvando...' : 'Salvar' }}
+      </button>
+    </div>
+    
+    <!-- Mensagens de feedback -->
+    <div class="feedback-messages">
+      <div class="error" *ngIf="error">{{ error }}</div>
+    </div>
   </form>
 </div>

@@ -1,0 +1,300 @@
+// Variáveis de cores
+$primary-color: #1976d2;
+$primary-light: #42a5f5;
+$success-color: #388e3c;
+$danger-color: #e74c3c;
+$warning-color: #ff9800;
+$background-color: #f8f9fa;
+$card-background: #ffffff;
+$text-primary: #2c3e50;
+$text-secondary: #6c757d;
+$border-color: #dee2e6;
+$border-light: #e9ecef;
+$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+// Container principal
+.anexos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// Item individual do anexo
+.anexo-item {
+  background: $card-background;
+  border: 2px solid $border-light;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: $primary-light;
+    box-shadow: $shadow-medium;
+    transform: translateY(-2px);
+  }
+  
+  // Cabeçalho do item
+  .anexo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $border-light;
+    
+    .anexo-title {
+      color: $text-primary;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .anexo-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      
+      &.uploaded {
+        background: rgba(56, 142, 60, 0.1);
+        color: $success-color;
+      }
+      
+      &.not-uploaded {
+        background: rgba(108, 117, 125, 0.1);
+        color: $text-secondary;
+      }
+    }
+  }
+  
+  // Área de upload
+  .upload-area {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    .file-input-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      
+      .file-input-wrapper {
+        position: relative;
+        flex: 1;
+        
+        input[type="file"] {
+          position: absolute;
+          opacity: 0;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          z-index: 2;
+        }
+        
+        .file-input-button {
+          background: $primary-color;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          padding: 0.875rem 1.5rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          width: 100%;
+          justify-content: center;
+          
+          &:hover {
+            background: $primary-light;
+            transform: translateY(-1px);
+            box-shadow: $shadow-light;
+          }
+          
+          .icon {
+            font-size: 1rem;
+          }
+        }
+      }
+      
+      .file-info {
+        flex: 1;
+        padding: 0.875rem;
+        background: $background-color;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        color: $text-secondary;
+        font-size: 0.9rem;
+        text-align: center;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &.has-file {
+          background: rgba(56, 142, 60, 0.1);
+          border-color: $success-color;
+          color: $success-color;
+          font-weight: 500;
+        }
+      }
+    }
+    
+    // Ações do arquivo
+    .file-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      
+      button {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: $shadow-light;
+        }
+        
+        .icon {
+          font-size: 0.9rem;
+        }
+      }
+      
+      .btn-download {
+        background: $success-color;
+        color: white;
+        
+        &:hover {
+          background: darken($success-color, 10%);
+        }
+      }
+      
+      .btn-remove {
+        background: $danger-color;
+        color: white;
+        
+        &:hover {
+          background: darken($danger-color, 10%);
+        }
+      }
+    }
+  }
+  
+  // Informações do arquivo
+  .file-details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: $background-color;
+    border-radius: 8px;
+    border: 1px solid $border-light;
+    
+    .file-name {
+      color: $primary-color;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .icon {
+        font-size: 1rem;
+      }
+    }
+    
+    .file-meta {
+      color: $text-secondary;
+      font-size: 0.85rem;
+      display: flex;
+      gap: 1rem;
+      
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        
+        .icon {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+// Estado vazio
+.anexo-item:not(.has-file) {
+  .file-actions {
+    display: none;
+  }
+  
+  .file-details {
+    display: none;
+  }
+}
+
+// Responsividade
+@media (max-width: 768px) {
+  .anexo-item {
+    padding: 1rem;
+    
+    .anexo-header {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+      text-align: center;
+    }
+    
+    .upload-area {
+      .file-input-group {
+        flex-direction: column;
+        gap: 1rem;
+        
+        .file-input-wrapper .file-input-button {
+          width: 100%;
+        }
+      }
+      
+      .file-actions {
+        justify-content: center;
+        
+        button {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .anexo-item {
+    padding: 0.75rem;
+    
+    .anexo-header .anexo-title {
+      font-size: 1rem;
+    }
+    
+    .upload-area {
+      .file-input-group .file-input-wrapper .file-input-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
+      
+      .file-actions button {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}

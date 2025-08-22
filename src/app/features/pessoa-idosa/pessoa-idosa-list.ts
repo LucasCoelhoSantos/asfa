@@ -1,9 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PessoaIdosaService } from './pessoa-idosa.service';
+import { PessoaIdosaService, FiltrosPessoaIdosa, PaginacaoResult } from './pessoa-idosa.service';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
 import { Router } from '@angular/router';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
+import { TableSkeletonComponent } from '../../shared/skeleton/table-skeleton.component';
+import { NotificationService } from '../../core/services/notification.service';
+import { CpfPipe } from '../../shared/pipes/cpf.pipe';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { CepPipe } from '../../shared/pipes/cep.pipe';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
 
 const ESTADOS_CIVIS = ['solteiro', 'casado', 'viúvo', 'divorciado'];
 const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
@@ -11,24 +17,30 @@ const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
 @Component({
   selector: 'app-pessoa-idosa-list',
   standalone: true,
-  imports: [CommonModule, MainMenuComponent],
+  imports: [CommonModule, MainMenuComponent, TableSkeletonComponent, CpfPipe, TelefonePipe, CepPipe],
   templateUrl: './pessoa-idosa-list.html',
-  styleUrls: ['./pessoa-idosa-list.scss']
+  styleUrls: ['./pessoa-idosa-list.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PessoaIdosaListComponent implements OnInit {
+export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   private pessoaIdosaService = inject(PessoaIdosaService);
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
+  private destroy$ = new Subject<void>();
+
+  // Observables reativos
+  pessoas$!: Observable<PaginacaoResult>;
+  loading$ = new Subject<boolean>();
 
   // Estado de filtros
-  filtro = {
+  filtro: FiltrosPessoaIdosa = {
     nome: '',
     dataNascimento: '',
     estadoCivil: '',
     cpf: '',
     rg: '',
     cep: '',
-    ativo: '',
-    // ...outros filtros se necessário
+    ativo: true
   };
 
   // Paginação
@@ -36,10 +48,9 @@ export class PessoaIdosaListComponent implements OnInit {
   pageSize = 20;
   pageIndex = 0;
   lastDoc: any = null;
-  loading = false;
   total = 0;
+  hasMore = false;
 
-  pessoas: PessoaIdosa[] = [];
   estadosCivis = ESTADOS_CIVIS;
 
   filtroAvancado = {
@@ -56,41 +67,78 @@ export class PessoaIdosaListComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.buscarPessoas();
+    this.inicializarObservables();
+    this.aplicarFiltros();
   }
 
-  async buscarPessoas(resetPage = false) {
-    this.loading = true;
-    if (resetPage) {
-      this.pageIndex = 0;
-      this.lastDoc = null;
-    }
-    const filtros: any = {};
-    if (this.filtro.nome) filtros.nome = this.filtro.nome;
-    if (this.filtro.cpf) filtros.cpf = this.filtro.cpf;
-    if (this.filtro.estadoCivil) filtros.estadoCivil = this.filtro.estadoCivil;
-    if (this.filtro.ativo) filtros.ativo = this.filtro.ativo === 'ativo';
-    // ...outros filtros
-    const res = await this.pessoaIdosaService.getPaginated(this.pageSize, this.lastDoc, filtros);
-    this.pessoas = res.pessoas;
-    this.lastDoc = res.lastDoc;
-    this.total = res.total;
-    this.loading = false;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  setFiltroNome(valor: string) { this.filtro.nome = valor; this.buscarPessoas(true); }
-  setFiltroDataNascimento(valor: string) { this.filtro.dataNascimento = valor; this.buscarPessoas(true); }
-  setFiltroEstadoCivil(valor: string) { this.filtro.estadoCivil = valor; this.buscarPessoas(true); }
-  setFiltroCpf(valor: string) { this.filtro.cpf = valor; this.buscarPessoas(true); }
-  setFiltroRg(valor: string) { this.filtro.rg = valor; this.buscarPessoas(true); }
-  setFiltroCep(valor: string) { this.filtro.cep = valor; this.buscarPessoas(true); }
-  setFiltroAtivo(valor: string) { this.filtro.ativo = valor; this.buscarPessoas(true); }
-  setPageSize(size: number) { this.pageSize = size; this.buscarPessoas(true); }
+  private inicializarObservables() {
+    this.pessoas$ = this.pessoaIdosaService.pessoas$.pipe(
+      tap(result => {
+        this.total = result.total;
+        this.hasMore = result.hasMore;
+        this.lastDoc = result.lastDoc;
+        this.loading$.next(false);
+      }),
+      takeUntil(this.destroy$)
+    );
+  }
+
+  private aplicarFiltros() {
+    this.loading$.next(true);
+    this.pessoaIdosaService.aplicarFiltros(this.filtro);
+    this.pessoaIdosaService.setPaginacao(this.pageSize, this.lastDoc);
+  }
+
+  // Métodos de filtro atualizados
+  setFiltroNome(valor: string) { 
+    this.filtro.nome = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroDataNascimento(valor: string) { 
+    this.filtro.dataNascimento = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroEstadoCivil(valor: string) { 
+    this.filtro.estadoCivil = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroCpf(valor: string) { 
+    this.filtro.cpf = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroRg(valor: string) { 
+    this.filtro.rg = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroCep(valor: string) { 
+    this.filtro.cep = valor; 
+    this.aplicarFiltros(); 
+  }
+  
+  setFiltroAtivo(valor: string) { 
+    this.filtro.ativo = valor === 'ativo'; 
+    this.aplicarFiltros(); 
+  }
+  
+  setPageSize(size: number) { 
+    this.pageSize = size; 
+    this.aplicarFiltros(); 
+  }
 
   setPageIndex(index: number) {
     if (index < 0) return;
     this.pageIndex = index;
-    this.buscarPessoas();
+    this.aplicarFiltros();
   }
 
   editar(id: string) {
@@ -99,7 +147,15 @@ export class PessoaIdosaListComponent implements OnInit {
 
   inativar(id: string) {
     if (confirm('Tem certeza que deseja inativar este registro?')) {
-      this.pessoaIdosaService.inativar(id).then(() => this.buscarPessoas());
+      this.pessoaIdosaService.inativar(id).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Registro inativado com sucesso.');
+          this.aplicarFiltros();
+        },
+        error: (error) => {
+          this.notificationService.showError('Erro ao inativar registro.');
+        }
+      });
     }
   }
 
@@ -109,36 +165,39 @@ export class PessoaIdosaListComponent implements OnInit {
       import('jspdf-autotable')
     ]).then(([{ default: jsPDF }, autoTable]) => {
       const doc = new jsPDF();
-      // Aplicar filtros avançados client-side
-      const pessoasFiltradas = this.pessoas.filter(p => {
-        const f = this.filtroAvancado;
-        return (!f.alfabetizado || p.composicaoFamiliar?.alfabetizado === f.alfabetizado)
-          && (!f.estudaAtualmente || p.composicaoFamiliar?.estudaAtualmente === f.estudaAtualmente)
-          && (!f.nivelSerie || p.composicaoFamiliar?.nivelSerieAtualConcluido?.includes(f.nivelSerie))
-          && (!f.cursoFormacao || p.composicaoFamiliar?.cursosTecnicoFormacaoProfissional?.includes(f.cursoFormacao))
-          && (!f.beneficio || p.composicaoFamiliar?.beneficio?.includes(f.beneficio))
-          && (!f.situacaoOcupacional || p.composicaoFamiliar?.situacaoOcupacional?.includes(f.situacaoOcupacional))
-          && (!f.problemaDeSaude || p.composicaoFamiliar?.problemaDeSaude?.includes(f.problemaDeSaude))
-          && (!f.aposentado || p.composicaoFamiliar?.aposentado?.includes(f.aposentado))
-          && (!f.moradia || p.endereco?.moradia?.includes(f.moradia))
-          && (!f.deficiencia || p.composicaoFamiliar?.deficiencia?.includes(f.deficiencia));
+      // Usar o observable para obter os dados atuais
+      this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
+        // Aplicar filtros avançados client-side
+        const pessoasFiltradas = resultado.pessoas.filter((p: PessoaIdosa) => {
+          const f = this.filtroAvancado;
+          return (!f.alfabetizado || p.composicaoFamiliar?.alfabetizado === f.alfabetizado)
+            && (!f.estudaAtualmente || p.composicaoFamiliar?.estudaAtualmente === f.estudaAtualmente)
+            && (!f.nivelSerie || p.composicaoFamiliar?.nivelSerieAtualConcluido?.includes(f.nivelSerie))
+            && (!f.cursoFormacao || p.composicaoFamiliar?.cursosTecnicoFormacaoProfissional?.includes(f.cursoFormacao))
+            && (!f.beneficio || p.composicaoFamiliar?.beneficio?.includes(f.beneficio))
+            && (!f.situacaoOcupacional || p.composicaoFamiliar?.situacaoOcupacional?.includes(f.situacaoOcupacional))
+            && (!f.problemaDeSaude || p.composicaoFamiliar?.problemaDeSaude?.includes(f.problemaDeSaude))
+            && (!f.aposentado || p.composicaoFamiliar?.aposentado?.includes(f.aposentado))
+            && (!f.moradia || p.endereco?.moradia?.includes(f.moradia))
+            && (!f.deficiencia || p.composicaoFamiliar?.deficiencia?.includes(f.deficiencia));
+        });
+        autoTable.default(doc, {
+          head: [[
+            'Nome', 'Data Nasc.', 'Estado Civil', 'CPF', 'RG', 'CEP', 'Ativo'
+          ]],
+          body: pessoasFiltradas.map((p: PessoaIdosa) => [
+            p.nome,
+            new Date(p.dataNascimento).toLocaleDateString(),
+            p.estadoCivil,
+            p.cpf,
+            p.rg,
+            p.endereco?.cep,
+            p.ativo ? 'Sim' : 'Não'
+          ]),
+          styles: { fontSize: 10 }
+        });
+        doc.save('pessoas-idosas.pdf');
       });
-      autoTable.default(doc, {
-        head: [[
-          'Nome', 'Data Nasc.', 'Estado Civil', 'CPF', 'RG', 'CEP', 'Ativo'
-        ]],
-        body: pessoasFiltradas.map((p: PessoaIdosa) => [
-          p.nome,
-          new Date(p.dataNascimento).toLocaleDateString(),
-          p.estadoCivil,
-          p.cpf,
-          p.rg,
-          p.endereco?.cep,
-          p.ativo ? 'Sim' : 'Não'
-        ]),
-        styles: { fontSize: 10 }
-      });
-      doc.save('pessoas-idosas.pdf');
     });
   }
 
@@ -154,21 +213,7 @@ export class PessoaIdosaListComponent implements OnInit {
   }
   get math() { return Math; }
 
-  get pessoasFiltradas() {
-    const f = this.filtroAvancado;
-    return this.pessoas.filter(p => {
-      return (!f.alfabetizado || p.composicaoFamiliar?.alfabetizado === f.alfabetizado)
-        && (!f.estudaAtualmente || p.composicaoFamiliar?.estudaAtualmente === f.estudaAtualmente)
-        && (!f.nivelSerie || p.composicaoFamiliar?.nivelSerieAtualConcluido?.includes(f.nivelSerie))
-        && (!f.cursoFormacao || p.composicaoFamiliar?.cursosTecnicoFormacaoProfissional?.includes(f.cursoFormacao))
-        && (!f.beneficio || p.composicaoFamiliar?.beneficio?.includes(f.beneficio))
-        && (!f.situacaoOcupacional || p.composicaoFamiliar?.situacaoOcupacional?.includes(f.situacaoOcupacional))
-        && (!f.problemaDeSaude || p.composicaoFamiliar?.problemaDeSaude?.includes(f.problemaDeSaude))
-        && (!f.aposentado || p.composicaoFamiliar?.aposentado?.includes(f.aposentado))
-        && (!f.moradia || p.endereco?.moradia?.includes(f.moradia))
-        && (!f.deficiencia || p.composicaoFamiliar?.deficiencia?.includes(f.deficiencia));
-    });
-  }
+
 
   setFiltroAlfabetizado(valor: boolean) { this.filtroAvancado.alfabetizado = valor; }
   setFiltroEstudaAtualmente(valor: boolean) { this.filtroAvancado.estudaAtualmente = valor; }
