@@ -53,4 +53,13 @@ export class UsuarioListComponent {
     this.showRemoveModal = false;
     this.usuarioRemoverId = null;
   }
+
+  getUserInitials(email: string): string {
+    if (!email) return 'U';
+    const parts = email.split('@')[0].split('.');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return email[0].toUpperCase();
+  }
 }

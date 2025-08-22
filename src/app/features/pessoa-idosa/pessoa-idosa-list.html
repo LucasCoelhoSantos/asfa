@@ -1,126 +1,172 @@
 <app-main-menu></app-main-menu>
+
 <div class="pessoas-list-container">
-  <h2>Pessoas Idosas Cadastradas</h2>
-  <button (click)="navigate('/pessoa-idosa/novo')" class="button-add">Adicionar Pessoa</button>
-  <div class="filtros-container">
-    <label>
-      Nome
-      <input placeholder="Nome" (input)="setFiltroNome(getValue($event))" />
-    </label>
-    <label>
-      Data Nasc.
-      <input type="date" (input)="setFiltroDataNascimento(getValue($event))" />
-    </label>
-    <label>
-      Estado Civil
-      <select (change)="setFiltroEstadoCivil(getValue($event))">
-        <option value="">Todos</option>
-        <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
-      </select>
-    </label>
-    <label>
-      CPF
-      <input placeholder="CPF" (input)="setFiltroCpf(getValue($event))" />
-    </label>
-    <label>
-      RG
-      <input placeholder="RG" (input)="setFiltroRg(getValue($event))" />
-    </label>
-    <label>
-      CEP
-      <input placeholder="CEP" (input)="setFiltroCep(getValue($event))" />
-    </label>
-    <div class="filtros-avancados-container">
-      <label>
-        Alfabetizado
-        <input type="checkbox" (change)="setFiltroAlfabetizado(getChecked($event))" />
-      </label>
-      <label>
-        Estuda Atualmente
-        <input type="checkbox" (change)="setFiltroEstudaAtualmente(getChecked($event))" />
-      </label>
-      <label>
-        Nível/Série Atual
-        <input (input)="setFiltroNivelSerie(getValue($event))" />
-      </label>
-      <label>
-        Curso Técnico/Formação
-        <input (input)="setFiltroCursoFormacao(getValue($event))" />
-      </label>
-      <label>
-        Benefício
-        <input (input)="setFiltroBeneficio(getValue($event))" />
-      </label>
-      <label>
-        Situação Ocupacional
-        <input (input)="setFiltroSituacaoOcupacional(getValue($event))" />
-      </label>
-      <label>
-        Problema de Saúde
-        <input (input)="setFiltroProblemaDeSaude(getValue($event))" />
-      </label>
-      <label>
-        Aposentado
-        <input (input)="setFiltroAposentado(getValue($event))" />
-      </label>
-      <label>
-        Moradia
-        <input (input)="setFiltroMoradia(getValue($event))" />
-      </label>
-      <label>
-        Deficiência
-        <input (input)="setFiltroDeficiencia(getValue($event))" />
-      </label>
+  <div class="header-section">
+    <div class="header-content">
+      <h1>Pessoas Idosas Cadastradas</h1>
+      <p class="subtitle">Gerencie as pessoas idosas cadastradas no sistema</p>
     </div>
-    <label>
-      Ativo?
-      <select (change)="setFiltroAtivo(getValue($event))">
-        <option value="">Todos</option>
-        <option value="ativo">Ativo</option>
-        <option value="inativo">Inativo</option>
-      </select>
-    </label>
-    <label class="page-size-label">
-      Exibir:
-      <select (change)="setPageSize(+getValue($event))">
-        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
-      </select>
-    </label>
-    <button (click)="exportarPdf()" class="exportar-pdf">Exportar PDF</button>
+    <button class="button-add" (click)="navigate('/pessoa-idosa/novo')">
+      Adicionar Pessoa
+    </button>
   </div>
-  <div *ngIf="loading" class="loading">Carregando...</div>
-  <table *ngIf="!loading && pessoas.length > 0; else semRegistros">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Data de Nascimento</th>
-        <th>Status</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let pessoa of pessoasFiltradas">
-        <td>{{ pessoa.nome }}</td>
-        <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
-        <td>
-          <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
-            {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
-          </span>
-        </td>
-        <td>
-          <button (click)="editar(pessoa.id)">Editar</button>
-          <button (click)="inativar(pessoa.id)" [disabled]="!pessoa.ativo">Inativar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="paginacao" *ngIf="!loading && pessoas.length > 0">
-    <ng-container *ngIf="pageSize > 0 && total > pageSize">
-      <button (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">Anterior</button>
-      <span>Página {{ pageIndex + 1 }} de {{ math.ceil(total / pageSize) }}</span>
-      <button (click)="setPageIndex(pageIndex + 1)" [disabled]="(pageIndex + 1) * pageSize >= total">Próxima</button>
-    </ng-container>
+  
+  <div class="filtros-container">
+    <div class="filtros-header">
+      <h3>Filtros de Pesquisa</h3>
+    </div>
+    
+    <!-- Filtros Básicos -->
+    <div class="filtros-section">
+      <h4>Informações Básicas</h4>
+      <div class="filtros-grid">
+        <div class="filtro-item">
+          <label>Nome</label>
+          <input placeholder="Nome" (input)="setFiltroNome(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Data Nasc.</label>
+          <input type="date" (input)="setFiltroDataNascimento(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Estado Civil</label>
+          <select (change)="setFiltroEstadoCivil(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
+          </select>
+        </div>
+        <div class="filtro-item">
+          <label>CPF</label>
+          <input placeholder="CPF" (input)="setFiltroCpf(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>RG</label>
+          <input placeholder="RG" (input)="setFiltroRg(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>CEP</label>
+          <input placeholder="CEP" (input)="setFiltroCep(getValue($event))" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filtros Avançados -->
+    <div class="filtros-section">
+      <h4>Informações Adicionais</h4>
+      <div class="filtros-grid">
+        <div class="filtro-item checkbox-item">
+          <label>
+            <input type="checkbox" (change)="setFiltroAlfabetizado(getChecked($event))" />
+            <span>Alfabetizado</span>
+          </label>
+        </div>
+        <div class="filtro-item checkbox-item">
+          <label>
+            <input type="checkbox" (change)="setFiltroEstudaAtualmente(getChecked($event))" />
+            <span>Estuda Atualmente</span>
+          </label>
+        </div>
+        <div class="filtro-item">
+          <label>Nível/Série Atual</label>
+          <input placeholder="Nível/Série" (input)="setFiltroNivelSerie(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Curso Técnico/Formação</label>
+          <input placeholder="Curso/Formação" (input)="setFiltroCursoFormacao(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Benefício</label>
+          <input placeholder="Benefício" (input)="setFiltroBeneficio(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Situação Ocupacional</label>
+          <input placeholder="Situação" (input)="setFiltroSituacaoOcupacional(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Problema de Saúde</label>
+          <input placeholder="Problema de Saúde" (input)="setFiltroProblemaDeSaude(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Aposentado</label>
+          <input placeholder="Aposentado" (input)="setFiltroAposentado(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Moradia</label>
+          <input placeholder="Moradia" (input)="setFiltroMoradia(getValue($event))" />
+        </div>
+        <div class="filtro-item">
+          <label>Deficiência</label>
+          <input placeholder="Deficiência" (input)="setFiltroDeficiencia(getValue($event))" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Controles de Exibição -->
+    <div class="filtros-section">
+      <h4>Controles</h4>
+      <div class="controles-grid">
+        <div class="filtro-item">
+          <label>Status</label>
+          <select (change)="setFiltroAtivo(getValue($event))">
+            <option value="">Todos</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+        <div class="filtro-item">
+          <label>Itens por Página</label>
+          <select (change)="setPageSize(+getValue($event))">
+            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
+          </select>
+        </div>
+        <div class="filtro-item">
+          <button (click)="exportarPdf()" class="exportar-pdf">Exportar PDF</button>
+        </div>
+      </div>
+    </div>
   </div>
+  
+  <app-table-skeleton *ngIf="loading$ | async" [rows]="5"></app-table-skeleton>
+  <ng-container *ngIf="pessoas$ | async as resultado">
+    <table *ngIf="resultado.pessoas.length > 0; else semRegistros">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>CEP</th>
+          <th>Data de Nascimento</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pessoa of resultado.pessoas">
+          <td>{{ pessoa.nome }}</td>
+          <td>{{ pessoa.cpf | cpf }}</td>
+          <td>{{ pessoa.telefone | telefone }}</td>
+          <td>{{ pessoa.endereco.cep | cep }}</td>
+          <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
+              {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </td>
+          <td>
+            <button (click)="editar(pessoa.id)">Editar</button>
+            <button (click)="inativar(pessoa.id)" [disabled]="!pessoa.ativo">Inativar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="paginacao" *ngIf="resultado.pessoas.length > 0">
+      <ng-container *ngIf="pageSize > 0 && resultado.total > pageSize">
+        <button (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">Anterior</button>
+        <span>Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
+        <button (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">Próxima</button>
+      </ng-container>
+    </div>
+  </ng-container>
   <ng-template #semRegistros>
     <div class="sem-registros">Nenhuma pessoa idosa cadastrada.</div>
   </ng-template>

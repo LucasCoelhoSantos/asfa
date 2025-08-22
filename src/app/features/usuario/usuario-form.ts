@@ -28,6 +28,7 @@ export class UsuarioFormComponent implements OnInit {
   editMode = false;
   usuarioId: string | null = null;
   roles = ROLES;
+  showPassword = false;
 
   constructor() {
     this.form = this.fb.group({
@@ -59,6 +60,10 @@ export class UsuarioFormComponent implements OnInit {
       this.form.get('senha')?.setValidators([Validators.required, Validators.minLength(6)]);
       this.form.get('senha')?.updateValueAndValidity();
     }
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   async onSubmit() {

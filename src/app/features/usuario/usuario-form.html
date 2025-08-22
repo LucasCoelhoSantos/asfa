@@ -1,39 +1,141 @@
 <app-main-menu></app-main-menu>
+
 <div class="usuario-form-container">
-  <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Usuário</h2>
+  <!-- Header Section -->
+  <div class="form-header">
+    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Usuário</h2>
+  </div>
+
+  <!-- Form Content -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="nome">Nome</label>
-      <input id="nome" formControlName="nome" />
-      <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">Nome obrigatório.</div>
+    <!-- Informações Básicas -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Informações Básicas</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nome">Nome Completo</label>
+          <input 
+            id="nome" 
+            type="text"
+            formControlName="nome" 
+            placeholder="Digite o nome completo"
+            required
+          />
+          <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
+            Nome é obrigatório
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input 
+            id="email" 
+            type="email"
+            formControlName="email" 
+            placeholder="exemplo@email.com"
+            required
+          />
+          <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            <span *ngIf="form.get('email')?.errors?.['required']">E-mail é obrigatório</span>
+            <span *ngIf="form.get('email')?.errors?.['email']">E-mail inválido</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="email">E-mail</label>
-      <input id="email" formControlName="email" type="email" />
-      <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">E-mail obrigatório e válido.</div>
+
+    <!-- Segurança -->
+    <div class="form-section" *ngIf="!editMode">
+      <div class="section-header">
+        <h3>Segurança</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <div class="password-input-group">
+            <input 
+              id="senha" 
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="senha" 
+              placeholder="Mínimo 6 caracteres"
+              required
+            />
+            <button 
+              type="button" 
+              class="password-toggle"
+              (click)="togglePassword()"
+              [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+            >
+              <span class="icon">{{ showPassword ? '👁️' : '👁️‍🗨️' }}</span>
+            </button>
+          </div>
+          <div class="error" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
+            <span *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória</span>
+            <span *ngIf="form.get('senha')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <!-- Campo vazio para manter o grid equilibrado -->
+        </div>
+      </div>
     </div>
-    <div class="form-group" *ngIf="!editMode">
-      <label for="senha">Senha</label>
-      <input id="senha" formControlName="senha" type="password" />
-      <div class="error" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">Senha obrigatória (mínimo 6 caracteres).</div>
+
+    <!-- Configurações -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3>Configurações</h3>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="role">Papel</label>
+          <select 
+            id="role" 
+            formControlName="role"
+            required
+          >
+            <option value="">Selecione o papel</option>
+            <option *ngFor="let r of roles" [value]="r">
+              {{ r === 'admin' ? 'Administrador' : 'Usuário' }}
+            </option>
+          </select>
+          <div class="error" *ngIf="form.get('role')?.invalid && form.get('role')?.touched">
+            Papel é obrigatório
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="editMode">
+          <label for="ativo">Status</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="ativo" />
+              <span class="checkmark"></span>
+              <span class="label-text">Usuário ativo</span>
+            </label>
+            <p class="checkbox-description">
+              Usuários inativos não podem acessar o sistema
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="role">Papel</label>
-      <select id="role" formControlName="role">
-        <option value="">Selecione</option>
-        <option *ngFor="let r of roles" [value]="r">{{ r === 'admin' ? 'Admin' : 'Usuário' }}</option>
-      </select>
-      <div class="error" *ngIf="form.get('role')?.invalid && form.get('role')?.touched">Campo obrigatório.</div>
-    </div>
-    <div class="form-group" *ngIf="editMode">
-      <label for="ativo">Ativo</label>
-      <input id="ativo" type="checkbox" formControlName="ativo" />
-    </div>
+
+    <!-- Form Actions -->
     <div class="form-actions">
-      <button type="submit" [disabled]="form.invalid || loading">Salvar</button>
-      <button type="button" (click)="voltarParaLista()">Voltar</button>
+      <button type="button" class="btn-secondary" (click)="voltarParaLista()">
+        Voltar
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
+        {{ loading ? 'Salvando...' : 'Salvar' }}
+      </button>
     </div>
-    <div class="loading" *ngIf="loading">Salvando...</div>
-    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <!-- Feedback Messages -->
+    <div class="feedback-messages" *ngIf="error">
+      <div class="error">
+        {{ error }}
+      </div>
+    </div>
   </form>
 </div>
