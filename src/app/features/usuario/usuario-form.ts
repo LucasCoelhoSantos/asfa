@@ -6,8 +6,7 @@ import { MainMenuComponent } from '../../shared/main-menu/main-menu';
 import { UsuarioRole } from '../../models/usuario.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-
-const ROLES: UsuarioRole[] = ['admin', 'user'];
+import { ROLES_USUARIO } from '../../shared/constants/app.constants';
 
 @Component({
   selector: 'app-usuario-form',
@@ -27,7 +26,7 @@ export class UsuarioFormComponent implements OnInit {
   error: string | null = null;
   editMode = false;
   usuarioId: string | null = null;
-  roles = ROLES;
+  roles = ROLES_USUARIO;
   showPassword = false;
 
   constructor() {

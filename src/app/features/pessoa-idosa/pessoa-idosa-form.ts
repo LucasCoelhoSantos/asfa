@@ -13,41 +13,25 @@ import { EnderecoFormComponent } from './endereco-form';
 import { AnexoFormComponent } from './anexo-form';
 import { NotificationService } from '../../core/services/notification.service';
 import { cpfValidator, rgValidator, cepValidator, telefoneValidator, dataNascimentoValidator } from './validators.util';
-
-const TIPOS_ANEXO = [
-  { tipo: 1, label: 'CPF' },
-  { tipo: 2, label: 'RG' },
-  { tipo: 3, label: 'Comprovante Endereço' },
-  { tipo: 4, label: 'Foto Cartão SUS' },
-  { tipo: 5, label: 'Cadastro NIS' },
-  { tipo: 6, label: 'Termo Autorização' },
-];
-
-const ESTADOS_CIVIS = [
-  'Solteiro(a)',
-  'Casado(a)',
-  'Divorciado(a)',
-  'Viúvo(a)'
-];
-
-const MORADIAS = [
-  'Própria',
-  'Alugada',
-  'Cedida',
-  'Financiada',
-  /*
-  'Casa',
-  'Apartamento',
-  'Sobrado',
-  'Chácara',
-  'Fazenda',
-  */
-];
+import { 
+  TIPOS_ANEXO, 
+  ESTADOS_CIVIS, 
+  MORADIAS_OPTIONS,
+  SITUACOES_OCUPACIONAIS_OPTIONS,
+  APOSENTADOS_OPTIONS,
+  RENDAS_OPTIONS,
+  BENEFICIOS_OPTIONS,
+  DEFICIENCIAS_OPTIONS,
+  NIVEIS_SERIE_OPTIONS,
+  CURSOS_FORMACAO_OPTIONS,
+  PROBLEMAS_SAUDE_OPTIONS
+} from '../../shared/constants/app.constants';
+import { MaskDirective } from '../../shared/directives/mask.directive';
 
 @Component({
   selector: 'app-pessoas-idosas-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent, EnderecoFormComponent, AnexoFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent, EnderecoFormComponent, AnexoFormComponent, MaskDirective],
   templateUrl: './pessoa-idosa-form.html',
   styleUrls: ['./pessoa-idosa-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -88,9 +72,19 @@ export class PessoaIdosaFormComponent implements OnInit {
   private anexoService = inject(AnexoService);
 
   estadosCivis = ESTADOS_CIVIS;
-  moradias = MORADIAS;
+  moradias = MORADIAS_OPTIONS;
   cepBuscaLoading = false;
   cepBuscaErro: string | null = null;
+  
+  // Enums para os novos campos
+  situacoesOcupacionais = SITUACOES_OCUPACIONAIS_OPTIONS;
+  aposentados = APOSENTADOS_OPTIONS;
+  rendas = RENDAS_OPTIONS;
+  beneficios = BENEFICIOS_OPTIONS;
+  deficiencias = DEFICIENCIAS_OPTIONS;
+  niveisSerie = NIVEIS_SERIE_OPTIONS;
+  cursosFormacao = CURSOS_FORMACAO_OPTIONS;
+  problemasSaude = PROBLEMAS_SAUDE_OPTIONS;
 
   constructor() {
     this.form = this.fb.group({
@@ -99,7 +93,33 @@ export class PessoaIdosaFormComponent implements OnInit {
       estadoCivil: ['', [Validators.required]],
       cpf: ['', [Validators.required, cpfValidator]],
       rg: ['', [rgValidator]],
+      orgaoEmissor: ['', [Validators.required]],
       telefone: ['', [Validators.required, telefoneValidator]],
+      naturalidade: ['', [Validators.required]],
+      prontuarioSaude: ['', [Validators.required]],
+      religiao: ['', [Validators.required]],
+      situacaoOcupacional: ['', [Validators.required]],
+      aposentado: ['', [Validators.required]],
+      renda: ['', [Validators.required]],
+      aposentadoConsegueSeManterComSuaRenda: [false, [Validators.required]],
+      comoComplementa: [''],
+      beneficio: [''],
+      alfabetizado: [false, [Validators.required]],
+      nivelSerieAtualConcluido: ['', [Validators.required]],
+      cursosTecnicoFormacaoProfissional: ['', [Validators.required]],
+      estudaAtualmente: [false, [Validators.required]],
+      deficiencia: ['', [Validators.required]],
+      problemaDeSaude: ['', [Validators.required]],
+      fazAlgumTratamento: [false, [Validators.required]],
+      fazAlgumTratamentoOnde: [''],
+      usaMedicamentoControlado: [false, [Validators.required]],
+      usaRecursosUbsLocal: [false, [Validators.required]],
+      trabalhoPastoralOuSocial: ['', [Validators.required]],
+      atividadeNaComunidadeSagradaFamilia: ['', [Validators.required]],
+      trabalhoVoluntario: ['', [Validators.required]],
+      trabalhoVoluntarioOnde: [''],
+             observacao: [''],
+       historicoFamiliarSocial: [''],
       endereco: this.fb.group({
         cep: ['', [Validators.required, cepValidator]],
         moradia: ['', [Validators.required]],
@@ -110,6 +130,9 @@ export class PessoaIdosaFormComponent implements OnInit {
         estado: ['', [Validators.required]]
       })
     });
+
+    // Configurar validações condicionais
+    this.setupConditionalValidations();
   }
 
   ngOnInit() {
@@ -121,60 +144,7 @@ export class PessoaIdosaFormComponent implements OnInit {
     }
   }
 
-  // Métodos para aplicar máscaras automáticas
-  aplicarMascaraCpf(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    
-    // Aplica máscara do CPF: 000.000.000-00
-    if (value.length <= 3) {
-      value = value;
-    } else if (value.length <= 6) {
-      value = value.substring(0, 3) + '.' + value.substring(3);
-    } else if (value.length <= 9) {
-      value = value.substring(0, 3) + '.' + value.substring(3, 6) + '.' + value.substring(6);
-    } else {
-      value = value.substring(0, 3) + '.' + value.substring(3, 6) + '.' + value.substring(6, 9) + '-' + value.substring(9, 11);
-    }
-    
-    input.value = value;
-  }
 
-  aplicarMascaraRg(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    
-    // Aplica máscara do RG: 00.000.000-0
-    if (value.length <= 2) {
-      value = value;
-    } else if (value.length <= 5) {
-      value = value.substring(0, 2) + '.' + value.substring(2);
-    } else if (value.length <= 8) {
-      value = value.substring(0, 2) + '.' + value.substring(2, 5) + '.' + value.substring(5);
-    } else {
-      value = value.substring(0, 2) + '.' + value.substring(2, 5) + '.' + value.substring(5, 8) + '-' + value.substring(8, 9);
-    }
-    
-    input.value = value;
-  }
-
-  aplicarMascaraTelefone(event: Event) {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
-    
-    // Aplica máscara do telefone: (00) 00000-0000
-    if (value.length <= 2) {
-      value = '(' + value;
-    } else if (value.length <= 6) {
-      value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
-    } else if (value.length <= 10) {
-      value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 7) + '-' + value.substring(7);
-    } else {
-      value = '(' + value.substring(0, 2) + ') ' + value.substring(2, 7) + '-' + value.substring(7, 11);
-    }
-    
-    input.value = value;
-  }
 
   async carregarPessoa() {
     if (!this.pessoaId) return;
@@ -311,6 +281,94 @@ export class PessoaIdosaFormComponent implements OnInit {
   cancelarRemoverAnexo() {
     this.showRemoveAnexoModal = false;
     this.anexoRemoverTipo = null;
+  }
+
+  // Configurar validações condicionais
+  private setupConditionalValidations() {
+    // Campo "comoComplementa" só é obrigatório se "aposentadoConsegueSeManterComSuaRenda" for false
+    const aposentadoConsegueSeManterControl = this.form.get('aposentadoConsegueSeManterComSuaRenda');
+    const comoComplementaControl = this.form.get('comoComplementa');
+    
+    if (aposentadoConsegueSeManterControl && comoComplementaControl) {
+      // Configurar estado inicial
+      this.updateComoComplementaState(aposentadoConsegueSeManterControl.value);
+      
+      aposentadoConsegueSeManterControl.valueChanges.subscribe(value => {
+        this.updateComoComplementaState(value);
+      });
+    }
+
+    // Campo "fazAlgumTratamentoOnde" só é obrigatório se "fazAlgumTratamento" for true
+    const fazAlgumTratamentoControl = this.form.get('fazAlgumTratamento');
+    const fazAlgumTratamentoOndeControl = this.form.get('fazAlgumTratamentoOnde');
+    
+    if (fazAlgumTratamentoControl && fazAlgumTratamentoOndeControl) {
+      // Configurar estado inicial
+      this.updateFazAlgumTratamentoOndeState(fazAlgumTratamentoControl.value);
+      
+      fazAlgumTratamentoControl.valueChanges.subscribe(value => {
+        this.updateFazAlgumTratamentoOndeState(value);
+      });
+    }
+
+    // Campo "trabalhoVoluntarioOnde" só é obrigatório se "trabalhoVoluntario" tiver conteúdo
+    const trabalhoVoluntarioControl = this.form.get('trabalhoVoluntario');
+    const trabalhoVoluntarioOndeControl = this.form.get('trabalhoVoluntarioOnde');
+    
+    if (trabalhoVoluntarioControl && trabalhoVoluntarioOndeControl) {
+      // Configurar estado inicial
+      this.updateTrabalhoVoluntarioOndeState(trabalhoVoluntarioControl.value);
+      
+      trabalhoVoluntarioControl.valueChanges.subscribe(value => {
+        this.updateTrabalhoVoluntarioOndeState(value);
+      });
+    }
+  }
+
+  // Métodos auxiliares para atualizar estados dos campos condicionais
+  private updateComoComplementaState(value: boolean) {
+    const comoComplementaControl = this.form.get('comoComplementa');
+    if (comoComplementaControl) {
+      if (value === false) {
+        comoComplementaControl.setValidators([Validators.required]);
+        comoComplementaControl.enable();
+      } else {
+        comoComplementaControl.clearValidators();
+        comoComplementaControl.disable();
+        comoComplementaControl.setValue('');
+      }
+      comoComplementaControl.updateValueAndValidity();
+    }
+  }
+
+  private updateFazAlgumTratamentoOndeState(value: boolean) {
+    const fazAlgumTratamentoOndeControl = this.form.get('fazAlgumTratamentoOnde');
+    if (fazAlgumTratamentoOndeControl) {
+      if (value === true) {
+        fazAlgumTratamentoOndeControl.setValidators([Validators.required]);
+        fazAlgumTratamentoOndeControl.enable();
+      } else {
+        fazAlgumTratamentoOndeControl.clearValidators();
+        fazAlgumTratamentoOndeControl.disable();
+        fazAlgumTratamentoOndeControl.setValue('');
+      }
+      fazAlgumTratamentoOndeControl.updateValueAndValidity();
+    }
+  }
+
+  private updateTrabalhoVoluntarioOndeState(value: string) {
+    const trabalhoVoluntarioOndeControl = this.form.get('trabalhoVoluntarioOnde');
+    if (trabalhoVoluntarioOndeControl) {
+      if (value && value.trim() !== '') {
+        trabalhoVoluntarioOndeControl.setValidators([Validators.required]);
+        trabalhoVoluntarioOndeControl.enable();
+      } else {
+        trabalhoVoluntarioOndeControl.clearValidators();
+        trabalhoVoluntarioOndeControl.disable();
+        trabalhoVoluntarioOndeControl.setValue('');
+      }
+      trabalhoVoluntarioOndeControl.updateValueAndValidity();
+    }
   }
 
   // Busca CEP no ViaCEP

@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TIPOS_ANEXO } from '../../shared/constants/app.constants';
 
 export interface Anexo {
   tipoAnexo: number;
@@ -7,15 +8,6 @@ export interface Anexo {
   path: string;
   nomeArquivo?: string;
 }
-
-const TIPOS_ANEXO = [
-  { id: 1, label: 'CPF', icon: '🆔' },
-  { id: 2, label: 'RG', icon: '📋' },
-  { id: 3, label: 'Comprovante Endereço', icon: '🏠' },
-  { id: 4, label: 'Foto Cartão SUS', icon: '🏥' },
-  { id: 5, label: 'Cadastro NIS', icon: '📊' },
-  { id: 6, label: 'Termo Autorização', icon: '✍️' }
-];
 
 @Component({
   selector: 'app-anexo-form',

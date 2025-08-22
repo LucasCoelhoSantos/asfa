@@ -64,6 +64,7 @@ export interface PessoaIdosa {
     prontuarioSaude: string;
     aposentadoConsegueSeManterComSuaRenda: boolean;
     comoComplementa: string;
+    beneficio: string;
     observacao: string;
     historicoFamiliarSocial: string;
     composicaoFamiliar: ComposicaoFamiliar;

@@ -2,12 +2,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { MaskUtils } from '../utils/mask.utils';
 
 @Pipe({
-  name: 'cep',
+  name: 'rg',
   standalone: true
 })
-export class CepPipe implements PipeTransform {
+export class RgPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    return MaskUtils.applyCepMask(value);
+    return MaskUtils.applyRgMask(value);
   }
-} 
+}

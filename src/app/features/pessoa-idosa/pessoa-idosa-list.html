@@ -37,15 +37,15 @@
         </div>
         <div class="filtro-item">
           <label>CPF</label>
-          <input placeholder="CPF" (input)="setFiltroCpf(getValue($event))" />
+          <input placeholder="000.000.000-00" appMask="cpf" (input)="setFiltroCpf(getValue($event))" />
         </div>
         <div class="filtro-item">
           <label>RG</label>
-          <input placeholder="RG" (input)="setFiltroRg(getValue($event))" />
+          <input placeholder="00.000.000-0" appMask="rg" (input)="setFiltroRg(getValue($event))" />
         </div>
         <div class="filtro-item">
           <label>CEP</label>
-          <input placeholder="CEP" (input)="setFiltroCep(getValue($event))" />
+          <input placeholder="00000-000" appMask="cep" (input)="setFiltroCep(getValue($event))" />
         </div>
       </div>
     </div>
@@ -68,35 +68,59 @@
         </div>
         <div class="filtro-item">
           <label>Nível/Série Atual</label>
-          <input placeholder="Nível/Série" (input)="setFiltroNivelSerie(getValue($event))" />
+          <select (change)="setFiltroNivelSerie(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let nivel of niveisSerie" [value]="nivel">{{ nivel }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Curso Técnico/Formação</label>
-          <input placeholder="Curso/Formação" (input)="setFiltroCursoFormacao(getValue($event))" />
+          <select (change)="setFiltroCursoFormacao(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let curso of cursosFormacao" [value]="curso">{{ curso }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Benefício</label>
-          <input placeholder="Benefício" (input)="setFiltroBeneficio(getValue($event))" />
+          <select (change)="setFiltroBeneficio(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let beneficio of beneficios" [value]="beneficio">{{ beneficio }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Situação Ocupacional</label>
-          <input placeholder="Situação" (input)="setFiltroSituacaoOcupacional(getValue($event))" />
+          <select (change)="setFiltroSituacaoOcupacional(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let situacao of situacoesOcupacionais" [value]="situacao">{{ situacao }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Problema de Saúde</label>
-          <input placeholder="Problema de Saúde" (input)="setFiltroProblemaDeSaude(getValue($event))" />
+          <select (change)="setFiltroProblemaDeSaude(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let problema of problemasSaude" [value]="problema">{{ problema }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Aposentado</label>
-          <input placeholder="Aposentado" (input)="setFiltroAposentado(getValue($event))" />
+          <select (change)="setFiltroAposentado(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let aposentado of aposentados" [value]="aposentado">{{ aposentado }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Moradia</label>
-          <input placeholder="Moradia" (input)="setFiltroMoradia(getValue($event))" />
+          <select (change)="setFiltroMoradia(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let moradia of moradias" [value]="moradia">{{ moradia }}</option>
+          </select>
         </div>
         <div class="filtro-item">
           <label>Deficiência</label>
-          <input placeholder="Deficiência" (input)="setFiltroDeficiencia(getValue($event))" />
+          <select (change)="setFiltroDeficiencia(getValue($event))">
+            <option value="">Todos</option>
+            <option *ngFor="let deficiencia of deficiencias" [value]="deficiencia">{{ deficiencia }}</option>
+          </select>
         </div>
       </div>
     </div>
@@ -123,51 +147,71 @@
           <button (click)="exportarPdf()" class="exportar-pdf">Exportar PDF</button>
         </div>
       </div>
+      
+      <!-- Botões de Ação -->
+      <div class="acoes-filtros">
+        <button (click)="buscar()" class="btn-buscar">
+          <span class="icon">🔍</span>
+          Buscar
+        </button>
+        <button (click)="limparFiltros()" class="btn-limpar">
+          <span class="icon">🗑️</span>
+          Limpar Filtros
+        </button>
+      </div>
     </div>
   </div>
   
-  <app-table-skeleton *ngIf="loading$ | async" [rows]="5"></app-table-skeleton>
-  <ng-container *ngIf="pessoas$ | async as resultado">
-    <table *ngIf="resultado.pessoas.length > 0; else semRegistros">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>CPF</th>
-          <th>Telefone</th>
-          <th>CEP</th>
-          <th>Data de Nascimento</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pessoa of resultado.pessoas">
-          <td>{{ pessoa.nome }}</td>
-          <td>{{ pessoa.cpf | cpf }}</td>
-          <td>{{ pessoa.telefone | telefone }}</td>
-          <td>{{ pessoa.endereco.cep | cep }}</td>
-          <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
-              {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
-            </span>
-          </td>
-          <td>
-            <button (click)="editar(pessoa.id)">Editar</button>
-            <button (click)="inativar(pessoa.id)" [disabled]="!pessoa.ativo">Inativar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="paginacao" *ngIf="resultado.pessoas.length > 0">
-      <ng-container *ngIf="pageSize > 0 && resultado.total > pageSize">
-        <button (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">Anterior</button>
-        <span>Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
-        <button (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">Próxima</button>
-      </ng-container>
-    </div>
+  <ng-container *ngIf="loading$ | async; else content">
+    <app-table-skeleton [rows]="5"></app-table-skeleton>
   </ng-container>
-  <ng-template #semRegistros>
-    <div class="sem-registros">Nenhuma pessoa idosa cadastrada.</div>
+  
+  <ng-template #content>
+    <ng-container *ngIf="pessoas$ | async as resultado">
+      <table *ngIf="resultado.pessoas.length > 0; else semRegistros">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>RG</th>
+            <th>CEP</th>
+            <th>Data de Nascimento</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pessoa of resultado.pessoas">
+            <td>{{ pessoa.nome }}</td>
+            <td>{{ pessoa.cpf | cpf }}</td>
+            <td>{{ pessoa.telefone | telefone }}</td>
+            <td>{{ pessoa.rg | rg }}</td>
+            <td>{{ pessoa?.endereco?.cep | cep }}</td>
+            <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
+                {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td>
+              <button (click)="editar(pessoa.id)">Editar</button>
+              <button *ngIf="pessoa.ativo" (click)="inativar(pessoa.id)">Inativar</button>
+              <button *ngIf="!pessoa.ativo" (click)="ativar(pessoa.id)">Ativar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="paginacao" *ngIf="resultado.pessoas.length > 0">
+        <ng-container *ngIf="pageSize > 0 && resultado.total > pageSize">
+          <button (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">Anterior</button>
+          <span>Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
+          <button (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">Próxima</button>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-template #semRegistros>
+      <div class="sem-registros">Nenhuma pessoa idosa cadastrada.</div>
+    </ng-template>
   </ng-template>
 </div>
