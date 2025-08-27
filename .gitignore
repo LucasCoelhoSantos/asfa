@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+.env
 
 # Node
 /node_modules
@@ -48,3 +49,4 @@ Thumbs.db
 
 # Gemini
 .gemini
+/.gemini
