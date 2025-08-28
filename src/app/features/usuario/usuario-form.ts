@@ -7,11 +7,21 @@ import { UsuarioRole } from '../../models/usuario.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ROLES_USUARIO } from '../../shared/constants/app.constants';
+import { FormCardComponent } from '../../shared/components/form-card.component';
+import { BootstrapFormFieldComponent } from '../../shared/components/bootstrap-form-field.component';
+import { BootstrapButtonComponent } from '../../shared/components/bootstrap-button.component';
 
 @Component({
   selector: 'app-usuario-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    MainMenuComponent,
+    FormCardComponent,
+    BootstrapFormFieldComponent,
+    BootstrapButtonComponent
+  ],
   templateUrl: './usuario-form.html',
   styleUrls: ['./usuario-form.scss']
 })
@@ -26,7 +36,7 @@ export class UsuarioFormComponent implements OnInit {
   error: string | null = null;
   editMode = false;
   usuarioId: string | null = null;
-  roles = ROLES_USUARIO;
+  roles = ROLES_USUARIO.map(role => ({ value: role, label: role === 'admin' ? 'Administrador' : 'Usuário' }));
   showPassword = false;
 
   constructor() {

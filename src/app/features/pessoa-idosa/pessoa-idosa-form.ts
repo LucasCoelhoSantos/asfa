@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PessoaIdosaService } from './pessoa-idosa.service';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
 import { PessoaIdosa, Dependente } from '../../models/pessoa-idosa.model';
 import { firstValueFrom } from 'rxjs';
-import { DependenteFormComponent } from '../../features/dependente/dependente-form';
+
 import { ModalComponent } from '../../shared/modal/modal';
 import { AnexoService } from './anexo.service';
 import { EnderecoFormComponent } from './endereco-form';
@@ -26,12 +26,22 @@ import {
   CURSOS_FORMACAO_OPTIONS,
   PROBLEMAS_SAUDE_OPTIONS
 } from '../../shared/constants/app.constants';
-import { MaskDirective } from '../../shared/directives/mask.directive';
+
+import { FormCardComponent } from '../../shared';
 
 @Component({
   selector: 'app-pessoas-idosas-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent, EnderecoFormComponent, AnexoFormComponent, MaskDirective],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule,
+    FormsModule,
+    MainMenuComponent, 
+    ModalComponent, 
+    EnderecoFormComponent, 
+    AnexoFormComponent, 
+    FormCardComponent
+  ],
   templateUrl: './pessoa-idosa-form.html',
   styleUrls: ['./pessoa-idosa-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -58,6 +68,36 @@ export class PessoaIdosaFormComponent implements OnInit {
   dependenteEditValue: Dependente | undefined = undefined;
   showRemoveModal = false;
   dependenteToRemoveIndex: number | null = null;
+  novoDependente: Dependente = {
+    nome: '',
+    dataNascimento: new Date(),
+    parentesco: '',
+    ceinf: '',
+    ceinfBairro: '',
+    programaSaudePastoralCrianca: '',
+    programaSaudePastoralCriancaLocal: '',
+    ativo: true,
+    composicaoFamiliar: {
+      alfabetizado: false,
+      estudaAtualmente: false,
+      nivelSerieAtualConcluido: '',
+      cursosTecnicoFormacaoProfissional: '',
+      situacaoOcupacional: '',
+      renda: '',
+      aposentado: '',
+      beneficio: '',
+      deficiencia: '',
+      problemaDeSaude: '',
+      fazAlgumTratamento: false,
+      fazAlgumTratamentoOnde: '',
+      usaMedicamentoControlado: false,
+      usaRecursosUbsLocal: false,
+      trabalhoPastoralOuSocial: '',
+      atividadeNaComunidadeSagradaFamilia: '',
+      trabalhoVoluntario: '',
+      trabalhoVoluntarioOnde: ''
+    }
+  };
 
   // Anexos
   anexos: any[] = [];
@@ -174,32 +214,69 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.dependenteEditIndex = undefined;
     this.dependenteEditValue = undefined;
     this.showDependenteForm = true;
+    this.resetNovoDependente();
   }
 
   editarDependente(index: number) {
     this.dependenteEditIndex = index;
     this.dependenteEditValue = { ...this.dependentes[index] };
+    this.novoDependente = { ...this.dependentes[index] };
     this.showDependenteForm = true;
   }
 
-  salvarDependente(dependente: Dependente) {
+  salvarDependente() {
     if (this.dependenteEditIndex !== undefined) {
       // Editando dependente existente
-      this.dependentes[this.dependenteEditIndex] = dependente;
+      this.dependentes[this.dependenteEditIndex] = { ...this.novoDependente };
     } else {
       // Adicionando novo dependente
-      this.dependentes.push(dependente);
+      this.dependentes.push({ ...this.novoDependente });
     }
     
     this.showDependenteForm = false;
     this.dependenteEditIndex = undefined;
     this.dependenteEditValue = undefined;
+    this.resetNovoDependente();
   }
 
   cancelarDependente() {
     this.showDependenteForm = false;
     this.dependenteEditIndex = undefined;
     this.dependenteEditValue = undefined;
+    this.resetNovoDependente();
+  }
+
+  resetNovoDependente() {
+    this.novoDependente = {
+      nome: '',
+      dataNascimento: new Date(),
+      parentesco: '',
+      ceinf: '',
+      ceinfBairro: '',
+      programaSaudePastoralCrianca: '',
+      programaSaudePastoralCriancaLocal: '',
+      ativo: true,
+      composicaoFamiliar: {
+        alfabetizado: false,
+        estudaAtualmente: false,
+        nivelSerieAtualConcluido: '',
+        cursosTecnicoFormacaoProfissional: '',
+        situacaoOcupacional: '',
+        renda: '',
+        aposentado: '',
+        beneficio: '',
+        deficiencia: '',
+        problemaDeSaude: '',
+        fazAlgumTratamento: false,
+        fazAlgumTratamentoOnde: '',
+        usaMedicamentoControlado: false,
+        usaRecursosUbsLocal: false,
+        trabalhoPastoralOuSocial: '',
+        atividadeNaComunidadeSagradaFamilia: '',
+        trabalhoVoluntario: '',
+        trabalhoVoluntarioOnde: ''
+      }
+    };
   }
 
   confirmarRemoverDependente(index: number) {

@@ -12,8 +12,8 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./main-menu.scss']
 })
 export class MainMenuComponent {
-  menuOpen = signal(false);
   currentRoute = signal('');
+  isMenuOpen = false;
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -32,15 +32,6 @@ export class MainMenuComponent {
 
   navigate(path: string) {
     this.router.navigate([path]);
-    this.menuOpen.set(false);
-  }
-
-  toggleMenu() {
-    this.menuOpen.update(open => !open);
-  }
-
-  closeMenu() {
-    this.menuOpen.set(false);
   }
 
   isActiveRoute(path: string): boolean {
@@ -68,5 +59,9 @@ export class MainMenuComponent {
     this.authService.logout().subscribe(() => {
       this.router.navigate(['/login']);
     });
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }

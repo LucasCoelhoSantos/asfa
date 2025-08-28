@@ -2,11 +2,20 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Dependente } from '../../models/pessoa-idosa.model';
+import { FormCardComponent } from '../../shared/components/form-card.component';
+import { BootstrapFormFieldComponent } from '../../shared/components/bootstrap-form-field.component';
+import { BootstrapButtonComponent } from '../../shared/components/bootstrap-button.component';
 
 @Component({
   selector: 'app-dependente-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    FormCardComponent, 
+    BootstrapFormFieldComponent, 
+    BootstrapButtonComponent
+  ],
   templateUrl: './dependente-form.html',
   styleUrls: ['./dependente-form.scss']
 })

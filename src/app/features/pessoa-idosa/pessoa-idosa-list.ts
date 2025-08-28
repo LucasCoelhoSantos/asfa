@@ -6,11 +6,8 @@ import { Router } from '@angular/router';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
 import { TableSkeletonComponent } from '../../shared/skeleton/table-skeleton.component';
 import { NotificationService } from '../../core/services/notification.service';
-import { CpfPipe } from '../../shared/pipes/cpf.pipe';
-import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
-import { CepPipe } from '../../shared/pipes/cep.pipe';
-import { RgPipe } from '../../shared/pipes/rg.pipe';
-import { MaskDirective } from '../../shared/directives/mask.directive';
+
+import { DataTableComponent, TableColumn, TableAction } from '../../shared';
 import { 
   Beneficio, 
   Renda, 
@@ -40,7 +37,12 @@ const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
 @Component({
   selector: 'app-pessoa-idosa-list',
   standalone: true,
-  imports: [CommonModule, MainMenuComponent, TableSkeletonComponent, CpfPipe, TelefonePipe, CepPipe, RgPipe, MaskDirective],
+  imports: [
+    CommonModule, 
+    MainMenuComponent, 
+    TableSkeletonComponent, 
+    DataTableComponent
+  ],
   templateUrl: './pessoa-idosa-list.html',
   styleUrls: ['./pessoa-idosa-list.scss']
 })
@@ -54,6 +56,23 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   // Observables reativos
   pessoas$!: Observable<PaginacaoResult>;
   loading$ = new BehaviorSubject<boolean>(false);
+
+  // Configuração da tabela
+  tableColumns: TableColumn[] = [
+    { key: 'nome', label: 'Nome', type: 'text' },
+    { key: 'cpf', label: 'CPF', type: 'text' },
+    { key: 'telefone', label: 'Telefone', type: 'text' },
+    { key: 'rg', label: 'RG', type: 'text' },
+    { key: 'endereco.cep', label: 'CEP', type: 'text' },
+    { key: 'dataNascimento', label: 'Data Nasc.', type: 'date' },
+    { key: 'ativo', label: 'Status', type: 'badge' },
+    { key: 'actions', label: 'Ações', type: 'actions', width: '150px' }
+  ];
+
+  tableActions: TableAction[] = [
+    { icon: 'bi bi-pencil', label: 'Editar', class: 'btn-outline-primary', action: 'edit' },
+    { icon: 'bi bi-toggle-on', label: 'Ativar/Inativar', class: 'btn-outline-secondary', action: 'toggleStatus' }
+  ];
 
   // Estado de filtros (agora não aplica automaticamente)
   filtro: FiltrosPessoaIdosa = {
@@ -294,6 +313,25 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
 
   navigate(path: string) {
     this.router.navigate([path]);
+  }
+
+  onTableAction(event: {action: string, item: any, index: number}) {
+    const { action, item } = event;
+    
+    switch (action) {
+      case 'edit':
+        this.editar(item.id);
+        break;
+      case 'toggleStatus':
+        if (item.ativo) {
+          this.inativar(item.id);
+        } else {
+          this.ativar(item.id);
+        }
+        break;
+      default:
+        console.warn('Ação não reconhecida:', action);
+    }
   }
 
   getValue(event: Event): string {

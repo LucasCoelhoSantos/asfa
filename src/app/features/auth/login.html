@@ -1,28 +1,98 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="logo-container">
-      <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-      <span class="project-name">Associação Católica Sagrada Família</span>
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-5">
+            <!-- Logo e Nome do Projeto -->
+            <div class="text-center mb-4">
+              <img src="asfa-logo.png" alt="Logo ASFA" class="img-fluid mb-3" style="max-height: 80px;" />
+              <h5 class="text-muted mb-0">Associação Católica Sagrada Família</h5>
+            </div>
+
+            <!-- Título -->
+            <div class="text-center mb-4">
+              <h3 class="text-primary fw-bold">Login</h3>
+              <p class="text-muted">Acesse sua conta</p>
+            </div>
+
+            <!-- Formulário -->
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">
+                  <i class="bi bi-envelope me-2"></i>
+                  E-mail
+                </label>
+                <input 
+                  id="email" 
+                  type="email" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+                  formControlName="email"
+                  placeholder="Digite seu e-mail"
+                  autocomplete="email" />
+                <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  E-mail obrigatório e válido.
+                </div>
+              </div>
+
+              <!-- Senha -->
+              <div class="mb-4">
+                <label for="password" class="form-label">
+                  <i class="bi bi-lock me-2"></i>
+                  Senha
+                </label>
+                <input 
+                  id="password" 
+                  type="password" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+                  formControlName="password"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password" />
+                <div class="invalid-feedback" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                  <i class="bi bi-exclamation-circle me-1"></i>
+                  Senha obrigatória (mínimo 6 caracteres).
+                </div>
+              </div>
+
+              <!-- Botão de Login -->
+              <div class="d-grid mb-3">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary btn-lg d-flex align-items-center justify-content-center"
+                  [disabled]="form.invalid || loading">
+                  <span *ngIf="!loading">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Entrar
+                  </span>
+                  <span *ngIf="loading">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                      <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    Entrando...
+                  </span>
+                </button>
+              </div>
+
+              <!-- Mensagens de Erro -->
+              <div *ngIf="error" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ error }}
+              </div>
+            </form>
+
+            <!-- Footer -->
+            <div class="text-center mt-4">
+              <small class="text-muted">
+                © 2025 ASFA. Todos os direitos reservados.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2>Login</h2>
-      <div class="form-group">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" formControlName="email" [class.invalid]="form.get('email')?.invalid && form.get('email')?.touched" />
-        <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          E-mail obrigatório e válido.
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <input id="password" type="password" formControlName="password" [class.invalid]="form.get('password')?.invalid && form.get('password')?.touched" />
-        <div class="error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Senha obrigatória (mínimo 6 caracteres).
-        </div>
-      </div>
-      <button type="submit" [disabled]="form.invalid || loading">Entrar</button>
-      <div class="loading" *ngIf="loading">Entrando...</div>
-      <div class="error" *ngIf="error">{{ error }}</div>
-    </form>
   </div>
 </div>
