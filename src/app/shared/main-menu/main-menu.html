@@ -1,101 +1,77 @@
-<nav class="main-menu">
-  <!-- Menu Desktop -->
-  <div class="menu-desktop">
-    <div class="menu-left">
-      <div class="brand-section">
-        <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-        <div class="brand-info">
-          <span class="project-name">ASFA</span>
-          <span class="project-subtitle">Associação Católica Sagrada Família</span>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom sticky-top">
+  <div class="container-fluid">
+    <!-- Brand/Logo -->
+    <div class="navbar-brand d-flex align-items-center">
+      <img src="asfa-logo.png" alt="Logo ASFA" class="me-2" style="height: 40px; width: 40px; border-radius: 8px;">
+      <div class="d-flex flex-column">
+        <span class="fw-bold text-primary fs-5">ASFA</span>
+        <small class="text-muted d-none d-md-block" style="font-size: 0.7rem;">Associação Católica Sagrada Família</small>
       </div>
-      
-      <div class="nav-links">
-        <a class="nav-link" 
-           [class.active]="isActiveRoute('/pessoa-idosa')"
-           (click)="navigate('/pessoa-idosa')">
-          <span class="icon">👥</span>
-          Pessoas Idosas
-        </a>
-        <ng-container *ngIf="userWithRole$ | async as user">
-          <a class="nav-link" 
-             *ngIf="user.role === 'admin'"
+    </div>
+
+         <!-- Mobile Toggle Button -->
+     <button class="navbar-toggler" type="button" (click)="toggleMenu()" 
+             aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+       <span class="navbar-toggler-icon"></span>
+     </button>
+
+         <!-- Navigation Content -->
+     <div class="navbar-collapse" [class.show]="isMenuOpen" id="navbarContent">
+      <!-- Navigation Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center gap-2" 
+             [class.active]="isActiveRoute('/pessoa-idosa')"
+             (click)="navigate('/pessoa-idosa')"
+             style="cursor: pointer;">
+            <span>👥</span>
+            Pessoas Idosas
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="(userWithRole$ | async)?.role === 'admin'">
+          <a class="nav-link d-flex align-items-center gap-2" 
              [class.active]="isActiveRoute('/usuario')"
-             (click)="navigate('/usuario')">
-            <span class="icon">👤</span>
+             (click)="navigate('/usuario')"
+             style="cursor: pointer;">
+            <span>👤</span>
             Usuários
           </a>
-        </ng-container>
-      </div>
-    </div>
-    
-    <div class="menu-right" *ngIf="user$ | async as user">
-      <div class="user-section">
-        <div class="user-info">
-          <div class="user-avatar">
-            <span class="avatar-text">{{ getUserInitials(user.email) }}</span>
-          </div>
-          <div class="user-details">
-            <span class="user-name">{{ getUserDisplayName(user.email) }}</span>
-            <span class="user-email">{{ user.email || 'Email não disponível' }}</span>
-          </div>
-        </div>
-        <button class="logout-btn" (click)="logout()" title="Sair do sistema">
-          <span class="logout-text">Sair</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Menu Mobile -->
-  <div class="menu-mobile">
-    <div class="mobile-header">
-      <div class="brand-section">
-        <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-        <div class="brand-info">
-          <span class="project-name">ASFA</span>
-        </div>
-      </div>
-      <button class="hamburger" (click)="toggleMenu()" [class.active]="menuOpen()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-    
-    <div class="mobile-menu-overlay" [class.open]="menuOpen()" (click)="closeMenu()"></div>
-    <div class="mobile-menu-items" [class.open]="menuOpen()">
-      <div class="mobile-user-section" *ngIf="user$ | async as user">
-        <div class="user-info">
-          <div class="user-avatar">
-            <span class="avatar-text">{{ getUserInitials(user.email) }}</span>
-          </div>
-          <div class="user-details">
-            <span class="user-name">{{ getUserDisplayName(user.email) }}</span>
-            <span class="user-email">{{ user.email || 'Email não disponível' }}</span>
-          </div>
-        </div>
-        <button class="logout-btn" (click)="logout()">
-          Sair
-        </button>
-      </div>
-      
-      <div class="mobile-nav-links">
-        <a class="nav-link" 
-           [class.active]="isActiveRoute('/pessoa-idosa')"
-           (click)="navigate('/pessoa-idosa')">
-          <span class="icon">👥</span>
-          Pessoas Idosas
-        </a>
-        <ng-container *ngIf="userWithRole$ | async as user">
-          <a class="nav-link" 
-             *ngIf="user.role === 'admin'"
-             [class.active]="isActiveRoute('/usuario')"
-             (click)="navigate('/usuario')">
-            <span class="icon">👤</span>
-            Usuários
-          </a>
-        </ng-container>
+        </li>
+      </ul>
+
+      <!-- User Section -->
+      <div class="navbar-nav ms-auto" *ngIf="user$ | async as user">
+                 <div class="nav-item dropdown">
+           <button class="nav-link dropdown-toggle d-flex align-items-center gap-2" 
+                   type="button" 
+                   data-bs-toggle="dropdown" 
+                   aria-expanded="false">
+             <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" 
+                  style="width: 35px; height: 35px; font-size: 0.9rem; font-weight: 600;">
+               {{ getUserInitials(user.email) }}
+             </div>
+             <div class="d-none d-lg-flex flex-column">
+               <small class="fw-semibold">{{ getUserDisplayName(user.email) }}</small>
+               <small class="text-muted" style="font-size: 0.75rem;">{{ user.email || 'Email não disponível' }}</small>
+             </div>
+           </button>
+           <ul class="dropdown-menu dropdown-menu-end">
+             <li class="dropdown-item-text">
+               <div class="d-flex flex-column">
+                 <span class="fw-semibold">{{ getUserDisplayName(user.email) }}</span>
+                 <small class="text-muted">{{ user.email || 'Email não disponível' }}</small>
+               </div>
+             </li>
+             <li><hr class="dropdown-divider"></li>
+             <li>
+               <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-2" 
+                       (click)="logout()">
+                 <i class="bi bi-box-arrow-right me-2"></i>
+                 Sair do sistema
+               </button>
+             </li>
+           </ul>
+         </div>
       </div>
     </div>
   </div>

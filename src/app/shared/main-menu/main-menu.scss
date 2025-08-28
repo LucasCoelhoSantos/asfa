@@ -1,423 +1,86 @@
-// Variáveis
-$primary-color: #1976d2;
-$primary-light: #42a5f5;
-$primary-dark: #1565c0;
-$success-color: #388e3c;
-$danger-color: #e74c3c;
-$background-color: #ffffff;
-$surface-color: #f8f9fa;
-$text-primary: #2c3e50;
-$text-secondary: #6c757d;
-$border-color: #dee2e6;
-$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
-$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
-$border-radius: 12px;
-$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-// Container principal
-.main-menu {
-  background: $background-color;
-  border-bottom: 1px solid $border-color;
-  box-shadow: $shadow-light;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  padding: 0.75rem 0;
-}
-
-// Menu Desktop
-.menu-desktop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-// Seção da esquerda
-.menu-left {
-  display: flex;
-  align-items: center;
-  gap: 2.5rem;
-}
-
-// Seção da marca
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  
-  .logo {
-    height: 40px;
-    width: 40px;
-    border-radius: 8px;
-    box-shadow: $shadow-light;
-  }
-  
-  .brand-info {
-    display: flex;
-    flex-direction: column;
-    
-    .project-name {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: $primary-color;
-      letter-spacing: 0.5px;
-      line-height: 1.2;
-    }
-    
-    .project-subtitle {
-      font-size: 0.75rem;
-      color: $text-secondary;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+// Custom styles for Bootstrap navbar
+.navbar {
+  .navbar-brand {
+    img {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
-}
 
-// Links de navegação
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  
   .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    color: $text-primary;
-    text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: $border-radius;
-    cursor: pointer;
-    transition: $transition;
-    position: relative;
-    
-    .icon {
-      font-size: 1.1rem;
-    }
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
     
     &:hover {
-      background: rgba($primary-color, 0.08);
-      color: $primary-color;
-      transform: translateY(-1px);
+      background-color: rgba(13, 110, 253, 0.08);
+      color: #0d6efd !important;
     }
     
     &.active {
-      background: $primary-color;
-      color: white;
-      box-shadow: $shadow-medium;
+      background-color: #0d6efd !important;
+      color: white !important;
+      box-shadow: 0 4px 16px rgba(13, 110, 253, 0.3);
       
       &:hover {
-        background: $primary-dark;
-        transform: translateY(-1px);
+        background-color: #0b5ed7 !important;
       }
     }
   }
-}
 
-// Seção da direita
-.menu-right {
-  display: flex;
-  align-items: center;
-}
+  .dropdown-toggle::after {
+    margin-left: 0.5rem;
+  }
 
-// Seção do usuário
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem;
-  border-radius: $border-radius;
-  transition: $transition;
-  
-  &:hover {
-    background: $surface-color;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, $primary-color, $primary-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: $shadow-light;
-      
-      .avatar-text {
-        color: white;
-        font-weight: 700;
-        font-size: 0.9rem;
-        letter-spacing: 0.5px;
-      }
-    }
-    
-    .user-details {
-      display: flex;
-      flex-direction: column;
-      
-      .user-name {
-        color: $text-primary;
-        font-weight: 600;
-        font-size: 0.9rem;
-        line-height: 1.2;
-      }
-      
-      .user-email {
-        color: $text-secondary;
-        font-size: 0.8rem;
-        font-weight: 500;
-        max-width: 160px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-  }
-  
-  .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid $danger-color;
-    color: $danger-color;
-    border-radius: $border-radius;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: $transition;
-    
-    .icon {
-      font-size: 1rem;
-    }
-    
-    .logout-text {
-      @media (max-width: 768px) {
-        display: none;
-      }
-    }
-    
-    &:hover {
-      background: $danger-color;
-      color: white;
-      transform: translateY(-1px);
-      box-shadow: $shadow-light;
-    }
-  }
-}
-
-// Menu Mobile
-.menu-mobile {
-  display: none;
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-// Header mobile
-.mobile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  
-  .brand-section {
-    .brand-info {
-      .project-subtitle {
-        display: none;
-      }
-    }
-  }
-}
-
-// Botão hamburger
-.hamburger {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: $transition;
-  
-  &:hover {
-    background: $surface-color;
-  }
-  
-  span {
-    display: block;
-    width: 24px;
-    height: 2px;
-    background: $primary-color;
-    border-radius: 1px;
-    transition: $transition;
-  }
-  
-  &.active {
-    span:nth-child(1) {
-      transform: rotate(45deg) translate(6px, 6px);
-    }
-    
-    span:nth-child(2) {
-      opacity: 0;
-    }
-    
-    span:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
-    }
-  }
-}
-
-// Overlay do menu mobile
-.mobile-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: $transition;
-  
-  &.open {
-    opacity: 1;
-    visibility: visible;
-  }
-}
-
-// Itens do menu mobile
-.mobile-menu-items {
-  position: fixed;
-  top: 0;
-  right: -300px;
-  width: 300px;
-  height: 100vh;
-  background: $background-color;
-  box-shadow: $shadow-medium;
-  z-index: 1000;
-  transition: $transition;
-  display: flex;
-  flex-direction: column;
-  
-  &.open {
-    right: 0;
-  }
-}
-
-// Seção do usuário mobile
-.mobile-user-section {
-  padding: 1.5rem;
-  border-bottom: 1px solid $border-color;
-  background: $surface-color;
-  
-  .user-info {
-    margin-bottom: 1rem;
-    
-    .user-avatar {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 0.75rem;
-      
-      .avatar-text {
-        font-size: 1.1rem;
-      }
-    }
-    
-    .user-details {
-      .user-name {
-        font-size: 1rem;
-        margin-bottom: 0.25rem;
-      }
-      
-      .user-email {
-        font-size: 0.85rem;
-        max-width: none;
-      }
-    }
-  }
-  
-  .logout-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 0.75rem;
-    
-    .logout-text {
-      display: inline;
-    }
-  }
-}
-
-// Links de navegação mobile
-.mobile-nav-links {
-  padding: 1rem;
-  flex: 1;
-  
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: $border-radius;
-    font-size: 1rem;
-    
-    .icon {
-      font-size: 1.2rem;
-    }
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-    
-    &.active {
-      background: $primary-color;
-      color: white;
-    }
-  }
-}
-
-// Responsividade
-@media (max-width: 768px) {
-  .menu-desktop {
-    display: none;
-  }
-  
-  .menu-mobile {
-    display: block;
-  }
-  
-  .main-menu {
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
     padding: 0.5rem 0;
+    
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: #f8f9fa;
+      }
+      
+      &.text-danger:hover {
+        background-color: #f8d7da;
+      }
+    }
   }
 }
 
-@media (max-width: 480px) {
-  .mobile-menu-items {
-    width: 100%;
-    right: -100%;
-  }
-  
-  .mobile-header {
-    padding: 0 0.5rem;
-  }
-  
-  .brand-section .brand-info .project-name {
-    font-size: 1.2rem;
+// Responsive adjustments
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    
+    &.show {
+      display: block !important;
+    }
+    
+    &:not(.show) {
+      display: none !important;
+    }
+    
+    .navbar-nav {
+      margin-top: 1rem;
+      padding: 1rem;
+      
+      .nav-item {
+        margin-bottom: 0.5rem;
+      }
+    }
   }
 }

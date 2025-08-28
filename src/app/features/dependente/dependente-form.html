@@ -1,95 +1,164 @@
-<div class="dependente-form-container">
-  <div class="form-header">
-    <h3>{{ dependente ? 'Editar' : 'Novo' }} Dependente</h3>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0 text-primary">
+          <i class="bi bi-person-plus me-2"></i>
+          {{ dependente ? 'Editar' : 'Novo' }} Dependente
+        </h2>
+        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+          <i class="bi bi-arrow-left me-2"></i>
+          Voltar
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+        <!-- Informações Básicas -->
+        <app-form-card 
+          title="Informações Básicas" 
+          icon="bi bi-person" 
+          headerClass="bg-primary text-white">
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="nome"
+                label="Nome Completo"
+                type="text"
+                [control]="form.controls['nome']"
+                controlName="nome"
+                placeholder="Digite o nome completo"
+                [required]="true">
+              </app-bootstrap-form-field>
+            </div>
+            
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="dataNascimento"
+                label="Data de Nascimento"
+                type="date"
+                [control]="form.controls['dataNascimento']"
+                controlName="dataNascimento"
+                [required]="true">
+              </app-bootstrap-form-field>
+            </div>
+            
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="parentesco"
+                label="Parentesco"
+                type="text"
+                [control]="form.controls['parentesco']"
+                controlName="parentesco"
+                placeholder="Ex: Filho, Neto, etc."
+                [required]="true">
+              </app-bootstrap-form-field>
+            </div>
+          </div>
+        </app-form-card>
+        
+        <!-- Informações Educacionais -->
+        <app-form-card 
+          title="Informações Educacionais" 
+          icon="bi bi-mortarboard" 
+          headerClass="bg-info text-white">
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="ceinf"
+                label="CEINF"
+                type="text"
+                [control]="form.controls['ceinf']"
+                controlName="ceinf"
+                placeholder="Nome da instituição">
+              </app-bootstrap-form-field>
+            </div>
+            
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="ceinfBairro"
+                label="CEINF Bairro"
+                type="text"
+                [control]="form.controls['ceinfBairro']"
+                controlName="ceinfBairro"
+                placeholder="Bairro da instituição">
+              </app-bootstrap-form-field>
+            </div>
+          </div>
+        </app-form-card>
+        
+        <!-- Programa de Saúde -->
+        <app-form-card 
+          title="Programa de Saúde" 
+          icon="bi bi-heart-pulse" 
+          headerClass="bg-success text-white">
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="programaSaudePastoralCrianca"
+                label="Programa Saúde Pastoral Criança"
+                type="text"
+                [control]="form.controls['programaSaudePastoralCrianca']"
+                controlName="programaSaudePastoralCrianca"
+                placeholder="Nome do programa">
+              </app-bootstrap-form-field>
+            </div>
+            
+            <div class="col-md-6">
+              <app-bootstrap-form-field
+                fieldId="programaSaudePastoralCriancaLocal"
+                label="Local do Programa"
+                type="text"
+                [control]="form.controls['programaSaudePastoralCriancaLocal']"
+                controlName="programaSaudePastoralCriancaLocal"
+                placeholder="Endereço/local">
+              </app-bootstrap-form-field>
+            </div>
+          </div>
+        </app-form-card>
+        
+        <!-- Status -->
+        <app-form-card 
+          title="Status" 
+          icon="bi bi-toggle-on" 
+          headerClass="bg-warning text-dark">
+          
+          <div class="form-check">
+            <input 
+              type="checkbox" 
+              class="form-check-input" 
+              id="ativo"
+              formControlName="ativo" />
+            <label class="form-check-label" for="ativo">
+              Dependente ativo
+            </label>
+            <div class="form-text">
+              Dependentes inativos não aparecerão nas listagens principais
+            </div>
+          </div>
+        </app-form-card>
+        
+        <!-- Ações do formulário -->
+        <div class="d-flex justify-content-between align-items-center">
+          <app-bootstrap-button
+            variant="outline-secondary"
+            text="Cancelar"
+            icon="bi bi-x-circle"
+            (onClick)="onCancel()">
+          </app-bootstrap-button>
+          
+          <app-bootstrap-button
+            type="submit"
+            variant="primary"
+            text="Salvar"
+            icon="bi bi-check-circle"
+            [disabled]="form.invalid">
+          </app-bootstrap-button>
+        </div>
+      </form>
+    </div>
   </div>
-  
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-sections">
-      <!-- Informações Básicas -->
-      <div class="form-section">
-        <h4>Informações Básicas</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="nome">Nome Completo *</label>
-            <input id="nome" formControlName="nome" placeholder="Digite o nome completo" />
-            <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
-              Nome obrigatório.
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="dataNascimento">Data de Nascimento *</label>
-            <input id="dataNascimento" type="date" formControlName="dataNascimento" />
-            <div class="error" *ngIf="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
-              Data obrigatória.
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="parentesco">Parentesco *</label>
-            <input id="parentesco" formControlName="parentesco" placeholder="Ex: Filho, Neto, etc." />
-            <div class="error" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">
-              Campo obrigatório.
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Informações Educacionais -->
-      <div class="form-section">
-        <h4>Informações Educacionais</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="ceinf">CEINF</label>
-            <input id="ceinf" formControlName="ceinf" placeholder="Nome da instituição" />
-          </div>
-          
-          <div class="form-group">
-            <label for="ceinfBairro">CEINF Bairro</label>
-            <input id="ceinfBairro" formControlName="ceinfBairro" placeholder="Bairro da instituição" />
-          </div>
-        </div>
-      </div>
-      
-      <!-- Programa de Saúde -->
-      <div class="form-section">
-        <h4>Programa de Saúde</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="programaSaudePastoralCrianca">Programa Saúde Pastoral Criança</label>
-            <input id="programaSaudePastoralCrianca" formControlName="programaSaudePastoralCrianca" placeholder="Nome do programa" />
-          </div>
-          
-          <div class="form-group">
-            <label for="programaSaudePastoralCriancaLocal">Local do Programa</label>
-            <input id="programaSaudePastoralCriancaLocal" formControlName="programaSaudePastoralCriancaLocal" placeholder="Endereço/local" />
-          </div>
-        </div>
-      </div>
-      
-      <!-- Status -->
-      <div class="form-section">
-        <h4>Status</h4>
-        <div class="checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" formControlName="ativo" />
-            <span class="checkmark"></span>
-            <span class="label-text">Ativo</span>
-          </label>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Ações do formulário -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="onCancel()">
-        <span class="icon">✕</span>
-        Cancelar
-      </button>
-      <button type="submit" class="btn-primary" [disabled]="form.invalid">
-        <span class="icon">💾</span>
-        Salvar
-      </button>
-    </div>
-  </form>
 </div>
