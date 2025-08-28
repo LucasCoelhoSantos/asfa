@@ -218,6 +218,10 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/pessoa-idosa', id, 'editar']);
   }
 
+  visualizar(id: string) {
+    this.router.navigate(['/pessoa-idosa', id, 'visualizar']);
+  }
+
   inativar(id: string) {
     if (confirm('Tem certeza que deseja inativar este registro?')) {
       this.pessoaIdosaService.inativar(id).subscribe({

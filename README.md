@@ -38,11 +38,12 @@ O ASFA é uma aplicação web desenvolvida em Angular e Firebase. O objetivo do 
 	    /app
 		    /core           // Serviços, singleton, guards, interceptors, helpers
 			    /guards
+				/interceptors
 			    /services
-	        /environments   // Configurações de ambiente
 		    /features       // Módulos de funcionalidades
 		    /models         // Interfaces e tipos
 		    /shared         // Componentes, pipes, diretivas reutilizáveis
+		/environments       // Configurações de ambiente
         app.config.ts       // Providers globais
         app.routes.ts       // Rotas principais
 ```
@@ -64,7 +65,7 @@ Formulário para inserção ou edição dos dados das pessoas idosas.
 É uma parte do formulário de pessoas idosas, é usado para registro de dependentes associados às pessoas idosas.
 
 5. Cadastro de usuários:
-Formulário para inserção ou edição dos dados dos usuários do sistema.
+Formulário para inserção ou edição dos dados dos usuários do sistema, apenas para usuários admins.
 
 ## Futuras Implementações
 
