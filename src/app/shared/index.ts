@@ -9,6 +9,7 @@ export * from './directives/mask.directive';
 
 // Utils
 export * from './utils/mask.utils';
+export * from './utils/validators.util';
 
 // Constants
 export * from './constants/app.constants';

@@ -20,7 +20,6 @@ export const RoleGuard = (allowedRoles: UsuarioRole[]): CanActivateFn => {
         if (allowedRoles.includes(user.role)) {
           return true;
         } else {
-          // Redireciona para página de acesso negado ou menu principal
           router.navigate(['/pessoa-idosa']);
           return false;
         }

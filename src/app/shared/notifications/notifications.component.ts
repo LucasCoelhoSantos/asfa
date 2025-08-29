@@ -7,92 +7,30 @@ import { NotificationService } from '../../core/services/notification.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="notifications-container">
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
       <div 
         *ngFor="let notification of notifications()"
-        class="notification"
-        [class]="'notification--' + notification.type"
+        class="toast show"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
         (click)="removeNotification(notification.id)"
+        style="cursor: pointer; min-width: 300px; max-width: 400px;"
       >
-        <div class="notification__content">
-          <span class="notification__message">{{ notification.message }}</span>
-          <button class="notification__close" (click)="removeNotification(notification.id)">
-            ×
-          </button>
+        <div class="toast-header" [class]="'bg-' + getBootstrapClass(notification.type) + ' text-white'">
+          <strong class="me-auto">{{ getNotificationTitle(notification.type) }}</strong>
+          <button type="button" class="btn-close btn-close-white" (click)="removeNotification(notification.id)" aria-label="Fechar"></button>
+        </div>
+        <div class="toast-body">
+          {{ notification.message }}
         </div>
       </div>
     </div>
   `,
   styles: [`
-    .notifications-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .notification {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      padding: 16px;
-      min-width: 300px;
-      max-width: 400px;
+    .toast {
+      margin-bottom: 0.5rem;
       animation: slideIn 0.3s ease-out;
-      border-left: 4px solid;
-    }
-
-    .notification--success {
-      border-left-color: #4caf50;
-    }
-
-    .notification--error {
-      border-left-color: #f44336;
-    }
-
-    .notification--warning {
-      border-left-color: #ff9800;
-    }
-
-    .notification--info {
-      border-left-color: #2196f3;
-    }
-
-    .notification__content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .notification__message {
-      flex: 1;
-      color: #333;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .notification__close {
-      background: none;
-      border: none;
-      font-size: 18px;
-      color: #666;
-      cursor: pointer;
-      padding: 0;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: background-color 0.2s;
-    }
-
-    .notification__close:hover {
-      background-color: rgba(0, 0, 0, 0.1);
     }
 
     @keyframes slideIn {
@@ -105,6 +43,22 @@ import { NotificationService } from '../../core/services/notification.service';
         opacity: 1;
       }
     }
+
+    .bg-success {
+      background-color: #198754 !important;
+    }
+
+    .bg-danger {
+      background-color: #dc3545 !important;
+    }
+
+    .bg-warning {
+      background-color: #ffc107 !important;
+    }
+
+    .bg-info {
+      background-color: #0dcaf0 !important;
+    }
   `]
 })
 export class NotificationsComponent {
@@ -113,5 +67,25 @@ export class NotificationsComponent {
 
   removeNotification(id: string) {
     this.notificationService.removeNotification(id);
+  }
+
+  getBootstrapClass(type: string): string {
+    switch (type) {
+      case 'success': return 'success';
+      case 'error': return 'danger';
+      case 'warning': return 'warning';
+      case 'info': return 'info';
+      default: return 'info';
+    }
+  }
+
+  getNotificationTitle(type: string): string {
+    switch (type) {
+      case 'success': return 'Sucesso';
+      case 'error': return 'Erro';
+      case 'warning': return 'Aviso';
+      case 'info': return 'Informação';
+      default: return 'Notificação';
+    }
   }
 } 
