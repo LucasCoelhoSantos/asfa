@@ -4,19 +4,25 @@ import { UsuarioService } from '../../core/services/usuario.service';
 import { MainMenuComponent } from '../../shared/main-menu/main-menu';
 import { Router } from '@angular/router';
 import { ModalComponent } from '../../shared/modal/modal';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
   imports: [CommonModule, MainMenuComponent, ModalComponent],
   templateUrl: './usuario-list.html',
-  styleUrls: ['./usuario-list.scss']
+  //styleUrls: ['./usuario-list.scss']
 })
 export class UsuarioListComponent {
   private usuarioService = inject(UsuarioService);
   private router = inject(Router);
+  private notifications = inject(NotificationService);
   showRemoveModal = false;
   usuarioRemoverId: string | null = null;
+
+  showAtivarModal = false;
+  showInativarModal = false;
+  usuarioPendenteId: string | null = null;
 
   usuarios$ = this.usuarioService.getAll();
 
@@ -28,12 +34,40 @@ export class UsuarioListComponent {
     this.router.navigate(['/usuario', id, 'editar']);
   }
 
-  ativar(id: string) {
-    this.usuarioService.setAtivo(id, true);
+  solicitarAtivar(id: string) {
+    this.usuarioPendenteId = id;
+    this.showAtivarModal = true;
   }
 
-  desativar(id: string) {
-    this.usuarioService.setAtivo(id, false);
+  confirmarAtivar() {
+    if (this.usuarioPendenteId !== null) {
+      this.usuarioService.setAtivo(this.usuarioPendenteId, true);
+      this.notifications.showSuccess('Usuário ativado com sucesso.');
+    }
+    this.cancelarAtivar();
+  }
+
+  cancelarAtivar() {
+    this.showAtivarModal = false;
+    this.usuarioPendenteId = null;
+  }
+
+  solicitarInativar(id: string) {
+    this.usuarioPendenteId = id;
+    this.showInativarModal = true;
+  }
+
+  confirmarInativar() {
+    if (this.usuarioPendenteId !== null) {
+      this.usuarioService.setAtivo(this.usuarioPendenteId, false);
+      this.notifications.showSuccess('Usuário inativado com sucesso.');
+    }
+    this.cancelarInativar();
+  }
+
+  cancelarInativar() {
+    this.showInativarModal = false;
+    this.usuarioPendenteId = null;
   }
 
   confirmarRemover(id: string) {
@@ -44,6 +78,7 @@ export class UsuarioListComponent {
   remover() {
     if (this.usuarioRemoverId !== null) {
       this.usuarioService.delete(this.usuarioRemoverId);
+      this.notifications.showSuccess('Usuário removido com sucesso.');
     }
     this.showRemoveModal = false;
     this.usuarioRemoverId = null;

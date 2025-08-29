@@ -1,28 +1,66 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="logo-container">
-      <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-      <span class="project-name">Associação Católica Sagrada Família</span>
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100 bg-light">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <img src="asfa-logo.png" alt="Logo ASFA" class="img-fluid mb-3" style="max-width: 120px;" />
+            <h4 class="text-muted">Associação Católica Sagrada Família</h4>
+          </div>
+          
+          <h2 class="text-center mb-4 fw-bold text-primary">Login</h2>
+          
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">E-mail</label>
+              <input 
+                id="email" 
+                type="email" 
+                class="form-control" 
+                formControlName="email" 
+                [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+                placeholder="Digite seu e-mail"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                E-mail obrigatório e válido.
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="password" class="form-label fw-semibold">Senha</label>
+              <input 
+                id="password" 
+                type="password" 
+                class="form-control" 
+                formControlName="password" 
+                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+                placeholder="Digite sua senha"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                Senha obrigatória (mínimo 6 caracteres).
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100 py-2 fw-semibold" 
+              [disabled]="form.invalid || loading"
+            >
+              <span *ngIf="!loading">Entrar</span>
+              <span *ngIf="loading" class="d-flex align-items-center justify-content-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                  <span class="visually-hidden">Carregando...</span>
+                </div>
+                Entrando...
+              </span>
+            </button>
+            
+            <div class="alert alert-danger mt-3" *ngIf="error" role="alert">
+              {{ error }}
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2>Login</h2>
-      <div class="form-group">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" formControlName="email" [class.invalid]="form.get('email')?.invalid && form.get('email')?.touched" />
-        <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          E-mail obrigatório e válido.
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password">Senha</label>
-        <input id="password" type="password" formControlName="password" [class.invalid]="form.get('password')?.invalid && form.get('password')?.touched" />
-        <div class="error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Senha obrigatória (mínimo 6 caracteres).
-        </div>
-      </div>
-      <button type="submit" [disabled]="form.invalid || loading">Entrar</button>
-      <div class="loading" *ngIf="loading">Entrando...</div>
-      <div class="error" *ngIf="error">{{ error }}</div>
-    </form>
   </div>
 </div>

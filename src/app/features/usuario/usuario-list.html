@@ -1,117 +1,130 @@
 <app-main-menu></app-main-menu>
 
-<div class="usuarios-list-container">
-  <!-- Header Section -->
-  <div class="header-section">
-    <div class="header-content">
-      <h1>Usuários do Sistema</h1>
-      <p class="subtitle">Gerencie os usuários e permissões do sistema</p>
-    </div>
-    <button class="btn-add" (click)="navigate('/usuario/novo')">
-      Adicionar Usuário
-    </button>
-  </div>
-
-  <!-- Content Section -->
-  <div class="content-section">
-    <!-- Loading State -->
-    <div class="loading-state" *ngIf="(usuarios$ | async) === null">
-      <div class="loading-spinner"></div>
-      <p>Carregando usuários...</p>
-    </div>
-
-    <!-- Users Table -->
-    <div class="table-container" *ngIf="(usuarios$ | async) as usuarios">
-      <div class="table-header">
-        <div class="table-info">
-          <span class="users-count">{{ usuarios.length }} usuário{{ usuarios.length !== 1 ? 's' : '' }}</span>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+      <!-- Header Section -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h2 mb-1 fw-bold text-primary">Usuários do Sistema</h1>
+          <p class="text-muted mb-0">Gerencie os usuários e permissões do sistema</p>
         </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th class="th-name">Nome</th>
-              <th class="th-email">Email</th>
-              <th class="th-role">Papel</th>
-              <th class="th-status">Status</th>
-              <th class="th-actions">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let usuario of usuarios" class="user-row">
-              <td class="td-name">
-                <div class="user-info">
-                  <div class="user-avatar">
-                    <span class="avatar-text">{{ getUserInitials(usuario.email) }}</span>
-                  </div>
-                  <div class="user-details">
-                    <span class="user-name">{{ usuario.nome }}</span>
-                    <span class="user-email">{{ usuario.email }}</span>
-                  </div>
-                </div>
-              </td>
-              <td class="td-email">
-                <span class="email-text">{{ usuario.email }}</span>
-              </td>
-              <td class="td-role">
-                <span class="role-badge" [class.admin]="usuario.role === 'admin'">
-                  <span class="role-icon">{{ usuario.role === 'admin' ? '👑' : '👤' }}</span>
-                  {{ usuario.role === 'admin' ? 'Admin' : 'Usuário' }}
-                </span>
-              </td>
-              <td class="td-status">
-                <span class="status-badge" [class.ativo]="usuario.ativo" [class.inativo]="!usuario.ativo">
-                  <span class="status-dot"></span>
-                  {{ usuario.ativo ? 'Ativo' : 'Inativo' }}
-                </span>
-              </td>
-              <td class="td-actions">
-                <div class="actions-group">
-                  <button class="btn-action btn-edit" (click)="editar(usuario.id)" title="Editar usuário">
-                    <span class="icon">✏️</span>
-                    <span class="action-text">Editar</span>
-                  </button>
-                  
-                  <button *ngIf="!usuario.ativo" 
-                          class="btn-action btn-activate" 
-                          (click)="ativar(usuario.id)" 
-                          title="Ativar usuário">
-                    <span class="icon">✅</span>
-                    <span class="action-text">Ativar</span>
-                  </button>
-                  
-                  <button *ngIf="usuario.ativo" 
-                          class="btn-action btn-deactivate" 
-                          (click)="desativar(usuario.id)" 
-                          title="Desativar usuário">
-                    <span class="icon">⏸️</span>
-                    <span class="action-text">Desativar</span>
-                  </button>
-                  
-                  <button class="btn-action btn-remove" 
-                          (click)="confirmarRemover(usuario.id)" 
-                          title="Remover usuário">
-                    <span class="icon">🗑️</span>
-                    <span class="action-text">Remover</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="usuarios.length === 0">
-        <div class="empty-icon">👥</div>
-        <h3>Nenhum usuário cadastrado</h3>
-        <p>Comece adicionando o primeiro usuário ao sistema</p>
-        <button class="btn-add-empty" (click)="navigate('/usuario/novo')">
-          <span class="icon">➕</span>
-          Adicionar Primeiro Usuário
+        <button class="btn btn-primary btn-lg" (click)="navigate('/usuario/novo')">
+          <i class="bi bi-plus-circle me-2"></i>
+          Adicionar Usuário
         </button>
+      </div>
+
+      <!-- Content Section -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <!-- Loading State -->
+          <div class="text-center py-5" *ngIf="(usuarios$ | async) === null">
+            <div class="spinner-border text-primary mb-3" role="status">
+              <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="text-muted">Carregando usuários...</p>
+          </div>
+
+          <!-- Users Table -->
+          <div *ngIf="(usuarios$ | async) as usuarios">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="border-0">Nome</th>
+                    <th class="border-0">Email</th>
+                    <th class="border-0">Papel</th>
+                    <th class="border-0">Status</th>
+                    <th class="border-0">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let usuario of usuarios" class="align-middle">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                          <span class="fw-semibold">{{ getUserInitials(usuario.email) }}</span>
+                        </div>
+                        <div>
+                          <div class="fw-semibold">{{ usuario.nome }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="text-muted">{{ usuario.email }}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-role" style="min-width: 88px" [class.bg-warning]="usuario.role === 'admin'" [class.bg-info]="usuario.role !== 'admin'">
+                        <i class="bi me-1" [class.bi-hammer]="usuario.role === 'admin'" [class.bi-person]="usuario.role !== 'admin'"></i>
+                        {{ usuario.role === 'admin' ? 'Admin' : 'Usuário' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge badge-status" style="min-width: 88px" [class.bg-success]="usuario.ativo" [class.bg-secondary]="!usuario.ativo">
+                        {{ usuario.ativo ? 'Ativo' : 'Inativo' }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <button 
+                          class="btn btn-outline-primary btn-sm btn-equal" 
+                          (click)="editar(usuario.id)" 
+                          title="Editar usuário"
+                        >
+                          <i class="bi bi-pencil me-1"></i>
+                          Editar
+                        </button>
+                        
+                        <button 
+                          *ngIf="!usuario.ativo" 
+                          class="btn btn-outline-success btn-sm btn-equal" 
+                          (click)="solicitarAtivar(usuario.id)" 
+                          title="Ativar usuário"
+                        >
+                          <i class="bi bi-check-circle me-1"></i>
+                          Ativar
+                        </button>
+                        
+                        <button 
+                          *ngIf="usuario.ativo" 
+                          class="btn btn-outline-warning btn-sm btn-equal" 
+                          (click)="solicitarInativar(usuario.id)" 
+                          title="Inativar usuário"
+                        >
+                          <i class="bi bi-pause-circle me-1"></i>
+                          Inativar
+                        </button>
+                        
+                        <button 
+                          class="btn btn-outline-danger btn-sm btn-equal" 
+                          (click)="confirmarRemover(usuario.id)" 
+                          title="Remover usuário"
+                        >
+                          <i class="bi bi-trash me-1"></i>
+                          Remover
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty State -->
+            <div class="text-center py-5" *ngIf="usuarios.length === 0">
+              <div class="display-1 text-muted mb-3">
+              <i class="bi bi-people-fill" style="font-size: 4rem;"></i>
+            </div>
+              <h3 class="h4 text-muted mb-2">Nenhum usuário cadastrado</h3>
+              <p class="text-muted mb-3">Comece adicionando o primeiro usuário ao sistema</p>
+              <button class="btn btn-primary btn-lg" (click)="navigate('/usuario/novo')">
+                <i class="bi bi-plus-circle me-2"></i>
+                Adicionar Primeiro Usuário
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -126,4 +139,26 @@
   cancelText="Cancelar"
   (confirm)="remover()"
   (cancel)="cancelarRemover()">
+</app-modal>
+
+<!-- Ativar Confirmation Modal -->
+<app-modal
+  [show]="showAtivarModal"
+  title="Ativar Usuário"
+  message="Tem certeza que deseja ativar este usuário?"
+  confirmText="Ativar"
+  cancelText="Cancelar"
+  (confirm)="confirmarAtivar()"
+  (cancel)="cancelarAtivar()">
+</app-modal>
+
+<!-- Inativar Confirmation Modal -->
+<app-modal
+  [show]="showInativarModal"
+  title="Inativar Usuário"
+  message="Tem certeza que deseja inativar este usuário?"
+  confirmText="Inativar"
+  cancelText="Cancelar"
+  (confirm)="confirmarInativar()"
+  (cancel)="cancelarInativar()">
 </app-modal>

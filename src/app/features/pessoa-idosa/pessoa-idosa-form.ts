@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { AnexoService } from './anexo.service';
 import { EnderecoFormComponent } from './endereco-form';
 import { AnexoFormComponent } from './anexo-form';
 import { NotificationService } from '../../core/services/notification.service';
-import { cpfValidator, rgValidator, cepValidator, telefoneValidator, dataNascimentoValidator } from './validators.util';
+import { cpfValidator, rgValidator, cepValidator, telefoneValidator, dataNascimentoValidator } from '../../shared/utils/validators.util';
 import { 
   TIPOS_ANEXO, 
   ESTADOS_CIVIS, 
@@ -33,7 +33,7 @@ import { MaskDirective } from '../../shared/directives/mask.directive';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MainMenuComponent, DependenteFormComponent, ModalComponent, EnderecoFormComponent, AnexoFormComponent, MaskDirective],
   templateUrl: './pessoa-idosa-form.html',
-  styleUrls: ['./pessoa-idosa-form.scss'],
+  //styleUrls: ['./pessoa-idosa-form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PessoaIdosaFormComponent implements OnInit {
@@ -51,7 +51,6 @@ export class PessoaIdosaFormComponent implements OnInit {
   editMode = false;
   pessoaId: string | null = null;
 
-  // Dependentes
   dependentes: Dependente[] = [];
   showDependenteForm = false;
   dependenteEditIndex: number | undefined = undefined;
@@ -59,7 +58,6 @@ export class PessoaIdosaFormComponent implements OnInit {
   showRemoveModal = false;
   dependenteToRemoveIndex: number | null = null;
 
-  // Anexos
   anexos: any[] = [];
   tiposAnexo = TIPOS_ANEXO;
   anexoSelecionadoTipo: number | null = null;
@@ -70,13 +68,13 @@ export class PessoaIdosaFormComponent implements OnInit {
   showRemoveAnexoModal = false;
 
   private anexoService = inject(AnexoService);
+  private cdr = inject(ChangeDetectorRef);
 
   estadosCivis = ESTADOS_CIVIS;
   moradias = MORADIAS_OPTIONS;
   cepBuscaLoading = false;
   cepBuscaErro: string | null = null;
   
-  // Enums para os novos campos
   situacoesOcupacionais = SITUACOES_OCUPACIONAIS_OPTIONS;
   aposentados = APOSENTADOS_OPTIONS;
   rendas = RENDAS_OPTIONS;
@@ -118,8 +116,8 @@ export class PessoaIdosaFormComponent implements OnInit {
       atividadeNaComunidadeSagradaFamilia: ['', [Validators.required]],
       trabalhoVoluntario: ['', [Validators.required]],
       trabalhoVoluntarioOnde: [''],
-             observacao: [''],
-       historicoFamiliarSocial: [''],
+      observacao: [''],
+      historicoFamiliarSocial: [''],
       endereco: this.fb.group({
         cep: ['', [Validators.required, cepValidator]],
         moradia: ['', [Validators.required]],
@@ -131,7 +129,6 @@ export class PessoaIdosaFormComponent implements OnInit {
       })
     });
 
-    // Configurar validações condicionais
     this.setupConditionalValidations();
   }
 
@@ -144,18 +141,70 @@ export class PessoaIdosaFormComponent implements OnInit {
     }
   }
 
-
-
   async carregarPessoa() {
     if (!this.pessoaId) return;
     
     this.loading = true;
     try {
       const pessoa = await firstValueFrom(this.pessoasService.getById(this.pessoaId));
-      if (pessoa) {
-        this.form.patchValue(pessoa);
+              if (pessoa) {
+          const cf = pessoa.composicaoFamiliar || ({} as any);
+
+          this.form.patchValue({
+          nome: pessoa.nome,
+          dataNascimento: pessoa.dataNascimento ? new Date(pessoa.dataNascimento).toISOString().slice(0, 10) : '',
+          estadoCivil: pessoa.estadoCivil,
+          cpf: pessoa.cpf,
+          rg: pessoa.rg,
+          orgaoEmissor: pessoa.orgaoEmissor,
+          telefone: pessoa.telefone,
+          naturalidade: pessoa.naturalidade,
+          prontuarioSaude: pessoa.prontuarioSaude,
+          religiao: pessoa.religiao,
+          situacaoOcupacional: cf.situacaoOcupacional ?? (pessoa as any).situacaoOcupacional ?? '',
+          aposentado: cf.aposentado ?? (pessoa as any).aposentado ?? '',
+          renda: cf.renda ?? (pessoa as any).renda ?? '',
+          aposentadoConsegueSeManterComSuaRenda: pessoa.aposentadoConsegueSeManterComSuaRenda ?? false,
+          comoComplementa: pessoa.comoComplementa ?? (cf as any).comoComplementa ?? '',
+          beneficio: pessoa.beneficio ?? cf.beneficio ?? '',
+          alfabetizado: cf.alfabetizado ?? (pessoa as any).alfabetizado ?? false,
+          nivelSerieAtualConcluido: cf.nivelSerieAtualConcluido ?? (pessoa as any).nivelSerieAtualConcluido ?? '',
+          cursosTecnicoFormacaoProfissional: cf.cursosTecnicoFormacaoProfissional ?? (pessoa as any).cursosTecnicoFormacaoProfissional ?? '',
+          estudaAtualmente: cf.estudaAtualmente ?? (pessoa as any).estudaAtualmente ?? false,
+          deficiencia: cf.deficiencia ?? (pessoa as any).deficiencia ?? '',
+          problemaDeSaude: cf.problemaDeSaude ?? (pessoa as any).problemaDeSaude ?? '',
+          fazAlgumTratamento: cf.fazAlgumTratamento ?? (pessoa as any).fazAlgumTratamento ?? false,
+          fazAlgumTratamentoOnde: cf.fazAlgumTratamentoOnde ?? (pessoa as any).fazAlgumTratamentoOnde ?? '',
+          usaMedicamentoControlado: cf.usaMedicamentoControlado ?? (pessoa as any).usaMedicamentoControlado ?? false,
+          usaRecursosUbsLocal: cf.usaRecursosUbsLocal ?? (pessoa as any).usaRecursosUbsLocal ?? false,
+          trabalhoPastoralOuSocial: cf.trabalhoPastoralOuSocial ?? (pessoa as any).trabalhoPastoralOuSocial ?? '',
+          atividadeNaComunidadeSagradaFamilia: cf.atividadeNaComunidadeSagradaFamilia ?? (pessoa as any).atividadeNaComunidadeSagradaFamilia ?? '',
+          trabalhoVoluntario: cf.trabalhoVoluntario ?? (pessoa as any).trabalhoVoluntario ?? '',
+          trabalhoVoluntarioOnde: cf.trabalhoVoluntarioOnde ?? (pessoa as any).trabalhoVoluntarioOnde ?? '',
+          observacao: pessoa.observacao ?? '',
+          historicoFamiliarSocial: pessoa.historicoFamiliarSocial ?? '',
+          endereco: {
+            cep: pessoa.endereco?.cep ?? '',
+            moradia: pessoa.endereco?.moradia ?? '',
+            logradouro: pessoa.endereco?.logradouro ?? '',
+            numero: pessoa.endereco?.numero ?? '',
+            bairro: pessoa.endereco?.bairro ?? '',
+            cidade: pessoa.endereco?.cidade ?? '',
+            estado: pessoa.endereco?.estado ?? ''
+          }
+        });
+
+        // Força a aplicação dos valores dos campos de texto
+        this.form.get('observacao')?.setValue(pessoa.observacao ?? '');
+        this.form.get('historicoFamiliarSocial')?.setValue(pessoa.historicoFamiliarSocial ?? '');
+        
         this.dependentes = pessoa.dependentes || [];
         this.anexos = pessoa.anexos || [];
+        
+        // Força a detecção de mudanças para atualizar a view
+        setTimeout(() => {
+          this.cdr.detectChanges();
+        }, 0);
       }
     } catch (error) {
       this.error = 'Erro ao carregar dados da pessoa.';
@@ -166,7 +215,6 @@ export class PessoaIdosaFormComponent implements OnInit {
   }
 
   onEnderecoChange(endereco: any) {
-    // Atualiza o endereço no formulário principal
     this.form.patchValue({ endereco });
   }
 
@@ -184,10 +232,8 @@ export class PessoaIdosaFormComponent implements OnInit {
 
   salvarDependente(dependente: Dependente) {
     if (this.dependenteEditIndex !== undefined) {
-      // Editando dependente existente
       this.dependentes[this.dependenteEditIndex] = dependente;
     } else {
-      // Adicionando novo dependente
       this.dependentes.push(dependente);
     }
     
@@ -220,7 +266,6 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.showRemoveModal = false;
   }
 
-  // Anexos
   getAnexoPorTipo(tipo: number): any | undefined {
     return this.anexos.find(a => a.tipoAnexo === tipo);
   }
@@ -246,7 +291,6 @@ export class PessoaIdosaFormComponent implements OnInit {
     try {
       const pessoaId = this.pessoaId || 'novo';
       const { url, path } = await this.anexoService.uploadAnexo(pessoaId, tipo, this.anexoSelecionadoFile);
-      // Remove anexo antigo desse tipo, se houver
       this.anexos = this.anexos.filter(a => a.tipoAnexo !== tipo);
       this.anexos.push({ tipoAnexo: tipo, url, path });
       this.anexoSelecionadoFile = null;
@@ -283,14 +327,11 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.anexoRemoverTipo = null;
   }
 
-  // Configurar validações condicionais
   private setupConditionalValidations() {
-    // Campo "comoComplementa" só é obrigatório se "aposentadoConsegueSeManterComSuaRenda" for false
     const aposentadoConsegueSeManterControl = this.form.get('aposentadoConsegueSeManterComSuaRenda');
     const comoComplementaControl = this.form.get('comoComplementa');
     
     if (aposentadoConsegueSeManterControl && comoComplementaControl) {
-      // Configurar estado inicial
       this.updateComoComplementaState(aposentadoConsegueSeManterControl.value);
       
       aposentadoConsegueSeManterControl.valueChanges.subscribe(value => {
@@ -298,12 +339,10 @@ export class PessoaIdosaFormComponent implements OnInit {
       });
     }
 
-    // Campo "fazAlgumTratamentoOnde" só é obrigatório se "fazAlgumTratamento" for true
     const fazAlgumTratamentoControl = this.form.get('fazAlgumTratamento');
     const fazAlgumTratamentoOndeControl = this.form.get('fazAlgumTratamentoOnde');
     
     if (fazAlgumTratamentoControl && fazAlgumTratamentoOndeControl) {
-      // Configurar estado inicial
       this.updateFazAlgumTratamentoOndeState(fazAlgumTratamentoControl.value);
       
       fazAlgumTratamentoControl.valueChanges.subscribe(value => {
@@ -311,12 +350,10 @@ export class PessoaIdosaFormComponent implements OnInit {
       });
     }
 
-    // Campo "trabalhoVoluntarioOnde" só é obrigatório se "trabalhoVoluntario" tiver conteúdo
     const trabalhoVoluntarioControl = this.form.get('trabalhoVoluntario');
     const trabalhoVoluntarioOndeControl = this.form.get('trabalhoVoluntarioOnde');
     
     if (trabalhoVoluntarioControl && trabalhoVoluntarioOndeControl) {
-      // Configurar estado inicial
       this.updateTrabalhoVoluntarioOndeState(trabalhoVoluntarioControl.value);
       
       trabalhoVoluntarioControl.valueChanges.subscribe(value => {
@@ -325,7 +362,6 @@ export class PessoaIdosaFormComponent implements OnInit {
     }
   }
 
-  // Métodos auxiliares para atualizar estados dos campos condicionais
   private updateComoComplementaState(value: boolean) {
     const comoComplementaControl = this.form.get('comoComplementa');
     if (comoComplementaControl) {
@@ -371,35 +407,56 @@ export class PessoaIdosaFormComponent implements OnInit {
     }
   }
 
-  // Busca CEP no ViaCEP
   async buscarCep() {
-    this.cepBuscaLoading = true;
-    this.cepBuscaErro = null;
-    const cep = this.form.get('endereco.cep')?.value.replace(/\D/g, '');
-    if (!cep || cep.length !== 8) {
-      this.cepBuscaErro = 'CEP inválido';
-      this.cepBuscaLoading = false;
+    const cep = this.extractCepFromForm();
+    if (!this.isValidCep(cep)) {
+      this.setCepError('CEP inválido');
       return;
     }
+
+    this.cepBuscaLoading = true;
+    this.cepBuscaErro = null;
+
     try {
-      const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      const data = await resp.json();
+      const data = await this.fetchCepData(cep);
       if (data.erro) {
-        this.cepBuscaErro = 'CEP não encontrado';
+        this.setCepError('CEP não encontrado');
       } else {
-        this.form.patchValue({
-          endereco: {
-            logradouro: data.logradouro || '',
-            bairro: data.bairro || '',
-            cidade: data.localidade || '',
-            estado: data.uf || ''
-          }
-        });
+        this.updateEnderecoFromCep(data);
       }
     } catch {
-      this.cepBuscaErro = 'Erro ao buscar CEP';
+      this.setCepError('Erro ao buscar CEP');
+    } finally {
+      this.cepBuscaLoading = false;
     }
-    this.cepBuscaLoading = false;
+  }
+
+  private extractCepFromForm(): string {
+    return this.form.get('endereco.cep')?.value.replace(/\D/g, '') || '';
+  }
+
+  private isValidCep(cep: string): boolean {
+    return cep.length === 8;
+  }
+
+  private setCepError(message: string): void {
+    this.cepBuscaErro = message;
+  }
+
+  private async fetchCepData(cep: string): Promise<any> {
+    const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    return await resp.json();
+  }
+
+  private updateEnderecoFromCep(data: any): void {
+    this.form.patchValue({
+      endereco: {
+        logradouro: data.logradouro || '',
+        bairro: data.bairro || '',
+        cidade: data.localidade || '',
+        estado: data.uf || ''
+      }
+    });
   }
 
   async onSubmit() {
@@ -409,12 +466,7 @@ export class PessoaIdosaFormComponent implements OnInit {
     this.error = null;
     
     try {
-      const formValue = this.form.value;
-      const pessoaData: PessoaIdosa = {
-        ...formValue,
-        dependentes: this.dependentes,
-        anexos: this.anexos
-      };
+      const pessoaData = this.buildPessoaData();
       
       if (this.editMode && this.pessoaId) {
         await this.pessoasService.update(this.pessoaId, pessoaData);
@@ -433,28 +485,88 @@ export class PessoaIdosaFormComponent implements OnInit {
     }
   }
 
+  private buildPessoaData(): PessoaIdosa {
+    const v = this.form.value as any;
+    
+    return {
+      id: this.pessoaId || '',
+      dataCadastro: new Date(),
+      nome: v.nome,
+      dataNascimento: v.dataNascimento ? new Date(v.dataNascimento) : new Date(),
+      ativo: true,
+      estadoCivil: v.estadoCivil,
+      cpf: v.cpf,
+      rg: v.rg,
+      orgaoEmissor: v.orgaoEmissor,
+      religiao: v.religiao,
+      naturalidade: v.naturalidade,
+      telefone: v.telefone,
+      prontuarioSaude: v.prontuarioSaude,
+      aposentadoConsegueSeManterComSuaRenda: !!v.aposentadoConsegueSeManterComSuaRenda,
+      comoComplementa: v.comoComplementa || '',
+      beneficio: v.beneficio || '',
+      observacao: v.observacao || '',
+      historicoFamiliarSocial: v.historicoFamiliarSocial || '',
+      composicaoFamiliar: this.buildComposicaoFamiliar(v),
+      endereco: this.buildEndereco(v.endereco),
+      dependentes: this.dependentes,
+      anexos: this.anexos
+    };
+  }
+
+  private buildComposicaoFamiliar(v: any) {
+    return {
+      alfabetizado: !!v.alfabetizado,
+      estudaAtualmente: !!v.estudaAtualmente,
+      nivelSerieAtualConcluido: v.nivelSerieAtualConcluido || '',
+      cursosTecnicoFormacaoProfissional: v.cursosTecnicoFormacaoProfissional || '',
+      situacaoOcupacional: v.situacaoOcupacional || '',
+      renda: v.renda || '',
+      aposentado: v.aposentado || '',
+      beneficio: v.beneficio || '',
+      deficiencia: v.deficiencia || '',
+      problemaDeSaude: v.problemaDeSaude || '',
+      fazAlgumTratamento: !!v.fazAlgumTratamento,
+      fazAlgumTratamentoOnde: v.fazAlgumTratamentoOnde || '',
+      usaMedicamentoControlado: !!v.usaMedicamentoControlado,
+      usaRecursosUbsLocal: !!v.usaRecursosUbsLocal,
+      trabalhoPastoralOuSocial: v.trabalhoPastoralOuSocial || '',
+      atividadeNaComunidadeSagradaFamilia: v.atividadeNaComunidadeSagradaFamilia || '',
+      trabalhoVoluntario: v.trabalhoVoluntario || '',
+      trabalhoVoluntarioOnde: v.trabalhoVoluntarioOnde || ''
+    };
+  }
+
+  private buildEndereco(endereco: any) {
+    return {
+      cep: endereco?.cep || '',
+      logradouro: endereco?.logradouro || '',
+      numero: endereco?.numero || '',
+      estado: endereco?.estado || '',
+      cidade: endereco?.cidade || '',
+      bairro: endereco?.bairro || '',
+      moradia: endereco?.moradia || ''
+    };
+  }
+
   voltarParaLista() {
     this.router.navigate(['/pessoa-idosa']);
   }
 
-  // Métodos para integração dos componentes filhos
   async onUploadAnexo(event: { tipoAnexo: number, file: File }) {
     this.anexoUploadLoading = true;
     this.anexoUploadError = null;
     try {
       const pessoaId = this.pessoaId || 'novo';
       const { url, path } = await this.anexoService.uploadAnexo(pessoaId, event.tipoAnexo, event.file);
-      // Remove anexo antigo desse tipo, se houver
       this.anexos = this.anexos.filter(a => a.tipoAnexo !== event.tipoAnexo);
-      this.anexos.push({ tipoAnexo: event.tipoAnexo, url, path, nomeArquivo: event.file.name }); // Added nomeArquivo
+      this.anexos.push({ tipoAnexo: event.tipoAnexo, url, path, nomeArquivo: event.file.name });
       
-      // Atualizar o estado local do componente filho
       if (this.anexoForm) {
         this.anexoForm.updateSelectedFile(event.tipoAnexo, event.file.name);
       }
     } catch (e: any) {
       this.anexoUploadError = e.message || 'Erro ao fazer upload.';
-      // Limpar o estado local em caso de erro
       if (this.anexoForm) {
         this.anexoForm.clearSelectedFile(event.tipoAnexo);
       }
@@ -468,7 +580,6 @@ export class PessoaIdosaFormComponent implements OnInit {
       await this.anexoService.deleteAnexo(anexo.path);
       this.anexos = this.anexos.filter(a => a.tipoAnexo !== anexo.tipoAnexo);
       
-      // Limpar o estado local do componente filho
       if (this.anexoForm) {
         this.anexoForm.clearSelectedFile(anexo.tipoAnexo);
       }

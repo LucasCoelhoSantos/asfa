@@ -1,3 +1,8 @@
+export enum Usuario {
+  Admin = 'admin',
+  User = 'user'
+}
+
 export enum Beneficio {
   Nao = 'Não',
   BeneficioDePrestacaoContinuadaIdoso = 'Benefício de Prestação Continuada - Idoso',
@@ -59,6 +64,7 @@ export enum NivelSerieAtualConcluido {
 }
 
 export enum CursoTecnicoFormacaoProfissional {
+  Nao = 'Não',
   Tecnico = 'Técnico',
   MOVA = 'MOVA',
   EJA = 'EJA',

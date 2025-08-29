@@ -1,462 +1,665 @@
 <app-main-menu></app-main-menu>
-<div class="pessoa-form-container">
-  <div class="form-header">
-    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Pessoa Idosa</h2>
+
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h2 class="card-title mb-0 fs-4 fw-semibold">{{ editMode ? 'Editar' : 'Cadastrar' }} Pessoa Idosa</h2>
+        </div>
+        
+        <div class="card-body p-4">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- Informações Pessoais -->
+            <div class="mb-4">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Informações Pessoais</h3>
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="nome" class="form-label fw-semibold">Nome Completo *</label>
+                  <input 
+                    id="nome" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="nome" 
+                    placeholder="Digite o nome completo"
+                    [class.is-invalid]="form.controls['nome'].invalid && form.controls['nome'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">
+                    Nome obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento *</label>
+                  <input 
+                    id="dataNascimento" 
+                    type="date" 
+                    class="form-control" 
+                    formControlName="dataNascimento"
+                    [class.is-invalid]="form.controls['dataNascimento'].errors?.['dataNascimento'] && form.controls['dataNascimento'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['dataNascimento'].errors?.['dataNascimento'] && form.controls['dataNascimento'].touched">
+                    Data inválida.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="estadoCivil" class="form-label fw-semibold">Estado Civil *</label>
+                  <select 
+                    id="estadoCivil" 
+                    class="form-select" 
+                    formControlName="estadoCivil"
+                    [class.is-invalid]="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched"
+                  >
+                    <option value="">Selecione o estado civil</option>
+                    <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="cpf" class="form-label fw-semibold">CPF *</label>
+                  <input 
+                    id="cpf" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="cpf" 
+                    maxlength="14" 
+                    inputmode="numeric" 
+                    placeholder="000.000.000-00"
+                    appMask="cpf"
+                    [class.is-invalid]="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">
+                    CPF inválido.
+                  </div>
+                  <div class="invalid-feedback" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="rg" class="form-label fw-semibold">RG</label>
+                  <input 
+                    id="rg" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="rg" 
+                    maxlength="12" 
+                    inputmode="numeric" 
+                    placeholder="00.000.000-0"
+                    appMask="rg"
+                    [class.is-invalid]="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">
+                    RG inválido.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="orgaoEmissor" class="form-label fw-semibold">Órgão Emissor (RG) *</label>
+                  <input 
+                    id="orgaoEmissor" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="orgaoEmissor" 
+                    placeholder="Ex: SSP, DETRAN"
+                    [class.is-invalid]="form.controls['orgaoEmissor'].invalid && form.controls['orgaoEmissor'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['orgaoEmissor'].invalid && form.controls['orgaoEmissor'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="telefone" class="form-label fw-semibold">Telefone/Celular *</label>
+                  <input 
+                    id="telefone" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="telefone" 
+                    maxlength="15" 
+                    inputmode="numeric" 
+                    placeholder="(00) 00000-0000"
+                    appMask="phone"
+                    [class.is-invalid]="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">
+                    Telefone inválido.
+                  </div>
+                  <div class="invalid-feedback" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">
+                    Campo obrigatório.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="naturalidade" class="form-label fw-semibold">Naturalidade *</label>
+                  <input 
+                    id="naturalidade" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="naturalidade" 
+                    placeholder="Digite a naturalidade"
+                    [class.is-invalid]="form.controls['naturalidade'].invalid && form.controls['naturalidade'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['naturalidade'].invalid && form.controls['naturalidade'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Informações Adicionais -->
+            <div class="mb-4">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Informações Adicionais</h3>
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="prontuarioSaude" class="form-label fw-semibold">Prontuário de Saúde *</label>
+                  <input 
+                    id="prontuarioSaude" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="prontuarioSaude" 
+                    placeholder="Digite o prontuário"
+                    [class.is-invalid]="form.controls['prontuarioSaude'].invalid && form.controls['prontuarioSaude'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['prontuarioSaude'].invalid && form.controls['prontuarioSaude'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="religiao" class="form-label fw-semibold">Religião *</label>
+                  <input 
+                    id="religiao" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="religiao" 
+                    placeholder="Digite a religião"
+                    [class.is-invalid]="form.controls['religiao'].invalid && form.controls['religiao'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['religiao'].invalid && form.controls['religiao'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="situacaoOcupacional" class="form-label fw-semibold">Situação Ocupacional *</label>
+                  <select 
+                    id="situacaoOcupacional" 
+                    class="form-select" 
+                    formControlName="situacaoOcupacional"
+                    [class.is-invalid]="form.controls['situacaoOcupacional'].invalid && form.controls['situacaoOcupacional'].touched"
+                  >
+                    <option value="">Selecione a situação</option>
+                    <option *ngFor="let so of situacoesOcupacionais" [value]="so">{{ so }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['situacaoOcupacional'].invalid && form.controls['situacaoOcupacional'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="aposentado" class="form-label fw-semibold">Aposentado? *</label>
+                  <select 
+                    id="aposentado" 
+                    class="form-select" 
+                    formControlName="aposentado"
+                    [class.is-invalid]="form.controls['aposentado'].invalid && form.controls['aposentado'].touched"
+                  >
+                    <option value="">Selecione</option>
+                    <option *ngFor="let ap of aposentados" [value]="ap">{{ ap }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['aposentado'].invalid && form.controls['aposentado'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="renda" class="form-label fw-semibold">Renda *</label>
+                  <select 
+                    id="renda" 
+                    class="form-select" 
+                    formControlName="renda"
+                    [class.is-invalid]="form.controls['renda'].invalid && form.controls['renda'].touched"
+                  >
+                    <option value="">Selecione a renda</option>
+                    <option *ngFor="let r of rendas" [value]="r">{{ r }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['renda'].invalid && form.controls['renda'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="aposentadoConsegueSeManterComSuaRenda" class="form-label fw-semibold">Se mantém com a renda? *</label>
+                  <select 
+                    id="aposentadoConsegueSeManterComSuaRenda" 
+                    class="form-select" 
+                    formControlName="aposentadoConsegueSeManterComSuaRenda"
+                    [class.is-invalid]="form.controls['aposentadoConsegueSeManterComSuaRenda'].invalid && form.controls['aposentadoConsegueSeManterComSuaRenda'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['aposentadoConsegueSeManterComSuaRenda'].invalid && form.controls['aposentadoConsegueSeManterComSuaRenda'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="comoComplementa" class="form-label fw-semibold">Como complementa a renda?</label>
+                  <textarea 
+                    id="comoComplementa" 
+                    class="form-control" 
+                    formControlName="comoComplementa" 
+                    placeholder="Descreva como complementa a renda" 
+                    rows="3" 
+                    [disabled]="form.get('aposentadoConsegueSeManterComSuaRenda')?.value !== false"
+                    [class.is-invalid]="form.controls['comoComplementa'].invalid && form.controls['comoComplementa'].touched"
+                  ></textarea>
+                  <div class="invalid-feedback" *ngIf="form.controls['comoComplementa'].invalid && form.controls['comoComplementa'].touched">
+                    Campo obrigatório quando não se mantém com a renda.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="beneficio" class="form-label fw-semibold">Recebe algum Benefício? *</label>
+                  <select 
+                    id="beneficio" 
+                    class="form-select" 
+                    formControlName="beneficio"
+                    [class.is-invalid]="form.controls['beneficio'].invalid && form.controls['beneficio'].touched"
+                  >
+                    <option value="">Selecione o benefício</option>
+                    <option *ngFor="let b of beneficios" [value]="b">{{ b }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['beneficio'].invalid && form.controls['beneficio'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="alfabetizado" class="form-label fw-semibold">Alfabetizado *</label>
+                  <select 
+                    id="alfabetizado" 
+                    class="form-select" 
+                    formControlName="alfabetizado"
+                    [class.is-invalid]="form.controls['alfabetizado'].invalid && form.controls['alfabetizado'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['alfabetizado'].invalid && form.controls['alfabetizado'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="nivelSerieAtualConcluido" class="form-label fw-semibold">Nível e Série Atual e Concluído *</label>
+                  <select 
+                    id="nivelSerieAtualConcluido" 
+                    class="form-select" 
+                    formControlName="nivelSerieAtualConcluido"
+                    [class.is-invalid]="form.controls['nivelSerieAtualConcluido'].invalid && form.controls['nivelSerieAtualConcluido'].touched"
+                  >
+                    <option value="">Selecione o nível</option>
+                    <option *ngFor="let ns of niveisSerie" [value]="ns">{{ ns }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['nivelSerieAtualConcluido'].invalid && form.controls['nivelSerieAtualConcluido'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="cursosTecnicoFormacaoProfissional" class="form-label fw-semibold">Curso Técnico e Formação Profissional *</label>
+                  <select 
+                    id="cursosTecnicoFormacaoProfissional" 
+                    class="form-select" 
+                    formControlName="cursosTecnicoFormacaoProfissional"
+                    [class.is-invalid]="form.controls['cursosTecnicoFormacaoProfissional'].invalid && form.controls['cursosTecnicoFormacaoProfissional'].touched"
+                  >
+                    <option value="">Selecione o curso</option>
+                    <option *ngFor="let cf of cursosFormacao" [value]="cf">{{ cf }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['cursosTecnicoFormacaoProfissional'].invalid && form.controls['cursosTecnicoFormacaoProfissional'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="estudaAtualmente" class="form-label fw-semibold">Estuda atualmente? *</label>
+                  <select 
+                    id="estudaAtualmente" 
+                    class="form-select" 
+                    formControlName="estudaAtualmente"
+                    [class.is-invalid]="form.controls['estudaAtualmente'].invalid && form.controls['estudaAtualmente'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['estudaAtualmente'].invalid && form.controls['estudaAtualmente'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="deficiencia" class="form-label fw-semibold">Possui alguma deficiência? *</label>
+                  <select 
+                    id="deficiencia" 
+                    class="form-select" 
+                    formControlName="deficiencia"
+                    [class.is-invalid]="form.controls['deficiencia'].invalid && form.controls['deficiencia'].touched"
+                  >
+                    <option value="">Selecione a deficiência</option>
+                    <option *ngFor="let d of deficiencias" [value]="d">{{ d }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['deficiencia'].invalid && form.controls['deficiencia'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="problemaDeSaude" class="form-label fw-semibold">Possui problemas de Saúde? *</label>
+                  <select 
+                    id="problemaDeSaude" 
+                    class="form-select" 
+                    formControlName="problemaDeSaude"
+                    [class.is-invalid]="form.controls['problemaDeSaude'].invalid && form.controls['problemaDeSaude'].touched"
+                  >
+                    <option value="">Selecione o problema</option>
+                    <option *ngFor="let ps of problemasSaude" [value]="ps">{{ ps }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['problemaDeSaude'].invalid && form.controls['problemaDeSaude'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="fazAlgumTratamento" class="form-label fw-semibold">Faz algum tratamento? *</label>
+                  <select 
+                    id="fazAlgumTratamento" 
+                    class="form-select" 
+                    formControlName="fazAlgumTratamento"
+                    [class.is-invalid]="form.controls['fazAlgumTratamento'].invalid && form.controls['fazAlgumTratamento'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['fazAlgumTratamento'].invalid && form.controls['fazAlgumTratamento'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="fazAlgumTratamentoOnde" class="form-label fw-semibold">Onde faz o tratamento?</label>
+                  <input 
+                    id="fazAlgumTratamentoOnde" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="fazAlgumTratamentoOnde" 
+                    placeholder="Digite onde faz o tratamento" 
+                    [disabled]="form.get('fazAlgumTratamento')?.value !== true"
+                    [class.is-invalid]="form.controls['fazAlgumTratamentoOnde'].invalid && form.controls['fazAlgumTratamentoOnde'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['fazAlgumTratamentoOnde'].invalid && form.controls['fazAlgumTratamentoOnde'].touched">
+                    Campo obrigatório quando faz tratamento.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="usaMedicamentoControlado" class="form-label fw-semibold">Usa medicamento controlado? *</label>
+                  <select 
+                    id="usaMedicamentoControlado" 
+                    class="form-select" 
+                    formControlName="usaMedicamentoControlado"
+                    [class.is-invalid]="form.controls['usaMedicamentoControlado'].invalid && form.controls['usaMedicamentoControlado'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['usaMedicamentoControlado'].invalid && form.controls['usaMedicamentoControlado'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="usaRecursosUbsLocal" class="form-label fw-semibold">Usa recursos da UBS local? *</label>
+                  <select 
+                    id="usaRecursosUbsLocal" 
+                    class="form-select" 
+                    formControlName="usaRecursosUbsLocal"
+                    [class.is-invalid]="form.controls['usaRecursosUbsLocal'].invalid && form.controls['usaRecursosUbsLocal'].touched"
+                  >
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.controls['usaRecursosUbsLocal'].invalid && form.controls['usaRecursosUbsLocal'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <label for="trabalhoPastoralOuSocial" class="form-label fw-semibold">Faz algum trabalho pastoral ou social na sua Igreja ou no seu bairro? *</label>
+                  <textarea 
+                    id="trabalhoPastoralOuSocial" 
+                    class="form-control" 
+                    formControlName="trabalhoPastoralOuSocial" 
+                    placeholder="Descreva o trabalho pastoral ou social" 
+                    rows="3"
+                    [class.is-invalid]="form.controls['trabalhoPastoralOuSocial'].invalid && form.controls['trabalhoPastoralOuSocial'].touched"
+                  ></textarea>
+                  <div class="invalid-feedback" *ngIf="form.controls['trabalhoPastoralOuSocial'].invalid && form.controls['trabalhoPastoralOuSocial'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <label for="atividadeNaComunidadeSagradaFamilia" class="form-label fw-semibold">Desenvolve alguma atividade na Comunidade Sagrada Família? *</label>
+                  <textarea 
+                    id="atividadeNaComunidadeSagradaFamilia" 
+                    class="form-control" 
+                    formControlName="atividadeNaComunidadeSagradaFamilia" 
+                    placeholder="Descreva a atividade na comunidade" 
+                    rows="3"
+                    [class.is-invalid]="form.controls['atividadeNaComunidadeSagradaFamilia'].invalid && form.controls['atividadeNaComunidadeSagradaFamilia'].touched"
+                  ></textarea>
+                  <div class="invalid-feedback" *ngIf="form.controls['atividadeNaComunidadeSagradaFamilia'].invalid && form.controls['atividadeNaComunidadeSagradaFamilia'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <label for="trabalhoVoluntario" class="form-label fw-semibold">Deseja desenvolver algum trabalho voluntário? *</label>
+                  <textarea 
+                    id="trabalhoVoluntario" 
+                    class="form-control" 
+                    formControlName="trabalhoVoluntario" 
+                    placeholder="Descreva o trabalho voluntário desejado" 
+                    rows="3"
+                    [class.is-invalid]="form.controls['trabalhoVoluntario'].invalid && form.controls['trabalhoVoluntario'].touched"
+                  ></textarea>
+                  <div class="invalid-feedback" *ngIf="form.controls['trabalhoVoluntario'].invalid && form.controls['trabalhoVoluntario'].touched">
+                    Campo obrigatório.
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <label for="trabalhoVoluntarioOnde" class="form-label fw-semibold">Onde gostaria de desenvolver o trabalho voluntário?</label>
+                  <input 
+                    id="trabalhoVoluntarioOnde" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="trabalhoVoluntarioOnde" 
+                    placeholder="Digite onde gostaria de trabalhar" 
+                    [disabled]="!form.get('trabalhoVoluntario')?.value || form.get('trabalhoVoluntario')?.value.trim() === ''"
+                    [class.is-invalid]="form.controls['trabalhoVoluntarioOnde'].invalid && form.controls['trabalhoVoluntarioOnde'].touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.controls['trabalhoVoluntarioOnde'].invalid && form.controls['trabalhoVoluntarioOnde'].touched">
+                    Campo obrigatório quando deseja desenvolver trabalho voluntário.
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <label for="observacao" class="form-label fw-semibold">Observação</label>
+                  <textarea 
+                    id="observacao" 
+                    class="form-control" 
+                    formControlName="observacao" 
+                    placeholder="Observações adicionais" 
+                    rows="3"
+                  ></textarea>
+                </div>
+                
+                <div class="col-12">
+                  <label for="historicoFamiliarSocial" class="form-label fw-semibold">Histórico familiar e social</label>
+                  <textarea 
+                    id="historicoFamiliarSocial" 
+                    class="form-control" 
+                    formControlName="historicoFamiliarSocial" 
+                    placeholder="Descreva o histórico familiar e social" 
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Endereço -->
+            <div class="mb-4">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Endereço</h3>
+              </div>
+              <ng-container *ngIf="form.get('endereco') as enderecoForm">
+                <app-endereco-form [form]="enderecoForm" (valueChanges)="onEnderecoChange($event)"></app-endereco-form>
+              </ng-container>
+            </div>
+
+            <!-- Dependentes -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Dependentes</h3>
+                <button type="button" class="btn btn-success" (click)="abrirNovoDependente()">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Adicionar Dependente
+                </button>
+              </div>
+              
+              <div class="dependentes-content">
+                <div *ngIf="dependentes.length === 0" class="text-center py-5">
+                  <div class="display-1 text-muted mb-3">
+                    <i class="bi bi-people-fill" style="font-size: 4rem;"></i>
+                  </div>
+                  <p class="fs-5 text-muted mb-2">Nenhum dependente cadastrado</p>
+                  <small class="text-muted">Clique no botão acima para adicionar um dependente</small>
+                </div>
+                
+                <div *ngIf="dependentes.length > 0" class="table-responsive">
+                  <table class="table table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Nome</th>
+                        <th>Data Nasc.</th>
+                        <th>Parentesco</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let dep of dependentes; let i = index">
+                        <td>{{ dep.nome }}</td>
+                        <td>{{ dep.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                        <td>{{ dep.parentesco }}</td>
+                        <td>
+                          <span class="badge" [class.bg-success]="dep.ativo" [class.bg-secondary]="!dep.ativo">
+                            {{ dep.ativo ? 'Ativo' : 'Inativo' }}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary btn-sm" (click)="editarDependente(i)" title="Editar">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" (click)="confirmarRemoverDependente(i)" title="Remover">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Modal de dependente -->
+              <div *ngIf="showDependenteForm" class="dependente-form-modal">
+                <app-dependente-form
+                  [dependente]="dependenteEditValue"
+                  (save)="salvarDependente($event)"
+                  (cancel)="cancelarDependente()">
+                </app-dependente-form>
+              </div>
+              
+              <!-- Modal de confirmação -->
+              <app-modal
+                [show]="showRemoveModal"
+                title="Remover dependente"
+                message="Tem certeza que deseja remover este dependente?"
+                confirmText="Sim"
+                cancelText="Não"
+                (confirm)="removerDependente()"
+                (cancel)="cancelarRemoverDependente()">
+              </app-modal>
+            </div>
+
+            <!-- Anexos -->
+            <div class="mb-4">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Documentos e Anexos</h3>
+              </div>
+              <app-anexo-form 
+                #anexoForm
+                [anexos]="anexos"
+                (upload)="onUploadAnexo($event)"
+                (removerAnexo)="onRemoverAnexo($event)"
+                (baixarAnexo)="onBaixarAnexo($event)">
+              </app-anexo-form>
+            </div>
+
+            <!-- Ações do formulário -->
+            <div class="d-flex gap-2 justify-content-between pt-4 border-top">
+              <button type="button" class="btn btn-outline-secondary" (click)="voltarParaLista()">
+                <i class="bi bi-arrow-left me-1"></i>
+                Voltar
+              </button>
+              <button type="submit" class="btn btn-primary px-4" [disabled]="form.invalid || loading">
+                <span *ngIf="!loading">
+                  <i class="bi bi-check-circle me-1"></i>
+                  Salvar
+                </span>
+                <span *ngIf="loading" class="d-flex align-items-center">
+                  <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                  </div>
+                  Salvando...
+                </span>
+              </button>
+            </div>
+            
+            <!-- Mensagens de feedback -->
+            <div class="mt-3" *ngIf="error">
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-  
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <!-- Informações Pessoais -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Informações Pessoais</h3>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="nome">Nome Completo *</label>
-          <input id="nome" formControlName="nome" placeholder="Digite o nome completo" />
-          <div class="error" *ngIf="form.controls['nome'].invalid && form.controls['nome'].touched">
-            Nome obrigatório.
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="dataNascimento">Data de Nascimento *</label>
-          <input id="dataNascimento" type="date" formControlName="dataNascimento" />
-          <div class="error" *ngIf="form.controls['dataNascimento'].errors?.['dataNascimento'] && form.controls['dataNascimento'].touched">
-            Data inválida.
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="estadoCivil">Estado Civil *</label>
-          <select id="estadoCivil" formControlName="estadoCivil">
-            <option value="">Selecione o estado civil</option>
-            <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
-          </select>
-          <div class="error" *ngIf="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched">
-            Campo obrigatório.
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="cpf">CPF *</label>
-          <input 
-            id="cpf" 
-            formControlName="cpf" 
-            maxlength="14" 
-            inputmode="numeric" 
-            placeholder="000.000.000-00"
-            appMask="cpf"
-          />
-          <div class="error" *ngIf="form.controls['cpf'].errors?.['cpf'] && form.controls['cpf'].touched">
-            CPF inválido.
-          </div>
-          <div class="error" *ngIf="form.controls['cpf'].invalid && form.controls['cpf'].touched && !form.controls['cpf'].errors?.['cpf']">
-            Campo obrigatório.
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="rg">RG</label>
-          <input 
-            id="rg" 
-            formControlName="rg" 
-            maxlength="12" 
-            inputmode="numeric" 
-            placeholder="00.000.000-0"
-            appMask="rg"
-          />
-          <div class="error" *ngIf="form.controls['rg'].errors?.['rg'] && form.controls['rg'].touched">
-            RG inválido.
-          </div>
-        </div>
-
-                 <div class="form-group">
-           <label for="orgaoEmissor">Órgão Emissor (RG) *</label>
-           <input id="orgaoEmissor" formControlName="orgaoEmissor" placeholder="Ex: SSP, DETRAN" />
-           <div class="error" *ngIf="form.controls['orgaoEmissor'].invalid && form.controls['orgaoEmissor'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-
-        <div class="form-group">
-          <label for="telefone">Telefone/Celular *</label>
-          <input 
-            id="telefone" 
-            formControlName="telefone" 
-            maxlength="15" 
-            inputmode="numeric" 
-            placeholder="(00) 00000-0000"
-            appMask="phone"
-          />
-          <div class="error" *ngIf="form.controls['telefone'].errors?.['telefone'] && form.controls['telefone'].touched">
-            Telefone inválido.
-          </div>
-          <div class="error" *ngIf="form.controls['telefone'].invalid && form.controls['telefone'].touched && !form.controls['telefone'].errors?.['telefone']">
-            Campo obrigatório.
-          </div>
-        </div>
-
-                 <div class="form-group">
-           <label for="naturalidade">Naturalidade *</label>
-           <input id="naturalidade" formControlName="naturalidade" placeholder="Digite a naturalidade" />
-           <div class="error" *ngIf="form.controls['naturalidade'].invalid && form.controls['naturalidade'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-      </div>
-    </div>
-    
-    <!-- Informações Adicionais -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Informações Adicionais</h3>
-      </div>
-      <div class="form-grid">
-        
-                 <div class="form-group">
-           <label for="prontuarioSaude">Prontuário de Saúde *</label>
-           <input id="prontuarioSaude" formControlName="prontuarioSaude" placeholder="Digite o prontuário" />
-           <div class="error" *ngIf="form.controls['prontuarioSaude'].invalid && form.controls['prontuarioSaude'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="religiao">Religião *</label>
-           <input id="religiao" formControlName="religiao" placeholder="Digite a religião" />
-           <div class="error" *ngIf="form.controls['religiao'].invalid && form.controls['religiao'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="situacaoOcupacional">Situação Ocupacional *</label>
-           <select id="situacaoOcupacional" formControlName="situacaoOcupacional">
-             <option value="">Selecione a situação</option>
-             <option *ngFor="let so of situacoesOcupacionais" [value]="so">{{ so }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['situacaoOcupacional'].invalid && form.controls['situacaoOcupacional'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="aposentado">Aposentado? *</label>
-           <select id="aposentado" formControlName="aposentado">
-             <option value="">Selecione</option>
-             <option *ngFor="let ap of aposentados" [value]="ap">{{ ap }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['aposentado'].invalid && form.controls['aposentado'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="renda">Renda *</label>
-           <select id="renda" formControlName="renda">
-             <option value="">Selecione a renda</option>
-             <option *ngFor="let r of rendas" [value]="r">{{ r }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['renda'].invalid && form.controls['renda'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="aposentadoConsegueSeManterComSuaRenda">Se mantém com a renda? *</label>
-           <select id="aposentadoConsegueSeManterComSuaRenda" formControlName="aposentadoConsegueSeManterComSuaRenda">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['aposentadoConsegueSeManterComSuaRenda'].invalid && form.controls['aposentadoConsegueSeManterComSuaRenda'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="comoComplementa">Como complementa a renda?</label>
-           <textarea id="comoComplementa" formControlName="comoComplementa" placeholder="Descreva como complementa a renda" rows="3" [disabled]="form.get('aposentadoConsegueSeManterComSuaRenda')?.value !== false"></textarea>
-           <div class="error" *ngIf="form.controls['comoComplementa'].invalid && form.controls['comoComplementa'].touched">
-             Campo obrigatório quando não se mantém com a renda.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="beneficio">Recebe algum Benefício? *</label>
-           <select id="beneficio" formControlName="beneficio">
-             <option value="">Selecione o benefício</option>
-             <option *ngFor="let b of beneficios" [value]="b">{{ b }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['beneficio'].invalid && form.controls['beneficio'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="alfabetizado">Alfabetizado *</label>
-           <select id="alfabetizado" formControlName="alfabetizado">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['alfabetizado'].invalid && form.controls['alfabetizado'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="nivelSerieAtualConcluido">Nível e Série Atual e Concluído *</label>
-           <select id="nivelSerieAtualConcluido" formControlName="nivelSerieAtualConcluido">
-             <option value="">Selecione o nível</option>
-             <option *ngFor="let ns of niveisSerie" [value]="ns">{{ ns }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['nivelSerieAtualConcluido'].invalid && form.controls['nivelSerieAtualConcluido'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="cursosTecnicoFormacaoProfissional">Curso Técnico e Formação Profissional *</label>
-           <select id="cursosTecnicoFormacaoProfissional" formControlName="cursosTecnicoFormacaoProfissional">
-             <option value="">Selecione o curso</option>
-             <option *ngFor="let cf of cursosFormacao" [value]="cf">{{ cf }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['cursosTecnicoFormacaoProfissional'].invalid && form.controls['cursosTecnicoFormacaoProfissional'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="estudaAtualmente">Estuda atualmente? *</label>
-           <select id="estudaAtualmente" formControlName="estudaAtualmente">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['estudaAtualmente'].invalid && form.controls['estudaAtualmente'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="deficiencia">Possui alguma deficiência? *</label>
-           <select id="deficiencia" formControlName="deficiencia">
-             <option value="">Selecione a deficiência</option>
-             <option *ngFor="let d of deficiencias" [value]="d">{{ d }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['deficiencia'].invalid && form.controls['deficiencia'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="problemaDeSaude">Possui problemas de Saúde? *</label>
-           <select id="problemaDeSaude" formControlName="problemaDeSaude">
-             <option value="">Selecione o problema</option>
-             <option *ngFor="let ps of problemasSaude" [value]="ps">{{ ps }}</option>
-           </select>
-           <div class="error" *ngIf="form.controls['problemaDeSaude'].invalid && form.controls['problemaDeSaude'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="fazAlgumTratamento">Faz algum tratamento? *</label>
-           <select id="fazAlgumTratamento" formControlName="fazAlgumTratamento">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['fazAlgumTratamento'].invalid && form.controls['fazAlgumTratamento'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="fazAlgumTratamentoOnde">Onde faz o tratamento?</label>
-           <input id="fazAlgumTratamentoOnde" formControlName="fazAlgumTratamentoOnde" placeholder="Digite onde faz o tratamento" [disabled]="form.get('fazAlgumTratamento')?.value !== true" />
-           <div class="error" *ngIf="form.controls['fazAlgumTratamentoOnde'].invalid && form.controls['fazAlgumTratamentoOnde'].touched">
-             Campo obrigatório quando faz tratamento.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="usaMedicamentoControlado">Usa medicamento controlado? *</label>
-           <select id="usaMedicamentoControlado" formControlName="usaMedicamentoControlado">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['usaMedicamentoControlado'].invalid && form.controls['usaMedicamentoControlado'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="usaRecursosUbsLocal">Usa recursos da UBS local? *</label>
-           <select id="usaRecursosUbsLocal" formControlName="usaRecursosUbsLocal">
-             <option [value]="true">Sim</option>
-             <option [value]="false">Não</option>
-           </select>
-           <div class="error" *ngIf="form.controls['usaRecursosUbsLocal'].invalid && form.controls['usaRecursosUbsLocal'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="trabalhoPastoralOuSocial">Faz algum trabalho pastoral ou social na sua Igreja ou no seu bairro? *</label>
-           <textarea id="trabalhoPastoralOuSocial" formControlName="trabalhoPastoralOuSocial" placeholder="Descreva o trabalho pastoral ou social" rows="3"></textarea>
-           <div class="error" *ngIf="form.controls['trabalhoPastoralOuSocial'].invalid && form.controls['trabalhoPastoralOuSocial'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="atividadeNaComunidadeSagradaFamilia">Desenvolve alguma atividade na Comunidade Sagrada Família? *</label>
-           <textarea id="atividadeNaComunidadeSagradaFamilia" formControlName="atividadeNaComunidadeSagradaFamilia" placeholder="Descreva a atividade na comunidade" rows="3"></textarea>
-           <div class="error" *ngIf="form.controls['atividadeNaComunidadeSagradaFamilia'].invalid && form.controls['atividadeNaComunidadeSagradaFamilia'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="trabalhoVoluntario">Deseja desenvolver algum trabalho voluntário? *</label>
-           <textarea id="trabalhoVoluntario" formControlName="trabalhoVoluntario" placeholder="Descreva o trabalho voluntário desejado" rows="3"></textarea>
-           <div class="error" *ngIf="form.controls['trabalhoVoluntario'].invalid && form.controls['trabalhoVoluntario'].touched">
-             Campo obrigatório.
-           </div>
-         </div>
-         
-         <div class="form-group">
-           <label for="trabalhoVoluntarioOnde">Onde gostaria de desenvolver o trabalho voluntário?</label>
-           <input id="trabalhoVoluntarioOnde" formControlName="trabalhoVoluntarioOnde" placeholder="Digite onde gostaria de trabalhar" [disabled]="!form.get('trabalhoVoluntario')?.value || form.get('trabalhoVoluntario')?.value.trim() === ''" />
-           <div class="error" *ngIf="form.controls['trabalhoVoluntarioOnde'].invalid && form.controls['trabalhoVoluntarioOnde'].touched">
-             Campo obrigatório quando deseja desenvolver trabalho voluntário.
-           </div>
-         </div>
-        
-                 <div class="form-group">
-           <label for="observacao">Observação</label>
-           <textarea id="observacao" formControlName="observacao" placeholder="Observações adicionais" rows="3"></textarea>
-         </div>
-         
-         <div class="form-group">
-           <label for="historicoFamiliarSocial">Histórico familiar e social</label>
-           <textarea id="historicoFamiliarSocial" formControlName="historicoFamiliarSocial" placeholder="Descreva o histórico familiar e social" rows="4"></textarea>
-         </div>
-      </div>
-    </div>
-    
-    <!-- Endereço -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Endereço</h3>
-      </div>
-      <ng-container *ngIf="form.get('endereco') as enderecoForm">
-        <app-endereco-form [form]="enderecoForm" (valueChanges)="onEnderecoChange($event)"></app-endereco-form>
-      </ng-container>
-    </div>
-
-    <!-- Dependentes -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Dependentes</h3>
-        <button type="button" class="btn-add" (click)="abrirNovoDependente()">
-          <span class="icon">+</span>
-          Adicionar Dependente
-        </button>
-      </div>
-      
-      <div class="dependentes-content">
-        <div *ngIf="dependentes.length === 0" class="empty-state">
-          <div class="empty-icon">👥</div>
-          <p>Nenhum dependente cadastrado</p>
-          <small>Clique no botão acima para adicionar um dependente</small>
-        </div>
-        
-        <div *ngIf="dependentes.length > 0" class="dependentes-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Data Nasc.</th>
-                <th>Parentesco</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let dep of dependentes; let i = index">
-                <td>{{ dep.nome }}</td>
-                <td>{{ dep.dataNascimento | date:'dd/MM/yyyy' }}</td>
-                <td>{{ dep.parentesco }}</td>
-                <td>
-                  <span [class.ativo]="dep.ativo" [class.inativo]="!dep.ativo">
-                    {{ dep.ativo ? 'Ativo' : 'Inativo' }}
-                  </span>
-                </td>
-                <td class="actions">
-                  <button type="button" class="btn-edit" (click)="editarDependente(i)">
-                    <span class="icon">✏️</span>
-                  </button>
-                  <button type="button" class="btn-remove" (click)="confirmarRemoverDependente(i)">
-                    <span class="icon">🗑️</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <!-- Modal de dependente -->
-      <div *ngIf="showDependenteForm" class="dependente-form-modal">
-        <app-dependente-form
-          [dependente]="dependenteEditValue"
-          (save)="salvarDependente($event)"
-          (cancel)="cancelarDependente()">
-        </app-dependente-form>
-      </div>
-      
-      <!-- Modal de confirmação -->
-      <app-modal
-        [show]="showRemoveModal"
-        title="Remover dependente"
-        message="Tem certeza que deseja remover este dependente?"
-        confirmText="Sim"
-        cancelText="Não"
-        (confirm)="removerDependente()"
-        (cancel)="cancelarRemoverDependente()">
-      </app-modal>
-    </div>
-
-    <!-- Anexos -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Documentos e Anexos</h3>
-      </div>
-      <app-anexo-form 
-        #anexoForm
-        [anexos]="anexos"
-        (upload)="onUploadAnexo($event)"
-        (removerAnexo)="onRemoverAnexo($event)"
-        (baixarAnexo)="onBaixarAnexo($event)">
-      </app-anexo-form>
-    </div>
-
-    <!-- Ações do formulário -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="voltarParaLista()">
-        <span class="icon">←</span>
-        Voltar
-      </button>
-      <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
-        <span class="icon" *ngIf="!loading">💾</span>
-        <span class="loading-spinner" *ngIf="loading"></span>
-        {{ loading ? 'Salvando...' : 'Salvar' }}
-      </button>
-    </div>
-    
-    <!-- Mensagens de feedback -->
-    <div class="feedback-messages">
-      <div class="error" *ngIf="error">{{ error }}</div>
-    </div>
-  </form>
 </div>

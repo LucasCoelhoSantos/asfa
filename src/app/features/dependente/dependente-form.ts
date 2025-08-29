@@ -8,7 +8,7 @@ import { Dependente } from '../../models/pessoa-idosa.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './dependente-form.html',
-  styleUrls: ['./dependente-form.scss']
+  //styleUrls: ['./dependente-form.scss']
 })
 export class DependenteFormComponent implements OnInit {
   @Input() dependente?: Dependente;
@@ -27,7 +27,7 @@ export class DependenteFormComponent implements OnInit {
       programaSaudePastoralCrianca: [''],
       programaSaudePastoralCriancaLocal: [''],
       ativo: [true],
-      composicaoFamiliar: this.fb.group({}) // pode ser detalhado depois
+      composicaoFamiliar: this.fb.group({})
     });
   }
 

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './modal.html',
-  styleUrls: ['./modal.scss']
+  //styleUrls: ['./modal.scss']
 })
 export class ModalComponent {
   @Input() show: boolean = false;

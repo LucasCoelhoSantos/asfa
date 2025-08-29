@@ -32,16 +32,22 @@ export class NotificationService {
   }
 
   private addNotification(message: string, type: Notification['type'], duration: number) {
-    const id = Date.now().toString();
+    const id = this.generateNotificationId();
     const notification: Notification = { id, message, type, duration };
     
     this.notifications.update(notifications => [...notifications, notification]);
     
     if (duration > 0) {
-      setTimeout(() => {
-        this.removeNotification(id);
-      }, duration);
+      this.scheduleNotificationRemoval(id, duration);
     }
+  }
+
+  private generateNotificationId(): string {
+    return Date.now().toString();
+  }
+
+  private scheduleNotificationRemoval(id: string, duration: number): void {
+    setTimeout(() => this.removeNotification(id), duration);
   }
 
   removeNotification(id: string) {

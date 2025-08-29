@@ -33,19 +33,19 @@ O ASFA é uma aplicação web desenvolvida em Angular e Firebase. O objetivo do 
 
 ```
 /asfa
-    /public                 // Arquivos compartilhados
+    /public                 	// Arquivos compartilhados
     /src
 	    /app
-		    /core           // Serviços, singleton, guards, interceptors, helpers
+		    /core           	// Serviços, singleton, guards, interceptors, helpers
 			    /guards
 				/interceptors
 			    /services
-		    /features       // Módulos de funcionalidades
-		    /models         // Interfaces e tipos
-		    /shared         // Componentes, pipes, diretivas reutilizáveis
-		/environments       // Configurações de ambiente
-        app.config.ts       // Providers globais
-        app.routes.ts       // Rotas principais
+		    /features       	// Módulos de funcionalidades
+		    /models         	// Interfaces e tipos
+		    /shared         	// Componentes, pipes, diretivas reutilizáveis
+		/environments       	// Configurações de ambiente
+        app.config.ts			// Providers globais
+        app.routes.ts       	// Rotas principais
 ```
 
 ## Telas Disponíveis
