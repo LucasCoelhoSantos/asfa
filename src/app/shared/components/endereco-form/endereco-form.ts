@@ -1,20 +1,15 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormControl, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { MaskDirective } from '../../shared/directives/mask.directive';
-import { MORADIAS_OPTIONS } from '../../shared/constants/app.constants';
+import { MaskDirective } from '../../directives/mask.directive';
+import { MORADIAS_OPTIONS } from '../../constants/app.constants';
+import { EnderecoService, EnderecoData } from './endereco.service';
 
-interface ViaCepResponse {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  erro?: boolean;
-}
-
+/**
+ * Componente reutilizável para formulário de endereço
+ * Inclui busca automática de CEP via ViaCEP
+ * Usado em: Pessoa Idosa Form, potencialmente outros formulários
+ */
 @Component({
   selector: 'app-endereco-form',
   standalone: true,
@@ -99,7 +94,7 @@ export class EnderecoFormComponent implements OnInit {
   cepError: string | null = null;
   private lastCepConsulted: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private enderecoService: EnderecoService) {}
 
   ngOnInit() {
     if (this.form instanceof FormGroup) {
@@ -130,8 +125,8 @@ export class EnderecoFormComponent implements OnInit {
     const cepControl = this.formGroup.get('cep');
     if (!cepControl) return;
     
-    const cep = cepControl.value?.replace(/\D/g, '');
-    if (!cep || cep.length !== 8) {
+    const cep = this.enderecoService.limparCep(cepControl.value || '');
+    if (!this.enderecoService.validarCep(cep)) {
       this.cepError = 'CEP deve ter 8 dígitos';
       return;
     }
@@ -144,24 +139,21 @@ export class EnderecoFormComponent implements OnInit {
     this.cepError = null;
 
     try {
-      const response = await this.http.get<ViaCepResponse>(`https://viacep.com.br/ws/${cep}/json/`).toPromise();
+      const enderecoData = await this.enderecoService.buscarCep(cep).toPromise();
       this.lastCepConsulted = cep;
       
-      if (response && !response.erro) {
+      if (enderecoData) {
         this.formGroup.patchValue({
-          logradouro: response.logradouro || '',
-          bairro: response.bairro || '',
-          cidade: response.localidade || '',
-          estado: response.uf || ''
+          logradouro: enderecoData.logradouro,
+          bairro: enderecoData.bairro,
+          cidade: enderecoData.cidade,
+          estado: enderecoData.estado
         });
         this.enderecoChange.emit(this.formGroup.value);
         this.cepError = null;
-      } else {
-        this.cepError = 'CEP não encontrado';
       }
-    } catch (error) {
-      console.error('Erro ao buscar CEP:', error);
-      this.cepError = 'Erro ao buscar CEP. Tente novamente.';
+    } catch (error: any) {
+      this.cepError = error.message || 'Erro ao buscar CEP. Tente novamente.';
     } finally {
       this.cepLoading = false;
     }

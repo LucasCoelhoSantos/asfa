@@ -1,15 +1,15 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TIPOS_ANEXO } from '../../shared/constants/app.constants';
-import { ModalComponent } from '../../shared/modal/modal';
+import { TIPOS_ANEXO } from '../../constants/app.constants';
+import { ModalComponent } from '../../modal/modal';
 
-export interface Anexo {
-  tipoAnexo: number;
-  url: string;
-  path: string;
-  nomeArquivo?: string;
-}
+import { Anexo } from '../../../models/pessoa-idosa.model';
 
+/**
+ * Componente reutilizável para upload e gerenciamento de anexos
+ * Suporta múltiplos tipos de anexo com validação
+ * Usado em: Pessoa Idosa Form, potencialmente outros formulários
+ */
 @Component({
   selector: 'app-anexo-form',
   standalone: true,
@@ -188,4 +188,4 @@ export class AnexoFormComponent implements OnInit {
       name: nomeArquivo
     });
   }
-} 
+}
