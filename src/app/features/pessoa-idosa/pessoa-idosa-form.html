@@ -3,6 +3,12 @@
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-xl-10">
+      <div class="d-flex justify-content-beetween align-items-center mb-4">
+        <button type="button" class="btn btn-secondary" (click)="voltarParaLista()">
+          <i class="bi bi-arrow-left"></i> Voltar
+        </button>
+      </div>
+
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-primary text-white">
           <h2 class="card-title mb-0 fs-4 fw-semibold">{{ editMode ? 'Editar' : 'Cadastrar' }} Pessoa Idosa</h2>

@@ -32,7 +32,7 @@
                   type="text" 
                   class="form-control" 
                   placeholder="Nome" 
-                  (input)="setFiltroNome(getValue($event))" 
+                  (input)="setFiltro('nome', getValue($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -40,14 +40,14 @@
                 <input 
                   type="date" 
                   class="form-control" 
-                  (input)="setFiltroDataNascimento(getValue($event))" 
+                  (input)="setFiltro('dataNascimento', getValue($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
                 <label class="form-label fw-semibold">Estado Civil</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroEstadoCivil(getValue($event))"
+                  (change)="setFiltro('estadoCivil', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
@@ -60,7 +60,7 @@
                   class="form-control" 
                   placeholder="000.000.000-00" 
                   appMask="cpf" 
-                  (input)="setFiltroCpf(getValue($event))" 
+                  (input)="setFiltro('cpf', getValue($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -70,7 +70,7 @@
                   class="form-control" 
                   placeholder="00.000.000-0" 
                   appMask="rg" 
-                  (input)="setFiltroRg(getValue($event))" 
+                  (input)="setFiltro('rg', getValue($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -80,7 +80,7 @@
                   class="form-control" 
                   placeholder="00000-000" 
                   appMask="cep" 
-                  (input)="setFiltroCep(getValue($event))" 
+                  (input)="setFiltro('cep', getValue($event))" 
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@
                     class="form-check-input" 
                     type="checkbox" 
                     id="filtroAlfabetizado" 
-                    (change)="setFiltroAlfabetizado(getChecked($event))" 
+                    (change)="setFiltroAvancado('alfabetizado', getChecked($event))" 
                   />
                   <label class="form-check-label" for="filtroAlfabetizado">
                     Alfabetizado
@@ -109,7 +109,7 @@
                     class="form-check-input" 
                     type="checkbox" 
                     id="filtroEstudaAtualmente" 
-                    (change)="setFiltroEstudaAtualmente(getChecked($event))" 
+                    (change)="setFiltroAvancado('estudaAtualmente', getChecked($event))" 
                   />
                   <label class="form-check-label" for="filtroEstudaAtualmente">
                     Estuda Atualmente
@@ -120,7 +120,7 @@
                 <label class="form-label fw-semibold">Nível/Série Atual</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroNivelSerie(getValue($event))"
+                  (change)="setFiltroAvancado('nivelSerie', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let nivel of niveisSerie" [value]="nivel">{{ nivel }}</option>
@@ -130,7 +130,7 @@
                 <label class="form-label fw-semibold">Curso Técnico/Formação</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroCursoFormacao(getValue($event))"
+                  (change)="setFiltroAvancado('cursoFormacao', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let curso of cursosFormacao" [value]="curso">{{ curso }}</option>
@@ -140,7 +140,7 @@
                 <label class="form-label fw-semibold">Benefício</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroBeneficio(getValue($event))"
+                  (change)="setFiltroAvancado('beneficio', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let beneficio of beneficios" [value]="beneficio">{{ beneficio }}</option>
@@ -150,7 +150,7 @@
                 <label class="form-label fw-semibold">Situação Ocupacional</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroSituacaoOcupacional(getValue($event))"
+                  (change)="setFiltroAvancado('situacaoOcupacional', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let situacao of situacoesOcupacionais" [value]="situacao">{{ situacao }}</option>
@@ -160,7 +160,7 @@
                 <label class="form-label fw-semibold">Problema de Saúde</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroProblemaDeSaude(getValue($event))"
+                  (change)="setFiltroAvancado('problemaDeSaude', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let problema of problemasSaude" [value]="problema">{{ problema }}</option>
@@ -170,7 +170,7 @@
                 <label class="form-label fw-semibold">Aposentado</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAposentado(getValue($event))"
+                  (change)="setFiltroAvancado('aposentado', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let aposentado of aposentados" [value]="aposentado">{{ aposentado }}</option>
@@ -180,7 +180,7 @@
                 <label class="form-label fw-semibold">Moradia</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroMoradia(getValue($event))"
+                  (change)="setFiltroAvancado('moradia', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let moradia of moradias" [value]="moradia">{{ moradia }}</option>
@@ -190,7 +190,7 @@
                 <label class="form-label fw-semibold">Deficiência</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroDeficiencia(getValue($event))"
+                  (change)="setFiltroAvancado('deficiencia', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let deficiencia of deficiencias" [value]="deficiencia">{{ deficiencia }}</option>
@@ -207,7 +207,7 @@
                 <label class="form-label fw-semibold">Status</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAtivo(getValue($event))"
+                  (change)="setFiltro('ativo', getValue($event))"
                 >
                   <option value="">Todos</option>
                   <option value="ativo">Ativo</option>
@@ -281,12 +281,21 @@
                     </td>
                     <td>
                       <div class="btn-group" role="group">
+                        <button
+                          class="btn btn-outline-info btn-sm"
+                          (click)="visualizar(pessoa.id)"
+                          title="Visualizar"
+                        >
+                          <i class="bi bi-eye"></i>
+                          Visuailzar
+                        </button>
                         <button 
                           class="btn btn-outline-primary btn-sm" 
                           (click)="editar(pessoa.id)"
                           title="Editar"
                         >
                           <i class="bi bi-pencil"></i>
+                          Editar
                         </button>
                         <button 
                           *ngIf="pessoa.ativo" 
@@ -295,6 +304,7 @@
                           title="Inativar"
                         >
                           <i class="bi bi-pause-circle"></i>
+                          Inativar
                         </button>
                         <button 
                           *ngIf="!pessoa.ativo" 
@@ -303,6 +313,7 @@
                           title="Ativar"
                         >
                           <i class="bi bi-play-circle"></i>
+                          Ativar
                         </button>
                       </div>
                     </td>

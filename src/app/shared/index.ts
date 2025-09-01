@@ -20,3 +20,9 @@ export * from './modal/modal';
 export * from './notifications/notifications.component';
 export * from './skeleton/skeleton.component';
 export * from './skeleton/table-skeleton.component';
+
+// Shared Components (reutilizáveis entre features)
+export * from './components/endereco-form/endereco-form';
+export * from './components/endereco-form/endereco.service';
+export * from './components/anexo-form/anexo-form';
+export * from './components/anexo-form/anexo.service';

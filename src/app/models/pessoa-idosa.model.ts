@@ -33,6 +33,7 @@ export interface Anexo {
     tipoAnexo: number;
     url: string;
     path: string;
+    nomeArquivo?: string;
 }
 
 export interface Dependente {

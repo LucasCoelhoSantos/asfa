@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PessoaIdosaService, FiltrosPessoaIdosa, PaginacaoResult } from './pessoa-idosa.service';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
@@ -169,32 +169,12 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     this.buscar();
   }
 
-  setFiltroNome(valor: string) { 
-    this.filtro.nome = valor; 
-  }
-  
-  setFiltroDataNascimento(valor: string) { 
-    this.filtro.dataNascimento = valor; 
-  }
-  
-  setFiltroEstadoCivil(valor: string) { 
-    this.filtro.estadoCivil = valor; 
-  }
-  
-  setFiltroCpf(valor: string) { 
-    this.filtro.cpf = valor; 
-  }
-  
-  setFiltroRg(valor: string) { 
-    this.filtro.rg = valor; 
-  }
-  
-  setFiltroCep(valor: string) { 
-    this.filtro.cep = valor; 
-  }
-  
-  setFiltroAtivo(valor: string) { 
-    this.filtro.ativo = valor === 'ativo' ? true : valor === 'inativo' ? false : undefined; 
+  setFiltro(campo: keyof FiltrosPessoaIdosa, valor: string | boolean | undefined) {
+    if (campo === 'ativo') {
+      this.filtro.ativo = valor === 'ativo' ? true : valor === 'inativo' ? false : undefined;
+    } else {
+      (this.filtro as any)[campo] = valor;
+    }
   }
   
   setPageSize(size: number) { 
@@ -275,90 +255,203 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
       import('jspdf-autotable')
     ]).then(([{ default: jsPDF }, autoTable]) => {
       const doc = new jsPDF();
-      this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
-        const pessoasFiltradas = this.aplicarFiltrosAvancados(resultado.pessoas);
-        this.gerarTabelaPdf(doc, autoTable, pessoasFiltradas);
-        doc.save('pessoas-idosas.pdf');
+      
+      this.carregarLogoEConverterParaBase64().then(logoBase64 => {
+        this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
+          const pessoasFiltradas = this.aplicarFiltrosAvancados(resultado.pessoas);
+          this.gerarPdf(doc, autoTable, pessoasFiltradas, logoBase64);
+          doc.save('pessoas-idosas.pdf');
+        });
+      }).catch(() => {
+        this.notificationService.showError('Erro ao carregar logo. PDF não foi gerado.');
       });
     });
   }
 
   private aplicarFiltrosAvancados(pessoas: PessoaIdosa[]): PessoaIdosa[] {
-    return pessoas.filter((p: PessoaIdosa) => {
-      const f = this.filtroAvancado;
-      return this.passouFiltroAlfabetizado(p, f)
-        && this.passouFiltroEstudaAtualmente(p, f)
-        && this.passouFiltroNivelSerie(p, f)
-        && this.passouFiltroCursoFormacao(p, f)
-        && this.passouFiltroBeneficio(p, f)
-        && this.passouFiltroSituacaoOcupacional(p, f)
-        && this.passouFiltroProblemaDeSaude(p, f)
-        && this.passouFiltroAposentado(p, f)
-        && this.passouFiltroMoradia(p, f)
-        && this.passouFiltroDeficiencia(p, f);
+    const filtros = this.filtroAvancado;
+    
+    return pessoas.filter((pessoa: PessoaIdosa) => {
+      const verificacoes = [
+        () => !filtros.alfabetizado || pessoa.composicaoFamiliar?.alfabetizado === filtros.alfabetizado,
+        () => !filtros.estudaAtualmente || pessoa.composicaoFamiliar?.estudaAtualmente === filtros.estudaAtualmente,
+        () => !filtros.nivelSerie || pessoa.composicaoFamiliar?.nivelSerieAtualConcluido?.includes(filtros.nivelSerie),
+        () => !filtros.cursoFormacao || pessoa.composicaoFamiliar?.cursosTecnicoFormacaoProfissional?.includes(filtros.cursoFormacao),
+        () => !filtros.beneficio || pessoa.composicaoFamiliar?.beneficio?.includes(filtros.beneficio),
+        () => !filtros.situacaoOcupacional || pessoa.composicaoFamiliar?.situacaoOcupacional?.includes(filtros.situacaoOcupacional),
+        () => !filtros.problemaDeSaude || pessoa.composicaoFamiliar?.problemaDeSaude?.includes(filtros.problemaDeSaude),
+        () => !filtros.aposentado || pessoa.composicaoFamiliar?.aposentado?.includes(filtros.aposentado),
+        () => !filtros.moradia || pessoa.endereco?.moradia?.includes(filtros.moradia),
+        () => !filtros.deficiencia || pessoa.composicaoFamiliar?.deficiencia?.includes(filtros.deficiencia)
+      ];
+
+      return verificacoes.every(verificacao => verificacao());
     });
   }
 
-  private passouFiltroAlfabetizado(p: PessoaIdosa, f: any): boolean {
-    return !f.alfabetizado || p.composicaoFamiliar?.alfabetizado === f.alfabetizado;
+  private gerarPdf(doc: any, autoTable: any, pessoasFiltradas: PessoaIdosa[], logoBase64: string): void {
+    const logoSize = 26;
+    const headerHeight = 35;
+    const margin = 20;
+    
+    this.gerarCabecalho(doc, logoBase64, margin, logoSize, headerHeight);
+    this.gerarInformacoesFiltros(doc, pessoasFiltradas, margin, headerHeight);
+    this.gerarTabela(doc, autoTable, pessoasFiltradas, margin, headerHeight);
+    this.gerarRodape(doc);
   }
 
-  private passouFiltroEstudaAtualmente(p: PessoaIdosa, f: any): boolean {
-    return !f.estudaAtualmente || p.composicaoFamiliar?.estudaAtualmente === f.estudaAtualmente;
-  }
-
-  private passouFiltroNivelSerie(p: PessoaIdosa, f: any): boolean {
-    return !f.nivelSerie || p.composicaoFamiliar?.nivelSerieAtualConcluido?.includes(f.nivelSerie);
-  }
-
-  private passouFiltroCursoFormacao(p: PessoaIdosa, f: any): boolean {
-    return !f.cursoFormacao || p.composicaoFamiliar?.cursosTecnicoFormacaoProfissional?.includes(f.cursoFormacao);
-  }
-
-  private passouFiltroBeneficio(p: PessoaIdosa, f: any): boolean {
-    return !f.beneficio || p.composicaoFamiliar?.beneficio?.includes(f.beneficio);
-  }
-
-  private passouFiltroSituacaoOcupacional(p: PessoaIdosa, f: any): boolean {
-    return !f.situacaoOcupacional || p.composicaoFamiliar?.situacaoOcupacional?.includes(f.situacaoOcupacional);
-  }
-
-  private passouFiltroProblemaDeSaude(p: PessoaIdosa, f: any): boolean {
-    return !f.problemaDeSaude || p.composicaoFamiliar?.problemaDeSaude?.includes(f.problemaDeSaude);
-  }
-
-  private passouFiltroAposentado(p: PessoaIdosa, f: any): boolean {
-    return !f.aposentado || p.composicaoFamiliar?.aposentado?.includes(f.aposentado);
-  }
-
-  private passouFiltroMoradia(p: PessoaIdosa, f: any): boolean {
-    return !f.moradia || p.endereco?.moradia?.includes(f.moradia);
-  }
-
-  private passouFiltroDeficiencia(p: PessoaIdosa, f: any): boolean {
-    return !f.deficiencia || p.composicaoFamiliar?.deficiencia?.includes(f.deficiencia);
-  }
-
-  private gerarTabelaPdf(doc: any, autoTable: any, pessoasFiltradas: PessoaIdosa[]): void {
-    autoTable.default(doc, {
-      head: [[
-        'Nome', 'Data Nasc.', 'Estado Civil', 'CPF', 'RG', 'CEP', 'Ativo'
-      ]],
-      body: pessoasFiltradas.map((p: PessoaIdosa) => this.criarLinhaTabela(p)),
-      styles: { fontSize: 10 }
+  private carregarLogoEConverterParaBase64(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = '/asfa-logo.png';
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          const maxWidth = 80;
+          const maxHeight = 80;
+          let { width, height } = img;
+          
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          const logoBase64 = canvas.toDataURL('image/png');
+          resolve(logoBase64);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      img.onerror = () => reject(new Error('Erro ao carregar logo'));
     });
   }
 
-  private criarLinhaTabela(p: PessoaIdosa): any[] {
-    return [
-      p.nome,
-      new Date(p.dataNascimento).toLocaleDateString(),
-      p.estadoCivil,
-      p.cpf,
-      p.rg,
-      p.endereco?.cep,
-      p.ativo ? 'Sim' : 'Não'
-    ];
+  private gerarCabecalho(doc: any, logoBase64: string, margin: number, logoSize: number, headerHeight: number): void {
+    doc.addImage(logoBase64, 'PNG', margin, margin, logoSize, logoSize);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Associação Católica Sagrada Família - Lar Misericordioso', margin + logoSize + 10, margin + 12);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')} - Campo Grande/MS`, margin + logoSize + 10, margin + 22);
+    doc.line(margin, margin + headerHeight, doc.internal.pageSize.width - margin, margin + headerHeight);
+    
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Relatório de Pessoas Idosas Cadastradas', doc.internal.pageSize.width / 2, margin + headerHeight + 10, { align: 'center' });
+  }
+
+  private gerarInformacoesFiltros(doc: any, pessoasFiltradas: PessoaIdosa[], margin: number, headerHeight: number): void {
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    let yPosition = margin + headerHeight + 20;
+    
+    const filtrosAplicados = [];
+    if (this.filtro.nome) filtrosAplicados.push(`Nome: ${this.filtro.nome}`);
+    if (this.filtro.cpf) filtrosAplicados.push(`CPF: ${this.filtro.cpf}`);
+    if (this.filtro.estadoCivil) filtrosAplicados.push(`Estado Civil: ${this.filtro.estadoCivil}`);
+    if (this.filtro.ativo !== undefined) filtrosAplicados.push(`Status: ${this.filtro.ativo ? 'Ativo' : 'Inativo'}`);
+    
+    if (filtrosAplicados.length > 0) {
+      doc.text('Filtros aplicados: ' + filtrosAplicados.join(', '), margin, yPosition);
+      yPosition += 8;
+    }
+    
+    doc.text(`Total de registros: ${pessoasFiltradas.length}`, margin, yPosition);
+  }
+
+  private gerarTabela(doc: any, autoTable: any, pessoasFiltradas: PessoaIdosa[], margin: number, headerHeight: number): void {
+    const yPosition = margin + headerHeight + 30;
+    
+    const headers = ['Nome', 'Data Nasc.', 'Estado Civil', 'CPF', 'RG', 'CEP', 'Status'];
+    const rows = pessoasFiltradas.map(pessoa => [
+      pessoa.nome,
+      new Date(pessoa.dataNascimento).toLocaleDateString('pt-BR'),
+      pessoa.estadoCivil || '-',
+      pessoa.cpf || '-',
+      pessoa.rg || '-',
+      pessoa.endereco?.cep || '-',
+      pessoa.ativo ? 'Ativo' : 'Inativo'
+    ]);
+
+    try {
+      autoTable.default(doc, {
+        head: [headers],
+        body: rows,
+        startY: yPosition,
+        styles: { 
+          fontSize: 9,
+          cellPadding: 3
+        },
+        headStyles: {
+          fillColor: [70, 130, 180],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245]
+        },
+        margin: { left: margin, right: margin }
+      });
+    } catch (error) {
+      this.desenharTabelaManual(doc, headers, rows, yPosition, margin);
+    }
+  }
+
+  private desenharTabelaManual(doc: any, headers: string[], rows: string[][], startY: number, margin: number): void {
+    const colWidth = 25;
+    const rowHeight = 8;
+    
+    doc.setFillColor(70, 130, 180);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    
+    headers.forEach((header, index) => {
+      const x = margin + (index * colWidth);
+      doc.rect(x, startY, colWidth, rowHeight, 'F');
+      doc.text(header, x + 2, startY + 5);
+    });
+    
+    doc.setTextColor(0, 0, 0);
+    rows.forEach((row, rowIndex) => {
+      const y = startY + rowHeight + (rowIndex * rowHeight);
+      
+      row.forEach((cell, colIndex) => {
+        const x = margin + (colIndex * colWidth);
+        doc.rect(x, y, colWidth, rowHeight, 'S');
+        doc.text(cell || '-', x + 2, y + 5);
+      });
+    });
+  }
+
+  private gerarRodape(doc: any): void {
+    const pageHeight = doc.internal.pageSize.height;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.text(
+      `Gerado em: ${new Date().toLocaleString('pt-BR')}`, 
+      doc.internal.pageSize.width / 2, 
+      pageHeight - 15, 
+      { align: 'center' }
+    );
   }
 
   navigate(path: string) {
@@ -378,15 +471,4 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   setFiltroAvancado(campo: keyof typeof this.filtroAvancado, valor: any): void {
     (this.filtroAvancado as any)[campo] = valor;
   }
-  
-  setFiltroAlfabetizado(valor: boolean) { this.setFiltroAvancado('alfabetizado', valor); }
-  setFiltroEstudaAtualmente(valor: boolean) { this.setFiltroAvancado('estudaAtualmente', valor); }
-  setFiltroNivelSerie(valor: string) { this.setFiltroAvancado('nivelSerie', valor); }
-  setFiltroCursoFormacao(valor: string) { this.setFiltroAvancado('cursoFormacao', valor); }
-  setFiltroBeneficio(valor: string) { this.setFiltroAvancado('beneficio', valor); }
-  setFiltroSituacaoOcupacional(valor: string) { this.setFiltroAvancado('situacaoOcupacional', valor); }
-  setFiltroProblemaDeSaude(valor: string) { this.setFiltroAvancado('problemaDeSaude', valor); }
-  setFiltroAposentado(valor: string) { this.setFiltroAvancado('aposentado', valor); }
-  setFiltroMoradia(valor: string) { this.setFiltroAvancado('moradia', valor); }
-  setFiltroDeficiencia(valor: string) { this.setFiltroAvancado('deficiencia', valor); }
 }

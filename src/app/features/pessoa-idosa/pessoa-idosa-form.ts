@@ -8,9 +8,8 @@ import { PessoaIdosa, Dependente } from '../../models/pessoa-idosa.model';
 import { firstValueFrom } from 'rxjs';
 import { DependenteFormComponent } from '../../features/dependente/dependente-form';
 import { ModalComponent } from '../../shared/modal/modal';
-import { AnexoService } from './anexo.service';
-import { EnderecoFormComponent } from './endereco-form';
-import { AnexoFormComponent } from './anexo-form';
+import { AnexoService } from '../../shared';
+import { EnderecoFormComponent, AnexoFormComponent } from '../../shared';
 import { NotificationService } from '../../core/services/notification.service';
 import { cpfValidator, rgValidator, cepValidator, telefoneValidator, dataNascimentoValidator } from '../../shared/utils/validators.util';
 import { 
@@ -193,15 +192,13 @@ export class PessoaIdosaFormComponent implements OnInit {
             estado: pessoa.endereco?.estado ?? ''
           }
         });
-
-        // Força a aplicação dos valores dos campos de texto
+        
         this.form.get('observacao')?.setValue(pessoa.observacao ?? '');
         this.form.get('historicoFamiliarSocial')?.setValue(pessoa.historicoFamiliarSocial ?? '');
         
         this.dependentes = pessoa.dependentes || [];
         this.anexos = pessoa.anexos || [];
         
-        // Força a detecção de mudanças para atualizar a view
         setTimeout(() => {
           this.cdr.detectChanges();
         }, 0);

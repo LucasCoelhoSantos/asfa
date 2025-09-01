@@ -1,0 +1,389 @@
+<app-main-menu></app-main-menu>
+
+<div class="container mt-4">
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+    <p class="mt-3">Carregando dados da pessoa idosa...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Erro ao carregar dados</h4>
+    <p>Não foi possível carregar os dados da pessoa idosa. Verifique se o registro existe e tente novamente.</p>
+    <hr>
+    <button class="btn btn-primary" (click)="voltar()">Voltar à Lista</button>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div *ngIf="!loading && !error && pessoaIdosa">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="h2 mb-1">Visualizando <strong>{{ pessoaIdosa.nome }}</strong></h1>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outline-primary" (click)="exportarPdf()">
+          <i class="bi bi-file-pdf"></i> Exportar PDF
+        </button>
+        <button class="btn btn-primary" (click)="editar()">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+        <button class="btn btn-secondary" (click)="voltar()">
+          <i class="bi bi-arrow-left"></i> Voltar
+        </button>
+      </div>
+    </div>
+
+    <!-- Informações Básicas -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-person-circle"></i> Informações Básicas
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Nome Completo:</label>
+              <p>{{ pessoaIdosa.nome }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Data de Nascimento:</label>
+              <p>{{ pessoaIdosa.dataNascimento | date:'dd/MM/yyyy' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Estado Civil:</label>
+              <p>{{ pessoaIdosa.estadoCivil || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">CPF:</label>
+              <p>{{ pessoaIdosa.cpf | cpf }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">RG:</label>
+              <p>{{ pessoaIdosa.rg | rg }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Órgão Emissor:</label>
+              <p>{{ pessoaIdosa.orgaoEmissor || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Religião:</label>
+              <p>{{ pessoaIdosa.religiao || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Naturalidade:</label>
+              <p>{{ pessoaIdosa.naturalidade || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Telefone:</label>
+              <p>{{ pessoaIdosa.telefone | telefone }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Status:</label>
+              <span class="badge" [class]="pessoaIdosa.ativo ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Endereço -->
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-geo-alt"></i> Endereço
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">CEP:</label>
+              <p>{{ (pessoaIdosa.endereco?.cep | cep) || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Logradouro:</label>
+              <p>{{ pessoaIdosa.endereco?.logradouro || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Número:</label>
+              <p>{{ pessoaIdosa.endereco?.numero || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Bairro:</label>
+              <p>{{ pessoaIdosa.endereco?.bairro || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Cidade:</label>
+              <p>{{ pessoaIdosa.endereco?.cidade || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Estado:</label>
+              <p>{{ pessoaIdosa.endereco?.estado || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Tipo de Moradia:</label>
+              <p>{{ pessoaIdosa.endereco?.moradia || '-' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Composição Familiar -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-people"></i> Composição Familiar
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Alfabetizado:</label>
+              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.alfabetizado ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.composicaoFamiliar?.alfabetizado ? 'Sim' : 'Não' }}
+              </span>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Estuda Atualmente:</label>
+              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.estudaAtualmente ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.composicaoFamiliar?.estudaAtualmente ? 'Sim' : 'Não' }}
+              </span>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Nível/Série Atual Concluído:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.nivelSerieAtualConcluido || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Cursos Técnicos/Formação Profissional:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.cursosTecnicoFormacaoProfissional || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Situação Ocupacional:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.situacaoOcupacional || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Renda:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.renda || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Aposentado:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.aposentado || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Benefício:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.beneficio || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="fw-bold">Deficiência:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.deficiencia || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Problema de Saúde:</label>
+              <p>{{ pessoaIdosa.composicaoFamiliar?.problemaDeSaude || '-' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informações Adicionais de Saúde -->
+        <div class="row mt-3">
+          <div class="col-12">
+            <h6 class="fw-bold">Informações de Saúde:</h6>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="fw-bold">Faz Algum Tratamento:</label>
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento ? 'bg-success' : 'bg-danger'">
+                    {{ pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento ? 'Sim' : 'Não' }}
+                  </span>
+                </div>
+                <div class="mb-3" *ngIf="pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento">
+                  <label class="fw-bold">Onde Faz Tratamento:</label>
+                  <p>{{ pessoaIdosa.composicaoFamiliar?.fazAlgumTratamentoOnde || '-' }}</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="fw-bold">Usa Medicamento Controlado:</label>
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.usaMedicamentoControlado ? 'bg-warning' : 'bg-success'">
+                    {{ pessoaIdosa.composicaoFamiliar?.usaMedicamentoControlado ? 'Sim' : 'Não' }}
+                  </span>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Usa Recursos UBS Local:</label>
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.usaRecursosUbsLocal ? 'bg-success' : 'bg-danger'">
+                    {{ pessoaIdosa.composicaoFamiliar?.usaRecursosUbsLocal ? 'Sim' : 'Não' }}
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="fw-bold">Trabalho Pastoral ou Social:</label>
+                  <p>{{ pessoaIdosa.composicaoFamiliar?.trabalhoPastoralOuSocial || '-' }}</p>
+                </div>
+                <div class="mb-3">
+                  <label class="fw-bold">Atividade na Comunidade Sagrada Família:</label>
+                  <p>{{ pessoaIdosa.composicaoFamiliar?.atividadeNaComunidadeSagradaFamilia || '-' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependentes -->
+    <div class="card mb-4" *ngIf="pessoaIdosa.dependentes && pessoaIdosa.dependentes.length > 0">
+      <div class="card-header bg-success text-white">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-person-plus"></i> Dependentes ({{ pessoaIdosa.dependentes?.length || 0 }})
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row" *ngFor="let dependente of pessoaIdosa.dependentes || []; let i = index">
+          <div class="col-12">
+            <div class="border rounded p-3 mb-3">
+              <h6 class="fw-bold text-success">
+                <i class="bi bi-person"></i> Dependente {{ i + 1 }}: {{ dependente?.nome }}
+              </h6>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <label class="fw-bold">Data de Nascimento:</label>
+                    <p class="mb-1">{{ dependente.dataNascimento | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold">Parentesco:</label>
+                    <p class="mb-1">{{ dependente.parentesco || '-' }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold">CEINF:</label>
+                    <p class="mb-1">{{ dependente.ceinf || '-' }}</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <label class="fw-bold">Bairro CEINF:</label>
+                    <p class="mb-1">{{ dependente.ceinfBairro || '-' }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold">Programa Saúde Pastoral Criança:</label>
+                    <p class="mb-1">{{ dependente.programaSaudePastoralCrianca || '-' }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold">Local do Programa:</label>
+                    <p class="mb-1">{{ dependente.programaSaudePastoralCriancaLocal || '-' }}</p>
+                  </div>
+                  <div class="mb-2">
+                    <label class="fw-bold">Status:</label>
+                    <span class="badge" [class]="dependente.ativo ? 'bg-success' : 'bg-danger'">
+                      {{ dependente.ativo ? 'Ativo' : 'Inativo' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações Adicionais -->
+    <div class="card mb-4">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-info-circle"></i> Informações Adicionais
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="fw-bold">Prontuário de Saúde:</label>
+              <p>{{ pessoaIdosa.prontuarioSaude || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Aposentado Consegue Se Manter Com Sua Renda:</label>
+              <span class="badge" [class]="pessoaIdosa.aposentadoConsegueSeManterComSuaRenda ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.aposentadoConsegueSeManterComSuaRenda ? 'Sim' : 'Não' }}
+              </span>
+            </div>
+            <div class="mb-3" *ngIf="!pessoaIdosa.aposentadoConsegueSeManterComSuaRenda">
+              <label class="fw-bold">Como Complementa:</label>
+              <p>{{ pessoaIdosa.comoComplementa || '-' }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="fw-bold">Benefício:</label>
+              <p>{{ pessoaIdosa.beneficio || '-' }}</p>
+            </div>
+            <div class="mb-3">
+              <label class="fw-bold">Data de Cadastro:</label>
+              <p>{{ pessoaIdosa.dataCadastro | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="row mt-3" *ngIf="pessoaIdosa.observacao">
+          <div class="col-12">
+            <div class="mb-3">
+              <label class="fw-bold">Observações:</label>
+              <p class="border rounded p-3 bg-light">{{ pessoaIdosa.observacao }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Histórico Familiar e Social -->
+        <div class="row mt-3" *ngIf="pessoaIdosa.historicoFamiliarSocial">
+          <div class="col-12">
+            <div class="mb-3">
+              <label class="fw-bold">Histórico Familiar e Social:</label>
+              <p class="border rounded p-3 bg-light">{{ pessoaIdosa.historicoFamiliarSocial }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODO: Seção de Anexos -->
+    <div class="card mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-paperclip"></i> Anexos
+          <small class="text-muted">(Implementação Futura)</small>
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info" role="alert">
+          <i class="bi bi-info-circle"></i>
+          <strong>Funcionalidade em Desenvolvimento:</strong> A seção de anexos será implementada em uma versão futura.
+          <br>
+          <small>Esta seção incluirá: fotos de perfil, documentos (CPF, RG), comprovantes de endereço, cartão SUS, cadastro NIS e termo de autorização.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
