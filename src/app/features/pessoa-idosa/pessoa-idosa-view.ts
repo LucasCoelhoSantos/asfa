@@ -95,6 +95,7 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
       const doc = new jsPDF();
       this.gerarPdf(doc, autoTable, this.pessoaIdosa!);
       doc.save(`pessoa-idosa-${this.pessoaIdosa!.nome.replace(/\s+/g, '-')}.pdf`);
+      this.notificationService.showSuccess('PDF gerado com sucesso!');
     }).catch(() => {
       this.notificationService.showError('Erro ao gerar PDF. Verifique se as dependências estão instaladas.');
     });

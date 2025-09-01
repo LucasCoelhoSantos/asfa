@@ -261,6 +261,7 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
           const pessoasFiltradas = this.aplicarFiltrosAvancados(resultado.pessoas);
           this.gerarPdf(doc, autoTable, pessoasFiltradas, logoBase64);
           doc.save('pessoas-idosas.pdf');
+          this.notificationService.showSuccess('PDF gerado com sucesso!');
         });
       }).catch(() => {
         this.notificationService.showError('Erro ao carregar logo. PDF não foi gerado.');
