@@ -111,15 +111,20 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
       import('jspdf-autotable')
     ]).then(([{ default: jsPDF }, autoTable]) => {
       const doc = new jsPDF();
-      this.gerarPdf(doc, autoTable, this.pessoaIdosa!);
-      doc.save(`pessoa-idosa-${this.pessoaIdosa!.nome.replace(/\s+/g, '-')}.pdf`);
-      this.notificationService.showSuccess('PDF gerado com sucesso!');
+      this.gerarPdfComAnexosAsync(doc, autoTable, this.pessoaIdosa!)
+        .then(() => {
+          doc.save(`pessoa-idosa-${this.pessoaIdosa!.nome.replace(/\s+/g, '-')}.pdf`);
+          this.notificationService.showSuccess('PDF gerado com sucesso!');
+        })
+        .catch(() => {
+          this.notificationService.showError('Erro ao gerar PDF dos anexos.');
+        });
     }).catch(() => {
       this.notificationService.showError('Erro ao gerar PDF. Verifique se as dependências estão instaladas.');
     });
   }
 
-  private gerarPdf(doc: any, autoTable: any, pessoa: PessoaIdosa): void {
+  private async gerarPdfComAnexosAsync(doc: any, autoTable: any, pessoa: PessoaIdosa): Promise<void> {
     const margin = 20;
     let yPosition = margin;
 
@@ -142,8 +147,7 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
 
     yPosition = this.gerarSecaoObservacoes(doc, pessoa, margin, yPosition);
 
-    // TODO: Implementar seção de anexos
-    // yPosition = this.gerarSecaoAnexos(doc, pessoa.anexos, margin, yPosition);
+    await this.gerarSecaoAnexos(doc, pessoa.anexos || [], margin);
     
     this.gerarRodape(doc);
   }
@@ -364,6 +368,18 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     return yPosition;
   }
 
+  private async gerarSecaoAnexos(doc: any, anexos: any[], margin: number): Promise<void> {
+    if (!anexos || anexos.length === 0) return;
+
+    doc.addPage();
+    for (let index = 0; index < anexos.length; index++) {
+      const anexo = anexos[index];
+      this.renderAttachmentHeader(doc, anexo, margin);
+      await this.renderAttachmentContent(doc, anexo, margin);
+      if (index < anexos.length - 1) doc.addPage();
+    }
+  }
+
   private gerarRodape(doc: any): void {
     const pageHeight = doc.internal.pageSize.height;
     doc.setFontSize(8);
@@ -374,6 +390,117 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
       pageHeight - 15, 
       { align: 'center' }
     );
+  }
+
+  private renderAttachmentFallback(doc: any, anexo: any, x: number, y: number, width: number) {
+    const altura = 22;
+    doc.setDrawColor(200);
+    doc.setFillColor(245, 245, 245);
+    doc.rect(x, y, width, altura, 'FD');
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const nome = anexo?.nomeArquivo || this.extractFileName(anexo?.path) || 'arquivo';
+    const texto = anexo?.url ? `${nome} (clique para abrir)` : `${nome} (indisponível)`;
+    doc.text(texto, x + 6, y + 13);
+    if (anexo?.url) {
+      try {
+        const textWidth = Math.max(doc.getTextWidth(texto), 60);
+        doc.link(x + 6, y + 5, textWidth, 14, { url: anexo.url });
+      } catch {}
+    }
+  }
+
+  private async loadImageAsBase64(url: string): Promise<string> {
+    // 1) Tenta via fetch -> blob -> dataURL
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const blob = await resp.blob();
+      return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (_e) {
+      // 2) Fallback: carrega via Image com crossOrigin e renderiza em canvas
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0);
+            const result = canvas.toDataURL('image/png');
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = reject;
+        const withAlt = url.includes('alt=media') ? url : (url.includes('?') ? `${url}&alt=media` : `${url}?alt=media`);
+        img.src = withAlt;
+      });
+      return dataUrl;
+    }
+  }
+
+  private async getImageDimensions(dataUrl: string): Promise<{ width: number; height: number; }> {
+    return await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({ width: img.width, height: img.height });
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  private fitWithin(origW: number, origH: number, maxW: number, maxH: number): { width: number; height: number; } {
+    const ratio = Math.min(maxW / origW, maxH / origH);
+    const width = Math.max(10, Math.floor(origW * ratio));
+    const height = Math.max(10, Math.floor(origH * ratio));
+    return { width, height };
+  }
+
+  private renderAttachmentHeader(doc: any, anexo: any, margin: number): void {
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Anexo', margin, margin);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    const name = anexo?.nomeArquivo || this.extractFileName(anexo?.path) || 'arquivo';
+    const typeLabel = this.getTipoAnexoLabel(anexo?.tipoAnexo);
+    doc.text(`${typeLabel} - ${name}`, margin, margin + 8);
+  }
+
+  private async renderAttachmentContent(doc: any, anexo: any, margin: number): Promise<void> {
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2 - 14;
+
+    const kind = this.inferFileKind(anexo?.nomeArquivo, anexo?.path);
+    if (kind === 'image' && anexo?.url) {
+      try {
+        const dataUrl = await this.loadImageAsBase64(anexo.url);
+        const size = await this.getImageDimensions(dataUrl);
+        const fit = this.fitWithin(size.width, size.height, maxWidth, maxHeight);
+        const x = margin + (maxWidth - fit.width) / 2;
+        const y = margin + 14 + (maxHeight - fit.height) / 2;
+        doc.addImage(dataUrl, 'PNG', x, y, fit.width, fit.height);
+        return;
+      } catch {}
+    }
+
+    this.renderAttachmentFallback(doc, anexo, margin, margin + 16, maxWidth);
+  }
+
+  private extractFileName(path?: string): string | undefined {
+    if (!path) return undefined;
+    const parts = path.split('/');
+    return parts[parts.length - 1] || undefined;
   }
 
   navigate(path: string) {
