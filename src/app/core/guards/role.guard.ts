@@ -13,17 +13,12 @@ export const RoleGuard = (allowedRoles: UsuarioRole[]): CanActivateFn => {
       take(1),
       map(user => {
         if (!user) {
-          router.navigate(['/login']);
-          return false;
+          return router.createUrlTree(['/login']);
         }
-        
-        if (allowedRoles.includes(user.role)) {
-          return true;
-        } else {
-          router.navigate(['/pessoa-idosa']);
-          return false;
-        }
+        return allowedRoles.includes(user.role)
+          ? true
+          : router.createUrlTree(['/pessoa-idosa']);
       })
     );
   };
-}; 
+};

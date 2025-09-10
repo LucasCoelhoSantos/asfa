@@ -70,25 +70,6 @@ export class UsuarioListComponent {
     this.usuarioPendenteId = null;
   }
 
-  confirmarRemover(id: string) {
-    this.usuarioRemoverId = id;
-    this.showRemoveModal = true;
-  }
-
-  remover() {
-    if (this.usuarioRemoverId !== null) {
-      this.usuarioService.delete(this.usuarioRemoverId);
-      this.notifications.showSuccess('Usuário removido com sucesso.');
-    }
-    this.showRemoveModal = false;
-    this.usuarioRemoverId = null;
-  }
-
-  cancelarRemover() {
-    this.showRemoveModal = false;
-    this.usuarioRemoverId = null;
-  }
-
   getUserInitials(email: string): string {
     if (!email) return 'U';
     const parts = email.split('@')[0].split('.');

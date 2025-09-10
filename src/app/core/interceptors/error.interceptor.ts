@@ -1,5 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
+import { NotificationService } from '../services/notification.service';
 
 const ERROR_MESSAGES: Record<number, string> = {
   400: 'Dados inválidos. Verifique as informações.',
@@ -14,17 +16,17 @@ const ERROR_MESSAGES: Record<number, string> = {
 };
 
 export const ErrorInterceptor: HttpInterceptorFn = (request, next) => {
+  const notification = inject(NotificationService);
+
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMessage = 'Erro inesperado. Tente novamente.';
+      const errorMessage = error.error instanceof ErrorEvent
+        ? `Erro: ${error.error.message}`
+        : (ERROR_MESSAGES[error.status] || `Erro ${error.status}: ${error.message}`);
 
-      if (error.error instanceof ErrorEvent) {
-        errorMessage = `Erro: ${error.error.message}`;
-      } else {
-        errorMessage = ERROR_MESSAGES[error.status] || `Erro ${error.status}: ${error.message}`;
-      }
-      
-      return throwError(() => new Error(errorMessage));
+      notification.showError(errorMessage);
+      (error as any).friendlyMessage = errorMessage;
+      return throwError(() => error);
     })
   );
 }; 

@@ -35,6 +35,24 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
   pessoaIdosa: PessoaIdosa | null = null;
   loading = true;
   error = false;
+  private tipoAnexoLabels: Record<number, string> = {
+    1: 'Foto de Perfil',
+    2: 'CPF',
+    3: 'RG',
+    4: 'Comprovante de Endereço',
+    5: 'Cartão SUS',
+    6: 'NIS',
+    7: 'Termo de Autorização'
+  };
+  private tipoAnexoBadgeClass: Record<number, string> = {
+    1: 'bg-primary',
+    2: 'bg-info',
+    3: 'bg-info',
+    4: 'bg-secondary',
+    5: 'bg-success',
+    6: 'bg-warning text-dark',
+    7: 'bg-dark'
+  };
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -360,5 +378,32 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
 
   navigate(path: string) {
     this.router.navigate([path]);
+  }
+
+  trackByAnexo = (_: number, anexo: any) => anexo?.path || anexo?.nomeArquivo || _;
+
+  getTipoAnexoLabel(tipo: number | undefined): string {
+    if (typeof tipo !== 'number') return 'Documento';
+    return this.tipoAnexoLabels[tipo] || 'Documento';
+  }
+
+  getTipoAnexoBadgeClass(tipo: number | undefined): string {
+    if (typeof tipo !== 'number') return 'bg-secondary';
+    return this.tipoAnexoBadgeClass[tipo] || 'bg-secondary';
+  }
+
+  inferFileKind(nomeArquivo?: string, path?: string): 'image' | 'pdf' | 'other' {
+    const source = (nomeArquivo || path || '').toLowerCase();
+    if (!source) return 'other';
+    if (source.endsWith('.jpg') || source.endsWith('.jpeg') || source.endsWith('.png') || source.endsWith('.webp')) {
+      return 'image';
+    }
+    if (source.endsWith('.pdf')) return 'pdf';
+    return 'other';
+  }
+
+  abrirEmNovaAba(url?: string) {
+    if (!url) return;
+    window.open(url, '_blank');
   }
 }
