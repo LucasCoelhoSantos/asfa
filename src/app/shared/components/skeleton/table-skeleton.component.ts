@@ -83,4 +83,4 @@ export class TableSkeletonComponent {
   get rowsArray() {
     return Array.from({ length: this.rows }, (_, i) => i);
   }
-} 
+}

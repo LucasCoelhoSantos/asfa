@@ -60,4 +60,4 @@ export class SkeletonComponent {
   @Input() width: string = '100%';
   @Input() height: string = '1em';
   @Input() borderRadius: string = '4px';
-} 
+}

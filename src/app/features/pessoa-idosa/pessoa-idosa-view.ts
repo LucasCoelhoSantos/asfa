@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { PessoaIdosaService } from './pessoa-idosa.service';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
-import { MainMenuComponent } from '../../shared/main-menu/main-menu';
+import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
 import { NotificationService } from '../../core/services/notification.service';
 import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';

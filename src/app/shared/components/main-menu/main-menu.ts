@@ -1,15 +1,14 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-main-menu',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './main-menu.html',
-  //styleUrls: ['./main-menu.scss']
+  templateUrl: './main-menu.html'
 })
 export class MainMenuComponent {
   menuOpen = signal(false);

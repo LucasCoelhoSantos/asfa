@@ -1,11 +1,9 @@
-// Container principal
 .anexos-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-// Item individual do anexo
 .anexo-item {
   background: #ffffff;
   border: 2px solid #e9ecef;
@@ -19,7 +17,6 @@
     transform: translateY(-2px);
   }
   
-  // Cabeçalho do item
   .anexo-header {
     display: flex;
     justify-content: space-between;
@@ -61,7 +58,6 @@
     }
   }
   
-  // Área de upload
   .upload-area {
     display: flex;
     flex-direction: column;
@@ -136,7 +132,6 @@
       }
     }
     
-    // Ações do arquivo
     .file-actions {
       display: flex;
       gap: 0.75rem;
@@ -169,7 +164,7 @@
         color: white;
         
         &:hover {
-          background: #2e7d32; // Versão mais escura do success-color
+          background: #2e7d32;
         }
       }
       
@@ -178,13 +173,12 @@
         color: white;
         
         &:hover {
-          background: #c0392b; // Versão mais escura do danger-color
+          background: #c0392b;
         }
       }
     }
   }
   
-  // Informações do arquivo
   .file-details {
     margin-top: 1rem;
     padding: 1rem;
@@ -225,7 +219,6 @@
   }
 }
 
-// Estado vazio
 .anexo-item:not(.has-file) {
   .file-actions {
     display: none;
@@ -236,7 +229,6 @@
   }
 }
 
-// Responsividade
 @media (max-width: 768px) {
   .anexo-item {
     padding: 1rem;

@@ -3,27 +3,16 @@ import { CommonModule } from '@angular/common';
 import { PessoaIdosaService, FiltrosPessoaIdosa, PaginacaoResult } from './pessoa-idosa.service';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
 import { Router } from '@angular/router';
-import { MainMenuComponent } from '../../shared/main-menu/main-menu';
-import { TableSkeletonComponent } from '../../shared/skeleton/table-skeleton.component';
+import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
+import { TableSkeletonComponent } from '../../shared/components/skeleton/table-skeleton.component';
+import { ModalComponent } from '../../shared/components/modal/modal';
 import { NotificationService } from '../../core/services/notification.service';
 import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 import { CepPipe } from '../../shared/pipes/cep.pipe';
 import { RgPipe } from '../../shared/pipes/rg.pipe';
 import { MaskDirective } from '../../shared/directives/mask.directive';
-import { ModalComponent } from '../../shared/modal/modal';
-import { 
-  Beneficio, 
-  Renda, 
-  SituacaoOcupacional, 
-  Aposentado, 
-  Deficiencia, 
-  NivelSerieAtualConcluido, 
-  CursoTecnicoFormacaoProfissional, 
-  ProblemaDeSaude,
-  Moradia
-} from '../../models/enums';
-import { Observable, Subject, BehaviorSubject, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, takeUntil } from 'rxjs';
 import { 
   ESTADOS_CIVIS, 
   MORADIAS_OPTIONS,
@@ -42,8 +31,7 @@ const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
   selector: 'app-pessoa-idosa-list',
   standalone: true,
   imports: [CommonModule, MainMenuComponent, TableSkeletonComponent, CpfPipe, TelefonePipe, CepPipe, RgPipe, MaskDirective, ModalComponent],
-  templateUrl: './pessoa-idosa-list.html',
-  //styleUrls: ['./pessoa-idosa-list.scss']
+  templateUrl: './pessoa-idosa-list.html'
 })
 export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   private pessoaIdosaService = inject(PessoaIdosaService);

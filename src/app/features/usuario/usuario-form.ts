@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { AuthService } from '../../core/services/auth.service';
-import { MainMenuComponent } from '../../shared/main-menu/main-menu';
+import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ROLES_USUARIO_OPTIONS } from '../../shared/constants/app.constants';
@@ -12,8 +12,7 @@ import { ROLES_USUARIO_OPTIONS } from '../../shared/constants/app.constants';
   selector: 'app-usuario-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MainMenuComponent],
-  templateUrl: './usuario-form.html',
-  //styleUrls: ['./usuario-form.scss']
+  templateUrl: './usuario-form.html'
 })
 export class UsuarioFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -42,11 +41,9 @@ export class UsuarioFormComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // Verifica se está no modo de perfil (rota /perfil)
     this.isProfileMode = this.route.snapshot.url[0]?.path === 'perfil';
     
     if (this.isProfileMode) {
-      // Modo perfil: carrega dados do usuário atual
       this.editMode = true;
       this.loading = true;
       try {
@@ -58,7 +55,6 @@ export class UsuarioFormComponent implements OnInit {
             senha: ''
           });
         }
-        // No perfil, senha é opcional
         this.form.get('senha')?.clearValidators();
         this.form.get('senha')?.updateValueAndValidity();
       } catch (e) {
@@ -66,7 +62,6 @@ export class UsuarioFormComponent implements OnInit {
       }
       this.loading = false;
     } else {
-      // Modo administração: carrega usuário específico ou novo
       this.usuarioId = this.route.snapshot.paramMap.get('id');
       this.editMode = !!this.usuarioId;
       
@@ -102,7 +97,6 @@ export class UsuarioFormComponent implements OnInit {
     
     try {
       if (this.isProfileMode) {
-        // Modo perfil: usa updateSelf
         const updateData: any = { nome, email };
         if (senha && senha.trim()) {
           updateData.senha = senha;
@@ -110,11 +104,9 @@ export class UsuarioFormComponent implements OnInit {
         await this.usuarioService.updateSelf(updateData);
         this.router.navigate(['/pessoa-idosa']);
       } else if (this.editMode && this.usuarioId) {
-        // Modo administração: edição
         await this.usuarioService.update(this.usuarioId, { nome, email, role, ativo });
         this.router.navigate(['/usuario']);
       } else {
-        // Modo administração: criação
         await this.usuarioService.create({ nome, email, role, ativo: true }, senha);
         this.router.navigate(['/usuario']);
       }

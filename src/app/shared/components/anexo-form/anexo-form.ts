@@ -1,8 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TIPOS_ANEXO } from '../../constants/app.constants';
-import { ModalComponent } from '../../modal/modal';
-
+import { ModalComponent } from '../../components/modal/modal';
 import { Anexo } from '../../../models/pessoa-idosa.model';
 
 /**

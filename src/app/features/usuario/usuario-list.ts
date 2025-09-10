@@ -1,17 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../core/services/usuario.service';
-import { MainMenuComponent } from '../../shared/main-menu/main-menu';
+import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
 import { Router } from '@angular/router';
-import { ModalComponent } from '../../shared/modal/modal';
+import { ModalComponent } from '../../shared/components/modal/modal';
 import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
   imports: [CommonModule, MainMenuComponent, ModalComponent],
-  templateUrl: './usuario-list.html',
-  //styleUrls: ['./usuario-list.scss']
+  templateUrl: './usuario-list.html'
 })
 export class UsuarioListComponent {
   private usuarioService = inject(UsuarioService);

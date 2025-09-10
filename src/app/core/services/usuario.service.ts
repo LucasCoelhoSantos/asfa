@@ -44,7 +44,6 @@ export class UsuarioService {
     await updateDoc(docRef, usuario);
   }
 
-  // Apenas ADMIN
   async update(id: string, usuario: Partial<Usuario>): Promise<void> {
     const docRef = doc(this.firestore, 'usuarios', id);
     await updateDoc(docRef, {
@@ -54,7 +53,6 @@ export class UsuarioService {
     });
   }
 
-  // Apenas ADMIN
   async setAtivo(id: string, ativo: boolean): Promise<void> {
     const docRef = doc(this.firestore, 'usuarios', id);
     await updateDoc(docRef, {

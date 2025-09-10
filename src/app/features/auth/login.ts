@@ -55,4 +55,8 @@ export class LoginComponent {
     }
     return 'Erro ao fazer login. Tente novamente.';
   }
+
+  goHome() {
+    this.router.navigate(['/']);
+  }
 }
