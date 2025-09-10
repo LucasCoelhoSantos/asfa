@@ -1,217 +1,381 @@
 <app-main-menu></app-main-menu>
 
-<div class="pessoas-list-container">
-  <div class="header-section">
-    <div class="header-content">
-      <h1>Pessoas Idosas Cadastradas</h1>
-      <p class="subtitle">Gerencie as pessoas idosas cadastradas no sistema</p>
-    </div>
-    <button class="button-add" (click)="navigate('/pessoa-idosa/novo')">
-      Adicionar Pessoa
-    </button>
-  </div>
-  
-  <div class="filtros-container">
-    <div class="filtros-header">
-      <h3>Filtros de Pesquisa</h3>
-    </div>
-    
-    <!-- Filtros Básicos -->
-    <div class="filtros-section">
-      <h4>Informações Básicas</h4>
-      <div class="filtros-grid">
-        <div class="filtro-item">
-          <label>Nome</label>
-          <input placeholder="Nome" (input)="setFiltroNome(getValue($event))" />
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+      <!-- Header Section -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h2 mb-1 fw-bold text-primary">Pessoas Idosas Cadastradas</h1>
+          <p class="text-muted mb-0">Gerencie as pessoas idosas cadastradas no sistema</p>
         </div>
-        <div class="filtro-item">
-          <label>Data Nasc.</label>
-          <input type="date" (input)="setFiltroDataNascimento(getValue($event))" />
-        </div>
-        <div class="filtro-item">
-          <label>Estado Civil</label>
-          <select (change)="setFiltroEstadoCivil(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>CPF</label>
-          <input placeholder="000.000.000-00" appMask="cpf" (input)="setFiltroCpf(getValue($event))" />
-        </div>
-        <div class="filtro-item">
-          <label>RG</label>
-          <input placeholder="00.000.000-0" appMask="rg" (input)="setFiltroRg(getValue($event))" />
-        </div>
-        <div class="filtro-item">
-          <label>CEP</label>
-          <input placeholder="00000-000" appMask="cep" (input)="setFiltroCep(getValue($event))" />
-        </div>
+        <button class="btn btn-primary btn-lg" (click)="navigate('/pessoa-idosa/novo')">
+          <i class="bi bi-plus-circle me-2"></i>
+          Adicionar Pessoa
+        </button>
       </div>
-    </div>
-    
-    <!-- Filtros Avançados -->
-    <div class="filtros-section">
-      <h4>Informações Adicionais</h4>
-      <div class="filtros-grid">
-        <div class="filtro-item checkbox-item">
-          <label>
-            <input type="checkbox" (change)="setFiltroAlfabetizado(getChecked($event))" />
-            <span>Alfabetizado</span>
-          </label>
+      
+      <!-- Filtros Container -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light">
+          <h3 class="h5 mb-0 fw-semibold">Filtros de Pesquisa</h3>
         </div>
-        <div class="filtro-item checkbox-item">
-          <label>
-            <input type="checkbox" (change)="setFiltroEstudaAtualmente(getChecked($event))" />
-            <span>Estuda Atualmente</span>
-          </label>
-        </div>
-        <div class="filtro-item">
-          <label>Nível/Série Atual</label>
-          <select (change)="setFiltroNivelSerie(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let nivel of niveisSerie" [value]="nivel">{{ nivel }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Curso Técnico/Formação</label>
-          <select (change)="setFiltroCursoFormacao(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let curso of cursosFormacao" [value]="curso">{{ curso }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Benefício</label>
-          <select (change)="setFiltroBeneficio(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let beneficio of beneficios" [value]="beneficio">{{ beneficio }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Situação Ocupacional</label>
-          <select (change)="setFiltroSituacaoOcupacional(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let situacao of situacoesOcupacionais" [value]="situacao">{{ situacao }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Problema de Saúde</label>
-          <select (change)="setFiltroProblemaDeSaude(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let problema of problemasSaude" [value]="problema">{{ problema }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Aposentado</label>
-          <select (change)="setFiltroAposentado(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let aposentado of aposentados" [value]="aposentado">{{ aposentado }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Moradia</label>
-          <select (change)="setFiltroMoradia(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let moradia of moradias" [value]="moradia">{{ moradia }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Deficiência</label>
-          <select (change)="setFiltroDeficiencia(getValue($event))">
-            <option value="">Todos</option>
-            <option *ngFor="let deficiencia of deficiencias" [value]="deficiencia">{{ deficiencia }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Controles de Exibição -->
-    <div class="filtros-section">
-      <h4>Controles</h4>
-      <div class="controles-grid">
-        <div class="filtro-item">
-          <label>Status</label>
-          <select (change)="setFiltroAtivo(getValue($event))">
-            <option value="">Todos</option>
-            <option value="ativo">Ativo</option>
-            <option value="inativo">Inativo</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <label>Itens por Página</label>
-          <select (change)="setPageSize(+getValue($event))">
-            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
-          </select>
-        </div>
-        <div class="filtro-item">
-          <button (click)="exportarPdf()" class="exportar-pdf">Exportar PDF</button>
+        
+        <div class="card-body">
+          <!-- Filtros Básicos -->
+          <div class="mb-4">
+            <h4 class="h6 fw-semibold text-primary mb-3">Informações Básicas</h4>
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Nome</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Nome" 
+                  (input)="setFiltro('nome', getValue($event))" 
+                />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Data de Nascimento</label>
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  (input)="setFiltro('dataNascimento', getValue($event))" 
+                />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Estado Civil</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltro('estadoCivil', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">CPF</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="000.000.000-00" 
+                  appMask="cpf" 
+                  (input)="setFiltro('cpf', getValue($event))" 
+                />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">RG</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="00.000.000-0" 
+                  appMask="rg" 
+                  (input)="setFiltro('rg', getValue($event))" 
+                />
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">CEP</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="00000-000" 
+                  appMask="cep" 
+                  (input)="setFiltro('cep', getValue($event))" 
+                />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Filtros Avançados -->
+          <div class="mb-4">
+            <h4 class="h6 fw-semibold text-primary mb-3">Informações Adicionais</h4>
+            <div class="row g-3">
+              <div class="col-12 col-md-6 col-lg-3">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="filtroAlfabetizado" 
+                    (change)="setFiltroAvancado('alfabetizado', getChecked($event))" 
+                  />
+                  <label class="form-check-label" for="filtroAlfabetizado">
+                    Alfabetizado
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="filtroEstudaAtualmente" 
+                    (change)="setFiltroAvancado('estudaAtualmente', getChecked($event))" 
+                  />
+                  <label class="form-check-label" for="filtroEstudaAtualmente">
+                    Estuda Atualmente
+                  </label>
+                </div>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Nível/Série Atual</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('nivelSerie', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let nivel of niveisSerie" [value]="nivel">{{ nivel }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Curso Técnico/Formação</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('cursoFormacao', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let curso of cursosFormacao" [value]="curso">{{ curso }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Benefício</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('beneficio', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let beneficio of beneficios" [value]="beneficio">{{ beneficio }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Situação Ocupacional</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('situacaoOcupacional', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let situacao of situacoesOcupacionais" [value]="situacao">{{ situacao }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Problema de Saúde</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('problemaDeSaude', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let problema of problemasSaude" [value]="problema">{{ problema }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Aposentado</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('aposentado', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let aposentado of aposentados" [value]="aposentado">{{ aposentado }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Moradia</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('moradia', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let moradia of moradias" [value]="moradia">{{ moradia }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Deficiência</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltroAvancado('deficiencia', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option *ngFor="let deficiencia of deficiencias" [value]="deficiencia">{{ deficiencia }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Controles de Exibição -->
+          <div class="mb-4">
+            <h4 class="h6 fw-semibold text-primary mb-3">Controles</h4>
+            <div class="row g-3 align-items-end">
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Status</label>
+                <select 
+                  class="form-select" 
+                  (change)="setFiltro('ativo', getValue($event))"
+                >
+                  <option value="">Todos</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 col-lg-3">
+                <label class="form-label fw-semibold">Itens por Página</label>
+                <select 
+                  class="form-select" 
+                  (change)="setPageSize(+getValue($event))"
+                >
+                  <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="d-flex gap-4 mt-3">
+              <button (click)="buscar()" class="btn btn-primary w-100">
+                <i class="bi bi-search me-2"></i>
+                Buscar
+              </button>
+              <button (click)="limparFiltros()" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-trash me-2"></i>
+                Limpar Filtros
+              </button>
+              <button (click)="exportarPdf()" class="btn btn-outline-success w-100">
+                <i class="bi bi-file-pdf me-2"></i>
+                Exportar PDF
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       
-      <!-- Botões de Ação -->
-      <div class="acoes-filtros">
-        <button (click)="buscar()" class="btn-buscar">
-          <span class="icon">🔍</span>
-          Buscar
-        </button>
-        <button (click)="limparFiltros()" class="btn-limpar">
-          <span class="icon">🗑️</span>
-          Limpar Filtros
-        </button>
-      </div>
+      <!-- Content Section -->
+      <ng-container *ngIf="loading$ | async; else content">
+        <app-table-skeleton [rows]="5"></app-table-skeleton>
+      </ng-container>
+      
+      <ng-template #content>
+        <ng-container *ngIf="pessoas$ | async as resultado">
+          <div *ngIf="resultado.pessoas.length > 0; else semRegistros">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>RG</th>
+                    <th>CEP</th>
+                    <th>Data de Nascimento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let pessoa of resultado.pessoas">
+                    <td class="fw-semibold">{{ pessoa.nome }}</td>
+                    <td>{{ pessoa.cpf | cpf }}</td>
+                    <td>{{ pessoa.telefone | telefone }}</td>
+                    <td>{{ pessoa.rg | rg }}</td>
+                    <td>{{ pessoa?.endereco?.cep | cep }}</td>
+                    <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                    <td>
+                      <span class="badge" [class.bg-success]="pessoa.ativo" [class.bg-secondary]="!pessoa.ativo">
+                        {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <button
+                          class="btn btn-outline-info btn-sm"
+                          (click)="visualizar(pessoa.id)"
+                          title="Visualizar"
+                        >
+                          <i class="bi bi-eye"></i>
+                          Visuailzar
+                        </button>
+                        <button 
+                          class="btn btn-outline-primary btn-sm" 
+                          (click)="editar(pessoa.id)"
+                          title="Editar"
+                        >
+                          <i class="bi bi-pencil"></i>
+                          Editar
+                        </button>
+                        <button 
+                          *ngIf="pessoa.ativo" 
+                          class="btn btn-outline-warning btn-sm" 
+                          (click)="openInativarConfirm(pessoa.id)"
+                          title="Inativar"
+                        >
+                          <i class="bi bi-pause-circle"></i>
+                          Inativar
+                        </button>
+                        <button 
+                          *ngIf="!pessoa.ativo" 
+                          class="btn btn-outline-success btn-sm" 
+                          (click)="openAtivarConfirm(pessoa.id)"
+                          title="Ativar"
+                        >
+                          <i class="bi bi-play-circle"></i>
+                          Ativar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Paginação -->
+            <div class="d-flex justify-content-center mt-4" *ngIf="pageSize > 0 && resultado.total > pageSize">
+              <nav aria-label="Navegação de páginas">
+                <ul class="pagination">
+                  <li class="page-item" [class.disabled]="pageIndex === 0">
+                    <button class="page-link" (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">
+                      Anterior
+                    </button>
+                  </li>
+                  <li class="page-item active">
+                    <span class="page-link">Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
+                  </li>
+                  <li class="page-item" [class.disabled]="!resultado.hasMore">
+                    <button class="page-link" (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">
+                      Próxima
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </ng-container>
+        
+        <ng-template #semRegistros>
+          <div class="text-center py-5">
+            <div class="display-1 text-muted mb-3">
+              <i class="bi bi-people-fill" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="h4 text-muted mb-2">Nenhuma pessoa idosa cadastrada</h3>
+            <p class="text-muted">Comece adicionando a primeira pessoa idosa ao sistema</p>
+          </div>
+        </ng-template>
+      </ng-template>
     </div>
   </div>
-  
-  <ng-container *ngIf="loading$ | async; else content">
-    <app-table-skeleton [rows]="5"></app-table-skeleton>
-  </ng-container>
-  
-  <ng-template #content>
-    <ng-container *ngIf="pessoas$ | async as resultado">
-      <table *ngIf="resultado.pessoas.length > 0; else semRegistros">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Telefone</th>
-            <th>RG</th>
-            <th>CEP</th>
-            <th>Data de Nascimento</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let pessoa of resultado.pessoas">
-            <td>{{ pessoa.nome }}</td>
-            <td>{{ pessoa.cpf | cpf }}</td>
-            <td>{{ pessoa.telefone | telefone }}</td>
-            <td>{{ pessoa.rg | rg }}</td>
-            <td>{{ pessoa?.endereco?.cep | cep }}</td>
-            <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
-            <td>
-              <span [class.ativo]="pessoa.ativo" [class.inativo]="!pessoa.ativo">
-                {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
-              </span>
-            </td>
-            <td>
-              <button (click)="editar(pessoa.id)">Editar</button>
-              <button *ngIf="pessoa.ativo" (click)="inativar(pessoa.id)">Inativar</button>
-              <button *ngIf="!pessoa.ativo" (click)="ativar(pessoa.id)">Ativar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="paginacao" *ngIf="resultado.pessoas.length > 0">
-        <ng-container *ngIf="pageSize > 0 && resultado.total > pageSize">
-          <button (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">Anterior</button>
-          <span>Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
-          <button (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">Próxima</button>
-        </ng-container>
-      </div>
-    </ng-container>
-    <ng-template #semRegistros>
-      <div class="sem-registros">Nenhuma pessoa idosa cadastrada.</div>
-    </ng-template>
-  </ng-template>
 </div>
+
+<!-- Modais de confirmação -->
+<app-modal 
+  [show]="showInativarModal" 
+  [title]="'Inativar registro'" 
+  [message]="'Tem certeza que deseja inativar este registro?'"
+  [confirmText]="'Inativar'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmInativar()"
+  (cancel)="cancelInativar()"
+></app-modal>
+
+<app-modal 
+  [show]="showAtivarModal" 
+  [title]="'Ativar registro'" 
+  [message]="'Tem certeza que deseja ativar este registro?'"
+  [confirmText]="'Ativar'"
+  [cancelText]="'Cancelar'"
+  (confirm)="confirmAtivar()"
+  (cancel)="cancelAtivar()"
+></app-modal>

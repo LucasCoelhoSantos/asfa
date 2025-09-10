@@ -1,10 +1,20 @@
-<div class="modal-overlay" *ngIf="show">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <h3 id="modalTitle">{{ title }}</h3>
-    <p>{{ message }}</p>
-    <div class="modal-actions">
-      <button type="button" (click)="onConfirm()">{{ confirmText }}</button>
-      <button type="button" (click)="onCancel()">{{ cancelText }}</button>
+<ng-container>
+  <div class="modal fade" [class.show]="show" [class.d-block]="show" [style.display]="show ? 'block' : 'none'" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h3 class="modal-title fs-5 fw-semibold" id="modalTitle">{{ title }}</h3>
+          <button type="button" class="btn-close" (click)="onCancel()" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <p class="text-muted mb-0">{{ message }}</p>
+        </div>
+        <div class="modal-footer border-0 pt-3">
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">{{ cancelText }}</button>
+          <button type="button" class="btn btn-primary" (click)="onConfirm()">{{ confirmText }}</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+  <div class="modal-backdrop fade show" *ngIf="show"></div>
+</ng-container>

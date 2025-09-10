@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, collectionData, doc, docData, updateDoc, deleteDoc, setDoc } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { Usuario } from '../../models/usuario.model';
+import { Auth, createUserWithEmailAndPassword, updateEmail, User } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
+import { Usuario } from '../../models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -20,31 +20,47 @@ export class UsuarioService {
   }
 
   async create(usuario: Omit<Usuario, 'id'>, senha: string): Promise<void> {
-    // Cria usuário no Auth
     const cred = await createUserWithEmailAndPassword(this.auth, usuario.email, senha);
-    // Salva dados extras no Firestore
+    
     await setDoc(doc(this.firestore, 'usuarios', cred.user.uid), {
       nome: usuario.nome,
       email: usuario.email,
       role: usuario.role,
-      ativo: usuario.ativo
+      ativo: usuario.ativo,
+      createdAt: new Date(),
+      createdBy: this.auth.currentUser?.uid
     });
   }
 
-  async update(id: string, usuario: Partial<Usuario>): Promise<void> {
-    const docRef = doc(this.firestore, 'usuarios', id);
+  async updateSelf(usuario: Partial<Usuario>): Promise<void> {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) return;
+
+    if (usuario.email && currentUser.email !== usuario.email) {
+      await updateEmail(currentUser, usuario.email);
+    }
+
+    const docRef = doc(this.firestore, 'usuarios', currentUser.uid);
     await updateDoc(docRef, usuario);
   }
 
-  async delete(id: string): Promise<void> {
-    // Remove do Firestore
+  // Apenas ADMIN
+  async update(id: string, usuario: Partial<Usuario>): Promise<void> {
     const docRef = doc(this.firestore, 'usuarios', id);
-    await deleteDoc(docRef);
-    // Opcional: remover do Auth (requer autenticação do usuário)
+    await updateDoc(docRef, {
+      ...usuario,
+      updatedAt: new Date(),
+      updatedBy: this.auth.currentUser?.uid
+    });
   }
 
+  // Apenas ADMIN
   async setAtivo(id: string, ativo: boolean): Promise<void> {
     const docRef = doc(this.firestore, 'usuarios', id);
-    await updateDoc(docRef, { ativo });
+    await updateDoc(docRef, {
+      ativo,
+      updatedAt: new Date(),
+      updatedBy: this.auth.currentUser?.uid
+    });
   }
 }

@@ -1,141 +1,181 @@
 <app-main-menu></app-main-menu>
 
-<div class="usuario-form-container">
-  <!-- Header Section -->
-  <div class="form-header">
-    <h2>{{ editMode ? 'Editar' : 'Cadastrar' }} Usuário</h2>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-8">
+      <div class="card border-0 shadow-sm">
+        <!-- Header Section -->
+        <div class="card-header bg-primary text-white">
+          <h2 class="card-title mb-0 fs-4 fw-semibold">
+            <i class="bi bi-person-circle me-2" *ngIf="isProfileMode"></i>
+            {{ isProfileMode ? 'Meu Perfil' : (editMode ? 'Editar' : 'Cadastrar') + ' Usuário' }}
+          </h2>
+        </div>
+
+        <!-- Form Content -->
+        <div class="card-body p-4">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- Informações Básicas -->
+            <div class="mb-4">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Informações Básicas</h3>
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="nome" class="form-label fw-semibold">Nome Completo</label>
+                  <input 
+                    id="nome" 
+                    type="text"
+                    class="form-control" 
+                    formControlName="nome" 
+                    placeholder="Digite o nome completo"
+                    required
+                    [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
+                    Nome é obrigatório
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="email" class="form-label fw-semibold">E-mail</label>
+                  <input 
+                    id="email" 
+                    type="email"
+                    class="form-control" 
+                    formControlName="email" 
+                    placeholder="exemplo@email.com"
+                    required
+                    [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+                  />
+                  <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                    <span *ngIf="form.get('email')?.errors?.['required']">E-mail é obrigatório</span>
+                    <span *ngIf="form.get('email')?.errors?.['email']">E-mail inválido</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Segurança -->
+            <div class="mb-4" *ngIf="!editMode || isProfileMode">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">
+                  {{ isProfileMode ? 'Alterar Senha' : 'Segurança' }}
+                </h3>
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="senha" class="form-label fw-semibold">
+                    {{ isProfileMode ? 'Nova Senha' : 'Senha' }}
+                  </label>
+                  <div class="input-group">
+                    <input 
+                      id="senha" 
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control" 
+                      formControlName="senha" 
+                      [placeholder]="isProfileMode ? 'Deixe em branco para manter a atual' : 'Mínimo 6 caracteres'"
+                      [required]="!isProfileMode"
+                      [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
+                    />
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary"
+                      (click)="togglePassword()"
+                      [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+                    >
+                      <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+                    </button>
+                  </div>
+                  <div class="form-text" *ngIf="isProfileMode">
+                    Deixe em branco se não quiser alterar a senha
+                  </div>
+                  <div class="invalid-feedback" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
+                    <span *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória</span>
+                    <span *ngIf="form.get('senha')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <!-- Campo vazio para manter o grid equilibrado -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Configurações -->
+            <div class="mb-4" *ngIf="!isProfileMode">
+              <div class="border-bottom border-2 border-primary pb-2 mb-3">
+                <h3 class="fs-5 fw-semibold text-primary mb-0">Configurações</h3>
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label for="role" class="form-label fw-semibold">Papel</label>
+                  <select 
+                    id="role" 
+                    class="form-select" 
+                    formControlName="role"
+                    required
+                    [class.is-invalid]="form.get('role')?.invalid && form.get('role')?.touched"
+                  >
+                    <option value="">Selecione o papel</option>
+                    <option *ngFor="let r of roles" [value]="r">
+                      {{ r === 'admin' ? 'Administrador' : 'Usuário' }}
+                    </option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="form.get('role')?.invalid && form.get('role')?.touched">
+                    Papel é obrigatório
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6" *ngIf="editMode">
+                  <label class="form-label fw-semibold">Status</label>
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      id="ativo" 
+                      formControlName="ativo"
+                    />
+                    <label class="form-check-label fw-semibold" for="ativo">
+                      Usuário ativo
+                    </label>
+                    <div class="form-text">
+                      Usuários inativos não podem acessar o sistema
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex gap-2 justify-content-between pt-4 border-top">
+              <button type="button" class="btn btn-outline-secondary" (click)="voltarParaLista()">
+                <i class="bi bi-arrow-left me-1"></i>
+                Voltar
+              </button>
+              <button type="submit" class="btn btn-primary px-4" [disabled]="form.invalid || loading">
+                <span *ngIf="!loading">
+                  <i class="bi bi-check-circle me-1"></i>
+                  Salvar
+                </span>
+                <span *ngIf="loading" class="d-flex align-items-center">
+                  <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                  </div>
+                  Salvando...
+                </span>
+              </button>
+            </div>
+
+            <!-- Feedback Messages -->
+            <div class="mt-3" *ngIf="error">
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <!-- Form Content -->
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <!-- Informações Básicas -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Informações Básicas</h3>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="nome">Nome Completo</label>
-          <input 
-            id="nome" 
-            type="text"
-            formControlName="nome" 
-            placeholder="Digite o nome completo"
-            required
-          />
-          <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
-            Nome é obrigatório
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email">E-mail</label>
-          <input 
-            id="email" 
-            type="email"
-            formControlName="email" 
-            placeholder="exemplo@email.com"
-            required
-          />
-          <div class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-            <span *ngIf="form.get('email')?.errors?.['required']">E-mail é obrigatório</span>
-            <span *ngIf="form.get('email')?.errors?.['email']">E-mail inválido</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Segurança -->
-    <div class="form-section" *ngIf="!editMode">
-      <div class="section-header">
-        <h3>Segurança</h3>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="senha">Senha</label>
-          <div class="password-input-group">
-            <input 
-              id="senha" 
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="senha" 
-              placeholder="Mínimo 6 caracteres"
-              required
-            />
-            <button 
-              type="button" 
-              class="password-toggle"
-              (click)="togglePassword()"
-              [title]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-            >
-              <span class="icon">{{ showPassword ? '👁️' : '👁️‍🗨️' }}</span>
-            </button>
-          </div>
-          <div class="error" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
-            <span *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória</span>
-            <span *ngIf="form.get('senha')?.errors?.['minlength']">Mínimo 6 caracteres</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <!-- Campo vazio para manter o grid equilibrado -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Configurações -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>Configurações</h3>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="role">Papel</label>
-          <select 
-            id="role" 
-            formControlName="role"
-            required
-          >
-            <option value="">Selecione o papel</option>
-            <option *ngFor="let r of roles" [value]="r">
-              {{ r === 'admin' ? 'Administrador' : 'Usuário' }}
-            </option>
-          </select>
-          <div class="error" *ngIf="form.get('role')?.invalid && form.get('role')?.touched">
-            Papel é obrigatório
-          </div>
-        </div>
-
-        <div class="form-group" *ngIf="editMode">
-          <label for="ativo">Status</label>
-          <div class="checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="ativo" />
-              <span class="checkmark"></span>
-              <span class="label-text">Usuário ativo</span>
-            </label>
-            <p class="checkbox-description">
-              Usuários inativos não podem acessar o sistema
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="voltarParaLista()">
-        Voltar
-      </button>
-      <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
-        {{ loading ? 'Salvando...' : 'Salvar' }}
-      </button>
-    </div>
-
-    <!-- Feedback Messages -->
-    <div class="feedback-messages" *ngIf="error">
-      <div class="error">
-        {{ error }}
-      </div>
-    </div>
-  </form>
 </div>

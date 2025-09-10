@@ -9,7 +9,7 @@ import { filter } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './main-menu.html',
-  styleUrls: ['./main-menu.scss']
+  //styleUrls: ['./main-menu.scss']
 })
 export class MainMenuComponent {
   menuOpen = signal(false);
@@ -22,7 +22,6 @@ export class MainMenuComponent {
   userWithRole$ = this.authService.userWithRole$;
 
   constructor() {
-    // Monitorar mudanças de rota
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {

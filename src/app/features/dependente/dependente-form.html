@@ -1,34 +1,54 @@
-<div class="dependente-form-container">
-  <div class="form-header">
-    <h3>{{ dependente ? 'Editar' : 'Novo' }} Dependente</h3>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-primary text-white">
+    <h3 class="card-title mb-0 fs-5 fw-semibold">{{ dependente ? 'Editar' : 'Novo' }} Dependente</h3>
   </div>
   
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-sections">
+  <div class="card-body p-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <!-- Informações Básicas -->
-      <div class="form-section">
-        <h4>Informações Básicas</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="nome">Nome Completo *</label>
-            <input id="nome" formControlName="nome" placeholder="Digite o nome completo" />
-            <div class="error" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
+      <div class="mb-4">
+        <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Básicas</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label for="nome" class="form-label fw-semibold">Nome Completo *</label>
+            <input 
+              id="nome" 
+              type="text"
+              class="form-control" 
+              formControlName="nome" 
+              placeholder="Digite o nome completo"
+              [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
               Nome obrigatório.
             </div>
           </div>
           
-          <div class="form-group">
-            <label for="dataNascimento">Data de Nascimento *</label>
-            <input id="dataNascimento" type="date" formControlName="dataNascimento" />
-            <div class="error" *ngIf="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
+          <div class="col-12 col-md-6">
+            <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento *</label>
+            <input 
+              id="dataNascimento" 
+              type="date" 
+              class="form-control" 
+              formControlName="dataNascimento"
+              [class.is-invalid]="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
               Data obrigatória.
             </div>
           </div>
           
-          <div class="form-group">
-            <label for="parentesco">Parentesco *</label>
-            <input id="parentesco" formControlName="parentesco" placeholder="Ex: Filho, Neto, etc." />
-            <div class="error" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">
+          <div class="col-12 col-md-6">
+            <label for="parentesco" class="form-label fw-semibold">Parentesco *</label>
+            <input 
+              id="parentesco" 
+              type="text"
+              class="form-control" 
+              formControlName="parentesco" 
+              placeholder="Ex: Filho, Neto, etc."
+              [class.is-invalid]="form.get('parentesco')?.invalid && form.get('parentesco')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">
               Campo obrigatório.
             </div>
           </div>
@@ -36,60 +56,88 @@
       </div>
       
       <!-- Informações Educacionais -->
-      <div class="form-section">
-        <h4>Informações Educacionais</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="ceinf">CEINF</label>
-            <input id="ceinf" formControlName="ceinf" placeholder="Nome da instituição" />
+      <div class="mb-4">
+        <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Educacionais</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label for="ceinf" class="form-label fw-semibold">CEINF</label>
+            <input 
+              id="ceinf" 
+              type="text"
+              class="form-control" 
+              formControlName="ceinf" 
+              placeholder="Nome da instituição" 
+            />
           </div>
           
-          <div class="form-group">
-            <label for="ceinfBairro">CEINF Bairro</label>
-            <input id="ceinfBairro" formControlName="ceinfBairro" placeholder="Bairro da instituição" />
+          <div class="col-12 col-md-6">
+            <label for="ceinfBairro" class="form-label fw-semibold">CEINF Bairro</label>
+            <input 
+              id="ceinfBairro" 
+              type="text"
+              class="form-control" 
+              formControlName="ceinfBairro" 
+              placeholder="Bairro da instituição" 
+            />
           </div>
         </div>
       </div>
       
       <!-- Programa de Saúde -->
-      <div class="form-section">
-        <h4>Programa de Saúde</h4>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="programaSaudePastoralCrianca">Programa Saúde Pastoral Criança</label>
-            <input id="programaSaudePastoralCrianca" formControlName="programaSaudePastoralCrianca" placeholder="Nome do programa" />
+      <div class="mb-4">
+        <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Programa de Saúde</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label for="programaSaudePastoralCrianca" class="form-label fw-semibold">Programa Saúde Pastoral Criança</label>
+            <input 
+              id="programaSaudePastoralCrianca" 
+              type="text"
+              class="form-control" 
+              formControlName="programaSaudePastoralCrianca" 
+              placeholder="Nome do programa" 
+            />
           </div>
           
-          <div class="form-group">
-            <label for="programaSaudePastoralCriancaLocal">Local do Programa</label>
-            <input id="programaSaudePastoralCriancaLocal" formControlName="programaSaudePastoralCriancaLocal" placeholder="Endereço/local" />
+          <div class="col-12 col-md-6">
+            <label for="programaSaudePastoralCriancaLocal" class="form-label fw-semibold">Local do Programa</label>
+            <input 
+              id="programaSaudePastoralCriancaLocal" 
+              type="text"
+              class="form-control" 
+              formControlName="programaSaudePastoralCriancaLocal" 
+              placeholder="Endereço/local" 
+            />
           </div>
         </div>
       </div>
       
       <!-- Status -->
-      <div class="form-section">
-        <h4>Status</h4>
-        <div class="checkbox-group">
-          <label class="checkbox-label">
-            <input type="checkbox" formControlName="ativo" />
-            <span class="checkmark"></span>
-            <span class="label-text">Ativo</span>
+      <div class="mb-4">
+        <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Status</h4>
+        <div class="form-check">
+          <input 
+            class="form-check-input" 
+            type="checkbox" 
+            id="ativo" 
+            formControlName="ativo"
+          />
+          <label class="form-check-label fw-semibold" for="ativo">
+            Ativo
           </label>
         </div>
       </div>
-    </div>
-    
-    <!-- Ações do formulário -->
-    <div class="form-actions">
-      <button type="button" class="btn-secondary" (click)="onCancel()">
-        <span class="icon">✕</span>
-        Cancelar
-      </button>
-      <button type="submit" class="btn-primary" [disabled]="form.invalid">
-        <span class="icon">💾</span>
-        Salvar
-      </button>
-    </div>
-  </form>
+      
+      <!-- Ações do formulário -->
+      <div class="d-flex gap-2 justify-content-end pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+          <i class="bi bi-x-circle me-1"></i>
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          <i class="bi bi-check-circle me-1"></i>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -1,24 +1,25 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TIPOS_ANEXO } from '../../shared/constants/app.constants';
+import { TIPOS_ANEXO } from '../../constants/app.constants';
+import { ModalComponent } from '../../modal/modal';
 
-export interface Anexo {
-  tipoAnexo: number;
-  url: string;
-  path: string;
-  nomeArquivo?: string;
-}
+import { Anexo } from '../../../models/pessoa-idosa.model';
 
+/**
+ * Componente reutilizável para upload e gerenciamento de anexos
+ * Suporta múltiplos tipos de anexo com validação
+ * Usado em: Pessoa Idosa Form, potencialmente outros formulários
+ */
 @Component({
   selector: 'app-anexo-form',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ModalComponent],
   template: `
     <div class="anexos-container">
       <div *ngFor="let tipo of tiposAnexo" class="anexo-item" [class.has-file]="hasFile(tipo.id)">
         <div class="anexo-header">
           <h4 class="anexo-title">
-            <span class="icon">{{ tipo.icon }}</span>
+            <i [class]="tipo.icon"></i>
             {{ tipo.label }}
           </h4>
           <span class="anexo-status" [class.uploaded]="hasFile(tipo.id)" [class.not-uploaded]="!hasFile(tipo.id)">
@@ -31,18 +32,18 @@ export interface Anexo {
             <div class="file-input-wrapper">
               <input type="file" accept=".png,.jpeg,.jpg,.pdf" (change)="onFileSelected($event, tipo.id)" />
               <button type="button" class="file-input-button">
-                <span class="icon">📁</span>
+                <i class="bi bi-folder2-open"></i>
                 {{ hasFile(tipo.id) ? 'Alterar Arquivo' : 'Selecionar Arquivo' }}
               </button>
             </div>
             
             <div class="file-info" [class.has-file]="hasFile(tipo.id)">
               <ng-container *ngIf="hasFile(tipo.id); else noFile">
-                <span class="icon">✅</span>
+                <i class="bi bi-check-circle-fill text-success"></i>
                 {{ getFileName(tipo.id) }}
               </ng-container>
               <ng-template #noFile>
-                <span class="icon">📄</span>
+                <i class="bi bi-file-earmark"></i>
                 Nenhum arquivo selecionado
               </ng-template>
             </div>
@@ -50,11 +51,11 @@ export interface Anexo {
           
           <div class="file-actions" *ngIf="hasFile(tipo.id)">
             <button type="button" class="btn-download" (click)="baixar(getAnexo(tipo.id)!)" title="Baixar arquivo">
-              <span class="icon">⬇️</span>
+              <i class="bi bi-download"></i>
               Baixar
             </button>
-            <button type="button" class="btn-remove" (click)="remover(getAnexo(tipo.id)!)" title="Remover arquivo">
-              <span class="icon">🗑️</span>
+            <button type="button" class="btn-remove" (click)="openRemoveConfirm(getAnexo(tipo.id)!)" title="Remover arquivo">
+              <i class="bi bi-trash3"></i>
               Remover
             </button>
           </div>
@@ -62,22 +63,32 @@ export interface Anexo {
         
         <div class="file-details" *ngIf="hasFile(tipo.id)">
           <div class="file-name">
-            <span class="icon">📎</span>
+            <i class="bi bi-paperclip"></i>
             {{ getFileName(tipo.id) }}
           </div>
           <div class="file-meta">
             <div class="meta-item">
-              <span class="icon">📅</span>
+              <i class="bi bi-calendar-check"></i>
               Enviado
             </div>
             <div class="meta-item">
-              <span class="icon">📏</span>
+              <i class="bi bi-check2-circle"></i>
               Arquivo válido
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <app-modal 
+      [show]="showRemoveModal" 
+      [title]="'Remover arquivo'" 
+      [message]="'Tem certeza que deseja remover este arquivo?'"
+      [confirmText]="'Remover'"
+      [cancelText]="'Cancelar'"
+      (confirm)="confirmRemove()"
+      (cancel)="cancelRemove()"
+    ></app-modal>
   `,
   styleUrls: ['./anexo-form.scss']
 })
@@ -89,11 +100,11 @@ export class AnexoFormComponent implements OnInit {
 
   tiposAnexo = TIPOS_ANEXO;
   
-  // Estado local para arquivos selecionados temporariamente
   private selectedFiles: Map<number, { file: File, name: string }> = new Map();
+  showRemoveModal = false;
+  private anexoPendenteRemocao: Anexo | null = null;
 
   ngOnInit() {
-    // Inicializar arquivos selecionados com base nos anexos existentes
     this.anexos.forEach(anexo => {
       if (anexo.nomeArquivo) {
         this.selectedFiles.set(anexo.tipoAnexo, {
@@ -136,39 +147,45 @@ export class AnexoFormComponent implements OnInit {
         return;
       }
       
-      // Adicionar ao estado local para feedback imediato
       this.selectedFiles.set(tipoAnexo, {
         file: file,
         name: file.name
       });
       
-      // Emitir evento para o componente pai
       this.upload.emit({ tipoAnexo, file });
     }
   }
 
-  remover(anexo: Anexo) {
-    if (confirm('Tem certeza que deseja remover este arquivo?')) {
-      // Remover do estado local
-      this.selectedFiles.delete(anexo.tipoAnexo);
-      this.removerAnexo.emit(anexo);
-    }
+  openRemoveConfirm(anexo: Anexo) {
+    this.anexoPendenteRemocao = anexo;
+    this.showRemoveModal = true;
+  }
+
+  cancelRemove() {
+    this.anexoPendenteRemocao = null;
+    this.showRemoveModal = false;
+  }
+
+  confirmRemove() {
+    if (!this.anexoPendenteRemocao) return;
+    this.selectedFiles.delete(this.anexoPendenteRemocao.tipoAnexo);
+    this.removerAnexo.emit(this.anexoPendenteRemocao);
+    this.anexoPendenteRemocao = null;
+    this.showRemoveModal = false;
   }
 
   baixar(anexo: Anexo) {
     this.baixarAnexo.emit(anexo);
   }
 
-  // Método público para limpar o estado local de um arquivo específico
   clearSelectedFile(tipoAnexo: number) {
     this.selectedFiles.delete(tipoAnexo);
   }
 
-  // Método público para atualizar o estado local quando um anexo é processado
   updateSelectedFile(tipoAnexo: number, nomeArquivo: string) {
     this.selectedFiles.set(tipoAnexo, {
       file: new File([], nomeArquivo),
       name: nomeArquivo
     });
   }
-} 
+}

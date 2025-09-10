@@ -1,18 +1,3 @@
-// Variáveis de cores
-$primary-color: #1976d2;
-$primary-light: #42a5f5;
-$success-color: #388e3c;
-$danger-color: #e74c3c;
-$warning-color: #ff9800;
-$background-color: #f8f9fa;
-$card-background: #ffffff;
-$text-primary: #2c3e50;
-$text-secondary: #6c757d;
-$border-color: #dee2e6;
-$border-light: #e9ecef;
-$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
-$shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
-
 // Container principal
 .anexos-container {
   display: flex;
@@ -22,15 +7,15 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
 
 // Item individual do anexo
 .anexo-item {
-  background: $card-background;
-  border: 2px solid $border-light;
+  background: #ffffff;
+  border: 2px solid #e9ecef;
   border-radius: 12px;
   padding: 1.5rem;
   transition: all 0.3s ease;
   
   &:hover {
-    border-color: $primary-light;
-    box-shadow: $shadow-medium;
+    border-color: #42a5f5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
   }
   
@@ -41,13 +26,21 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid #e9ecef;
     
     .anexo-title {
-      color: $text-primary;
+      color: #2c3e50;
       font-size: 1.1rem;
       font-weight: 600;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      i {
+        font-size: 1.2rem;
+        color: #1976d2;
+      }
     }
     
     .anexo-status {
@@ -58,12 +51,12 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
       
       &.uploaded {
         background: rgba(56, 142, 60, 0.1);
-        color: $success-color;
+        color: #388e3c;
       }
       
       &.not-uploaded {
         background: rgba(108, 117, 125, 0.1);
-        color: $text-secondary;
+        color: #6c757d;
       }
     }
   }
@@ -93,7 +86,7 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .file-input-button {
-          background: $primary-color;
+          background: #1976d2;
           color: white;
           border: none;
           border-radius: 8px;
@@ -109,12 +102,12 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
           justify-content: center;
           
           &:hover {
-            background: $primary-light;
+            background: #42a5f5;
             transform: translateY(-1px);
-            box-shadow: $shadow-light;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           }
           
-          .icon {
+          i {
             font-size: 1rem;
           }
         }
@@ -123,10 +116,10 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
       .file-info {
         flex: 1;
         padding: 0.875rem;
-        background: $background-color;
-        border: 1px solid $border-color;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
         border-radius: 8px;
-        color: $text-secondary;
+        color: #6c757d;
         font-size: 0.9rem;
         text-align: center;
         min-height: 48px;
@@ -136,8 +129,8 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
         
         &.has-file {
           background: rgba(56, 142, 60, 0.1);
-          border-color: $success-color;
-          color: $success-color;
+          border-color: #388e3c;
+          color: #388e3c;
           font-weight: 500;
         }
       }
@@ -163,29 +156,29 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
         
         &:hover {
           transform: translateY(-1px);
-          box-shadow: $shadow-light;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        .icon {
+        i {
           font-size: 0.9rem;
         }
       }
       
       .btn-download {
-        background: $success-color;
+        background: #388e3c;
         color: white;
         
         &:hover {
-          background: darken($success-color, 10%);
+          background: #2e7d32; // Versão mais escura do success-color
         }
       }
       
       .btn-remove {
-        background: $danger-color;
+        background: #e74c3c;
         color: white;
         
         &:hover {
-          background: darken($danger-color, 10%);
+          background: #c0392b; // Versão mais escura do danger-color
         }
       }
     }
@@ -195,12 +188,12 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
   .file-details {
     margin-top: 1rem;
     padding: 1rem;
-    background: $background-color;
+    background: #f8f9fa;
     border-radius: 8px;
-    border: 1px solid $border-light;
+    border: 1px solid #e9ecef;
     
     .file-name {
-      color: $primary-color;
+      color: #1976d2;
       font-weight: 600;
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
@@ -208,13 +201,13 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
       align-items: center;
       gap: 0.5rem;
       
-      .icon {
+      i {
         font-size: 1rem;
       }
     }
     
     .file-meta {
-      color: $text-secondary;
+      color: #6c757d;
       font-size: 0.85rem;
       display: flex;
       gap: 1rem;
@@ -224,7 +217,7 @@ $shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
         align-items: center;
         gap: 0.25rem;
         
-        .icon {
+        i {
           font-size: 0.8rem;
         }
       }

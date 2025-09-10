@@ -6,50 +6,49 @@ import imageCompression from 'browser-image-compression';
 export class AnexoService {
   private storage = inject(Storage);
 
-  /**
-   * Faz upload de um anexo para o Storage, retorna a URL e o caminho salvo
-   * Aceita apenas .png, .jpeg, .pdf
-   */
-  async uploadAnexo(pessoaId: string, tipoAnexo: number,file: File): Promise<{ url: string, path: string }> {
-    if (!this.isFileAllowed(file)) {
-      throw new Error('Tipo de arquivo não permitido.');
-    }
-    file = await this.comprimirArquivo(file);
-    const safeFileName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
-    const path = `pessoas-idosas/${pessoaId}/anexos/tipo/${tipoAnexo}_${Date.now()}_${safeFileName}`;
+  async uploadAnexo(pessoaId: string, tipoAnexo: number, file: File): Promise<{ url: string, path: string }> {
+    this.validateFile(file);
+    
+    const processedFile = await this.comprimirArquivo(file);
+    const path = this.generateStoragePath(pessoaId, tipoAnexo, processedFile);
     const storageRef = ref(this.storage, path);
-    await uploadBytes(storageRef, file);
+    
+    await uploadBytes(storageRef, processedFile);
     const url = await getDownloadURL(storageRef);
+    
     return { url, path };
   }
 
-  /**
-   * Retorna a URL de download de um anexo
-   */
+  private validateFile(file: File): void {
+    if (!this.isFileAllowed(file)) {
+      throw new Error('Tipo de arquivo não permitido.');
+    }
+  }
+
+  private generateStoragePath(pessoaId: string, tipoAnexo: number, file: File): string {
+    const safeFileName = this.sanitizeFileName(file.name);
+    return `pessoas-idosas/${pessoaId}/anexos/tipo/${tipoAnexo}_${Date.now()}_${safeFileName}`;
+  }
+
+  private sanitizeFileName(fileName: string): string {
+    return fileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+  }
+
   getDownloadUrl(path: string): Promise<string> {
     const storageRef = ref(this.storage, path);
     return getDownloadURL(storageRef);
   }
 
-  /**
-   * Remove um anexo do Storage
-   */
   deleteAnexo(path: string): Promise<void> {
     const storageRef = ref(this.storage, path);
     return deleteObject(storageRef);
   }
 
-  /**
-   * Verifica se o arquivo é permitido
-   */
   isFileAllowed(file: File): boolean {
     const allowed = ['image/png', 'image/jpeg', 'application/pdf'];
     return allowed.includes(file.type);
   }
 
-  /**
-   * (Stub) Comprime o arquivo se for imagem. Implementação futura.
-   */
   private async comprimirArquivo(file: File): Promise<File> {
     if (!file.type.startsWith('image/')) {
       return file;

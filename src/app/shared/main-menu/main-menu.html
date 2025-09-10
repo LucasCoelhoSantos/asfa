@@ -1,101 +1,137 @@
-<nav class="main-menu">
-  <!-- Menu Desktop -->
-  <div class="menu-desktop">
-    <div class="menu-left">
-      <div class="brand-section">
-        <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-        <div class="brand-info">
-          <span class="project-name">ASFA</span>
-          <span class="project-subtitle">Associação Católica Sagrada Família</span>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <!-- Menu Desktop -->
+    <div class="d-none d-lg-flex w-100 align-items-center">
+      <div class="d-flex align-items-center me-4">
+        <div class="brand-section d-flex align-items-center">
+          <img src="asfa-logo.png" alt="Logo ASFA" class="logo me-3" style="width: 40px; height: 40px;" />
+          <div class="brand-info">
+            <span class="project-name fw-bold fs-5 text-white">ASFA</span>
+            <span class="project-subtitle d-block text-white small">Associação Católica Sagrada Família</span>
+          </div>
         </div>
       </div>
       
-      <div class="nav-links">
-        <a class="nav-link" 
+      <div class="nav-links flex-grow-1 d-flex justify-content-center">
+        <a class="nav-link text-white px-3 py-2 rounded" 
            [class.active]="isActiveRoute('/pessoa-idosa')"
-           (click)="navigate('/pessoa-idosa')">
-          <span class="icon">👥</span>
+           [class.bg-white]="isActiveRoute('/pessoa-idosa')"
+           [class.text-primary]="isActiveRoute('/pessoa-idosa')"
+           (click)="navigate('/pessoa-idosa')"
+           style="cursor: pointer; text-decoration: none;">
+          <i class="bi bi-people me-2"></i>
           Pessoas Idosas
         </a>
         <ng-container *ngIf="userWithRole$ | async as user">
-          <a class="nav-link" 
+          <a class="nav-link text-white px-3 py-2 rounded ms-2" 
              *ngIf="user.role === 'admin'"
              [class.active]="isActiveRoute('/usuario')"
-             (click)="navigate('/usuario')">
-            <span class="icon">👤</span>
+             [class.bg-white]="isActiveRoute('/usuario')"
+             [class.text-primary]="isActiveRoute('/usuario')"
+             (click)="navigate('/usuario')"
+             style="cursor: pointer; text-decoration: none;">
+            <i class="bi bi-person me-2"></i>
             Usuários
           </a>
         </ng-container>
       </div>
-    </div>
-    
-    <div class="menu-right" *ngIf="user$ | async as user">
-      <div class="user-section">
-        <div class="user-info">
-          <div class="user-avatar">
-            <span class="avatar-text">{{ getUserInitials(user.email) }}</span>
-          </div>
-          <div class="user-details">
-            <span class="user-name">{{ getUserDisplayName(user.email) }}</span>
-            <span class="user-email">{{ user.email || 'Email não disponível' }}</span>
-          </div>
+      
+      <div class="user-section d-flex align-items-center" *ngIf="user$ | async as user">
+        <div class="dropdown">
+          <button class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center" 
+                  type="button" 
+                  id="userDropdown" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false">
+            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+              <span class="fw-semibold small">{{ getUserInitials(user.email) }}</span>
+            </div>
+            <div class="d-none d-md-block text-start">
+              <div class="text-white fw-semibold small">{{ getUserDisplayName(user.email) }}</div>
+              <div class="text-white-50 small">{{ user.email || 'Email não disponível' }}</div>
+            </div>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li>
+              <a class="dropdown-item" (click)="navigate('/perfil')">
+                <i class="bi bi-person me-2"></i>
+                Meu Perfil
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" (click)="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Sair
+              </a>
+            </li>
+          </ul>
         </div>
-        <button class="logout-btn" (click)="logout()" title="Sair do sistema">
-          <span class="logout-text">Sair</span>
-        </button>
       </div>
     </div>
-  </div>
-  
-  <!-- Menu Mobile -->
-  <div class="menu-mobile">
-    <div class="mobile-header">
-      <div class="brand-section">
-        <img src="asfa-logo.png" alt="Logo ASFA" class="logo" />
-        <div class="brand-info">
-          <span class="project-name">ASFA</span>
-        </div>
-      </div>
-      <button class="hamburger" (click)="toggleMenu()" [class.active]="menuOpen()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
     
-    <div class="mobile-menu-overlay" [class.open]="menuOpen()" (click)="closeMenu()"></div>
-    <div class="mobile-menu-items" [class.open]="menuOpen()">
-      <div class="mobile-user-section" *ngIf="user$ | async as user">
-        <div class="user-info">
-          <div class="user-avatar">
-            <span class="avatar-text">{{ getUserInitials(user.email) }}</span>
-          </div>
-          <div class="user-details">
-            <span class="user-name">{{ getUserDisplayName(user.email) }}</span>
-            <span class="user-email">{{ user.email || 'Email não disponível' }}</span>
+    <!-- Menu Mobile -->
+    <div class="d-lg-none w-100">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="brand-section d-flex align-items-center">
+          <img src="asfa-logo.png" alt="Logo ASFA" class="logo me-2" style="width: 35px; height: 35px;" />
+          <div class="brand-info">
+            <span class="project-name fw-bold text-white">ASFA</span>
           </div>
         </div>
-        <button class="logout-btn" (click)="logout()">
-          Sair
+        <button class="navbar-toggler border-0" type="button" (click)="toggleMenu()" [class.collapsed]="!menuOpen()" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
       </div>
       
-      <div class="mobile-nav-links">
-        <a class="nav-link" 
-           [class.active]="isActiveRoute('/pessoa-idosa')"
-           (click)="navigate('/pessoa-idosa')">
-          <span class="icon">👥</span>
-          Pessoas Idosas
-        </a>
-        <ng-container *ngIf="userWithRole$ | async as user">
-          <a class="nav-link" 
-             *ngIf="user.role === 'admin'"
-             [class.active]="isActiveRoute('/usuario')"
-             (click)="navigate('/usuario')">
-            <span class="icon">👤</span>
-            Usuários
-          </a>
-        </ng-container>
+      <div class="collapse" [class.show]="menuOpen()" id="mobileMenu">
+        <div class="pt-3 border-top border-white-25">
+          <div class="mobile-user-section mb-3 pb-3 border-bottom border-white-25" *ngIf="user$ | async as user">
+            <div class="user-info d-flex align-items-center mb-3">
+              <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <span class="fw-semibold">{{ getUserInitials(user.email) }}</span>
+              </div>
+              <div>
+                <div class="text-white fw-semibold">{{ getUserDisplayName(user.email) }}</div>
+                <div class="text-white-50 small">{{ user.email || 'Email não disponível' }}</div>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-light btn-sm" (click)="navigate('/perfil')">
+                <i class="bi bi-person me-2"></i>
+                Meu Perfil
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Sair
+              </button>
+            </div>
+          </div>
+          
+          <div class="mobile-nav-links">
+            <a class="nav-link text-white-50 py-2 px-3 rounded" 
+               [class.active]="isActiveRoute('/pessoa-idosa')"
+               [class.bg-white]="isActiveRoute('/pessoa-idosa')"
+               [class.text-primary]="isActiveRoute('/pessoa-idosa')"
+               (click)="navigate('/pessoa-idosa')"
+               style="cursor: pointer; text-decoration: none;">
+              <i class="bi bi-people me-2"></i>
+              Pessoas Idosas
+            </a>
+            <ng-container *ngIf="userWithRole$ | async as user">
+              <a class="nav-link text-white-50 py-2 px-3 rounded mt-2" 
+                 *ngIf="user.role === 'admin'"
+                 [class.active]="isActiveRoute('/usuario')"
+                 [class.bg-white]="isActiveRoute('/usuario')"
+                 [class.text-primary]="isActiveRoute('/usuario')"
+                 (click)="navigate('/usuario')"
+                 style="cursor: pointer; text-decoration: none;">
+                <i class="bi bi-person me-2"></i>
+                Usuários
+              </a>
+            </ng-container>
+          </div>
+        </div>
       </div>
     </div>
   </div>
