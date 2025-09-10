@@ -36,10 +36,6 @@ export class PessoaIdosaService {
   }
 
   getById(id: string): Observable<PessoaIdosa | undefined> {
-    if (this.cache.has(id)) {
-      return from(Promise.resolve(this.cache.get(id)));
-    }
-
     const docRef = doc(this.firestore, this.collectionName, id);
     return docData(docRef).pipe(
       map(doc => {

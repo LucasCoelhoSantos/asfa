@@ -23,7 +23,7 @@
 
 ## Technologies Used
 
-### Frondend
+### Frontend
 - **Angular 20.1.0** - Core Framework
 - **TypeScript 5.8.2** - Programming Language
 - **Bootstrap 5.3.8** - CSS Framework

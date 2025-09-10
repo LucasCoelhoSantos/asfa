@@ -110,35 +110,35 @@
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">CEP:</label>
-              <p>{{ (pessoaIdosa.endereco?.cep | cep) || '-' }}</p>
+              <p>{{ (pessoaIdosa.endereco.cep | cep) || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Logradouro:</label>
-              <p>{{ pessoaIdosa.endereco?.logradouro || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.logradouro || '-' }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">Número:</label>
-              <p>{{ pessoaIdosa.endereco?.numero || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.numero || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Bairro:</label>
-              <p>{{ pessoaIdosa.endereco?.bairro || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.bairro || '-' }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">Cidade:</label>
-              <p>{{ pessoaIdosa.endereco?.cidade || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.cidade || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Estado:</label>
-              <p>{{ pessoaIdosa.endereco?.estado || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.estado || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Tipo de Moradia:</label>
-              <p>{{ pessoaIdosa.endereco?.moradia || '-' }}</p>
+              <p>{{ pessoaIdosa.endereco.moradia || '-' }}</p>
             </div>
           </div>
         </div>
@@ -157,51 +157,51 @@
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">Alfabetizado:</label>
-              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.alfabetizado ? 'bg-success' : 'bg-danger'">
-                {{ pessoaIdosa.composicaoFamiliar?.alfabetizado ? 'Sim' : 'Não' }}
+              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar.alfabetizado ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.composicaoFamiliar.alfabetizado ? 'Sim' : 'Não' }}
               </span>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Estuda Atualmente:</label>
-              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.estudaAtualmente ? 'bg-success' : 'bg-danger'">
-                {{ pessoaIdosa.composicaoFamiliar?.estudaAtualmente ? 'Sim' : 'Não' }}
+              <span class="badge" [class]="pessoaIdosa.composicaoFamiliar.estudaAtualmente ? 'bg-success' : 'bg-danger'">
+                {{ pessoaIdosa.composicaoFamiliar.estudaAtualmente ? 'Sim' : 'Não' }}
               </span>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Nível/Série Atual Concluído:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.nivelSerieAtualConcluido || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.nivelSerieAtualConcluido || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Cursos Técnicos/Formação Profissional:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.cursosTecnicoFormacaoProfissional || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.cursosTecnicoFormacaoProfissional || '-' }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">Situação Ocupacional:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.situacaoOcupacional || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.situacaoOcupacional || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Renda:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.renda || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.renda || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Aposentado:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.aposentado || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.aposentado || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Benefício:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.beneficio || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.beneficio || '-' }}</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label class="fw-bold">Deficiência:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.deficiencia || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.deficiencia || '-' }}</p>
             </div>
             <div class="mb-3">
               <label class="fw-bold">Problema de Saúde:</label>
-              <p>{{ pessoaIdosa.composicaoFamiliar?.problemaDeSaude || '-' }}</p>
+              <p>{{ pessoaIdosa.composicaoFamiliar.problemaDeSaude || '-' }}</p>
             </div>
           </div>
         </div>
@@ -214,37 +214,37 @@
               <div class="col-md-4">
                 <div class="mb-3">
                   <label class="fw-bold">Faz Algum Tratamento:</label>
-                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento ? 'bg-success' : 'bg-danger'">
-                    {{ pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento ? 'Sim' : 'Não' }}
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar.fazAlgumTratamento ? 'bg-success' : 'bg-danger'">
+                    {{ pessoaIdosa.composicaoFamiliar.fazAlgumTratamento ? 'Sim' : 'Não' }}
                   </span>
                 </div>
                 <div class="mb-3" *ngIf="pessoaIdosa.composicaoFamiliar?.fazAlgumTratamento">
                   <label class="fw-bold">Onde Faz Tratamento:</label>
-                  <p>{{ pessoaIdosa.composicaoFamiliar?.fazAlgumTratamentoOnde || '-' }}</p>
+                  <p>{{ pessoaIdosa.composicaoFamiliar.fazAlgumTratamentoOnde || '-' }}</p>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="mb-3">
                   <label class="fw-bold">Usa Medicamento Controlado:</label>
-                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.usaMedicamentoControlado ? 'bg-warning' : 'bg-success'">
-                    {{ pessoaIdosa.composicaoFamiliar?.usaMedicamentoControlado ? 'Sim' : 'Não' }}
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar.usaMedicamentoControlado ? 'bg-warning' : 'bg-success'">
+                    {{ pessoaIdosa.composicaoFamiliar.usaMedicamentoControlado ? 'Sim' : 'Não' }}
                   </span>
                 </div>
                 <div class="mb-3">
                   <label class="fw-bold">Usa Recursos UBS Local:</label>
-                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar?.usaRecursosUbsLocal ? 'bg-success' : 'bg-danger'">
-                    {{ pessoaIdosa.composicaoFamiliar?.usaRecursosUbsLocal ? 'Sim' : 'Não' }}
+                  <span class="badge" [class]="pessoaIdosa.composicaoFamiliar.usaRecursosUbsLocal ? 'bg-success' : 'bg-danger'">
+                    {{ pessoaIdosa.composicaoFamiliar.usaRecursosUbsLocal ? 'Sim' : 'Não' }}
                   </span>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="mb-3">
                   <label class="fw-bold">Trabalho Pastoral ou Social:</label>
-                  <p>{{ pessoaIdosa.composicaoFamiliar?.trabalhoPastoralOuSocial || '-' }}</p>
+                  <p>{{ pessoaIdosa.composicaoFamiliar.trabalhoPastoralOuSocial || '-' }}</p>
                 </div>
                 <div class="mb-3">
                   <label class="fw-bold">Atividade na Comunidade Sagrada Família:</label>
-                  <p>{{ pessoaIdosa.composicaoFamiliar?.atividadeNaComunidadeSagradaFamilia || '-' }}</p>
+                  <p>{{ pessoaIdosa.composicaoFamiliar.atividadeNaComunidadeSagradaFamilia || '-' }}</p>
                 </div>
               </div>
             </div>
@@ -257,7 +257,7 @@
     <div class="card mb-4" *ngIf="pessoaIdosa.dependentes && pessoaIdosa.dependentes.length > 0">
       <div class="card-header bg-success text-white">
         <h5 class="card-title mb-0">
-          <i class="bi bi-person-plus"></i> Dependentes ({{ pessoaIdosa.dependentes?.length || 0 }})
+          <i class="bi bi-person-plus"></i> Dependentes ({{ pessoaIdosa.dependentes.length || 0 }})
         </h5>
       </div>
       <div class="card-body">
@@ -368,20 +368,54 @@
       </div>
     </div>
 
-    <!-- TODO: Seção de Anexos -->
+    <!-- Anexos -->
     <div class="card mb-4">
-      <div class="card-header bg-warning text-dark">
+      <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">
           <i class="bi bi-paperclip"></i> Anexos
-          <small class="text-muted">(Implementação Futura)</small>
         </h5>
+        <small class="text-muted">{{ pessoaIdosa.anexos.length || 0 }}/6</small>
       </div>
       <div class="card-body">
-        <div class="alert alert-info" role="alert">
-          <i class="bi bi-info-circle"></i>
-          <strong>Funcionalidade em Desenvolvimento:</strong> A seção de anexos será implementada em uma versão futura.
-          <br>
-          <small>Esta seção incluirá: fotos de perfil, documentos (CPF, RG), comprovantes de endereço, cartão SUS, cadastro NIS e termo de autorização.</small>
+        <div *ngIf="!pessoaIdosa.anexos || pessoaIdosa.anexos.length === 0" class="text-center py-4">
+          <i class="bi bi-inbox fs-1 text-muted"></i>
+          <p class="mt-2 mb-0 text-muted">Nenhum anexo cadastrado.</p>
+        </div>
+
+        <div class="row g-3" *ngIf="pessoaIdosa.anexos && pessoaIdosa.anexos.length > 0">
+          <div class="col-12 col-sm-6 col-lg-4" *ngFor="let anexo of pessoaIdosa.anexos; trackBy: trackByAnexo">
+            <div class="card h-100 shadow-sm">
+              <div class="position-relative" style="aspect-ratio: 1/1; overflow: hidden;">
+                <img *ngIf="inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'image'"
+                     [src]="anexo.url"
+                     [alt]="anexo.nomeArquivo || 'Imagem'"
+                     loading="lazy"
+                     class="w-100 h-100"
+                     style="object-fit: cover;">
+                <div *ngIf="inferFileKind(anexo?.nomeArquivo, anexo?.path) !== 'image'"
+                     class="d-flex align-items-center justify-content-center bg-light w-100 h-100"
+                     style="min-height: 160px;">
+                  <i class="bi" [ngClass]="{
+                    'bi-file-earmark-pdf text-danger': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'pdf',
+                    'bi-file-earmark text-secondary': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'other'
+                  }" style="font-size: 3rem;"></i>
+                </div>
+                <span class="badge position-absolute top-0 start-0 m-2" [class]="getTipoAnexoBadgeClass(anexo?.tipoAnexo)">
+                  {{ getTipoAnexoLabel(anexo?.tipoAnexo) }}
+                </span>
+              </div>
+              <div class="card-body p-2">
+                <div class="text-truncate small" title="{{ anexo.nomeArquivo || anexo.path }}">
+                  {{ anexo.nomeArquivo || anexo.path }}
+                </div>
+              </div>
+              <div class="card-footer d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="abrirEmNovaAba(anexo.url)" aria-label="Abrir">
+                  <i class="bi bi-box-arrow-up-right"></i> Abrir
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

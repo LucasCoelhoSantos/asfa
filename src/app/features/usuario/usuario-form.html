@@ -6,7 +6,10 @@
       <div class="card border-0 shadow-sm">
         <!-- Header Section -->
         <div class="card-header bg-primary text-white">
-          <h2 class="card-title mb-0 fs-4 fw-semibold">{{ editMode ? 'Editar' : 'Cadastrar' }} Usuário</h2>
+          <h2 class="card-title mb-0 fs-4 fw-semibold">
+            <i class="bi bi-person-circle me-2" *ngIf="isProfileMode"></i>
+            {{ isProfileMode ? 'Meu Perfil' : (editMode ? 'Editar' : 'Cadastrar') + ' Usuário' }}
+          </h2>
         </div>
 
         <!-- Form Content -->
@@ -54,21 +57,25 @@
             </div>
 
             <!-- Segurança -->
-            <div class="mb-4" *ngIf="!editMode">
+            <div class="mb-4" *ngIf="!editMode || isProfileMode">
               <div class="border-bottom border-2 border-primary pb-2 mb-3">
-                <h3 class="fs-5 fw-semibold text-primary mb-0">Segurança</h3>
+                <h3 class="fs-5 fw-semibold text-primary mb-0">
+                  {{ isProfileMode ? 'Alterar Senha' : 'Segurança' }}
+                </h3>
               </div>
               <div class="row g-3">
                 <div class="col-12 col-md-6">
-                  <label for="senha" class="form-label fw-semibold">Senha</label>
+                  <label for="senha" class="form-label fw-semibold">
+                    {{ isProfileMode ? 'Nova Senha' : 'Senha' }}
+                  </label>
                   <div class="input-group">
                     <input 
                       id="senha" 
                       [type]="showPassword ? 'text' : 'password'"
                       class="form-control" 
                       formControlName="senha" 
-                      placeholder="Mínimo 6 caracteres"
-                      required
+                      [placeholder]="isProfileMode ? 'Deixe em branco para manter a atual' : 'Mínimo 6 caracteres'"
+                      [required]="!isProfileMode"
                       [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
                     />
                     <button 
@@ -79,6 +86,9 @@
                     >
                       <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
                     </button>
+                  </div>
+                  <div class="form-text" *ngIf="isProfileMode">
+                    Deixe em branco se não quiser alterar a senha
                   </div>
                   <div class="invalid-feedback" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
                     <span *ngIf="form.get('senha')?.errors?.['required']">Senha é obrigatória</span>
@@ -93,7 +103,7 @@
             </div>
 
             <!-- Configurações -->
-            <div class="mb-4">
+            <div class="mb-4" *ngIf="!isProfileMode">
               <div class="border-bottom border-2 border-primary pb-2 mb-3">
                 <h3 class="fs-5 fw-semibold text-primary mb-0">Configurações</h3>
               </div>

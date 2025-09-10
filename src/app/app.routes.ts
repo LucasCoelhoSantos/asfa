@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/usuario/usuario.routes').then(m => m.USUARIO_ROUTES)
   },
   { 
+    path: 'perfil', 
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./features/usuario/usuario-form').then(m => m.UsuarioFormComponent)
+  },
+  { 
     path: 'pessoa-idosa', 
     canActivate: [AuthGuard],
     loadChildren: () => import('./features/pessoa-idosa/pessoa-idosa.routes').then(m => m.PESSOA_IDOSA_ROUTES)

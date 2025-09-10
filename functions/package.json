@@ -15,7 +15,6 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "asfa": "file:..",
     "firebase-admin": "^12.6.0",
     "firebase-functions": "^6.0.1"
   },

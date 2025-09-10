@@ -23,7 +23,7 @@ O **ASFA** é uma aplicação web desenvolvida em **Angular 20.1.0** e **Firebas
 
 ## Tecnologias Utilizadas
 
-### Frondend
+### Frontend
 - **Angular 20.1.0** - Framework principal
 - **TypeScript 5.8.2** - Linguagem de programação
 - **Bootstrap 5.3.8** - Framework CSS
