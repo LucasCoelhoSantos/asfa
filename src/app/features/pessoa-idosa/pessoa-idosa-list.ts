@@ -11,6 +11,7 @@ import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 import { CepPipe } from '../../shared/pipes/cep.pipe';
 import { RgPipe } from '../../shared/pipes/rg.pipe';
+import { loadAndResizeImageAsBase64 } from '../../shared/utils/image.utils';
 import { MaskDirective } from '../../shared/directives/mask.directive';
 import { Observable, Subject, BehaviorSubject, takeUntil } from 'rxjs';
 import { 
@@ -290,46 +291,7 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   }
 
   private carregarLogoEConverterParaBase64(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = '/asfa-logo.png';
-      
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          const maxWidth = 80;
-          const maxHeight = 80;
-          let { width, height } = img;
-          
-          if (width > height) {
-            if (width > maxWidth) {
-              height = (height * maxWidth) / width;
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = (width * maxHeight) / height;
-              height = maxHeight;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          const logoBase64 = canvas.toDataURL('image/png');
-          resolve(logoBase64);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      
-      img.onerror = () => reject(new Error('Erro ao carregar logo'));
-    });
+    return loadAndResizeImageAsBase64({ src: '/asfa-logo.png', crossOrigin: 'anonymous', maxWidth: 80, maxHeight: 80, outputType: 'image/png' });
   }
 
   private gerarCabecalho(doc: any, logoBase64: string, margin: number, logoSize: number, headerHeight: number): void {

@@ -10,6 +10,7 @@ import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 import { CepPipe } from '../../shared/pipes/cep.pipe';
 import { RgPipe } from '../../shared/pipes/rg.pipe';
+import { loadAndResizeImageAsBase64 } from '../../shared/utils/image.utils';
 
 @Component({
   selector: 'app-pessoa-idosa-view',
@@ -103,73 +104,81 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     this.router.navigate(['/pessoa-idosa']);
   }
 
-  exportarPdf() {
+  async exportarPdf() {
     if (!this.pessoaIdosa) return;
-
-    Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable')
-    ]).then(([{ default: jsPDF }, autoTable]) => {
+  
+    try {
+      const [{ default: jsPDF }, autoTable] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable')
+      ]);
+  
       const doc = new jsPDF();
-      this.gerarPdfComAnexosAsync(doc, autoTable, this.pessoaIdosa!)
-        .then(() => {
-          doc.save(`pessoa-idosa-${this.pessoaIdosa!.nome.replace(/\s+/g, '-')}.pdf`);
-          this.notificationService.showSuccess('PDF gerado com sucesso!');
-        })
-        .catch(() => {
-          this.notificationService.showError('Erro ao gerar PDF dos anexos.');
-        });
-    }).catch(() => {
-      this.notificationService.showError('Erro ao gerar PDF. Verifique se as dependências estão instaladas.');
-    });
+      const logoBase64 = await this.carregarLogoEConverterParaBase64();
+  
+      await this.gerarPdfAsync(doc, autoTable, this.pessoaIdosa!, logoBase64);
+  
+      doc.save(`pessoa-idosa-${this.pessoaIdosa!.nome.replace(/\s+/g, '-')}.pdf`);
+      this.notificationService.showSuccess('PDF gerado com sucesso!');
+    } catch (error) {
+      this.notificationService.showError('Erro ao gerar PDF. Verifique se as dependências estão instaladas ou se há anexos.');
+      console.error(error);
+    }
   }
 
-  private async gerarPdfComAnexosAsync(doc: any, autoTable: any, pessoa: PessoaIdosa): Promise<void> {
+  private async gerarPdfAsync(doc: any, autoTable: any, pessoa: PessoaIdosa, logoBase64: string): Promise<void> {
+    const logoSize = 26;
+    const headerHeight = 35;
     const margin = 20;
-    let yPosition = margin;
 
-    this.gerarCabecalho(doc, pessoa, margin, yPosition);
-    yPosition += 40;
-
-    yPosition = this.gerarSecaoInformacoesPessoais(doc, pessoa, margin, yPosition);
-    yPosition += 10;
-
-    yPosition = this.gerarSecaoEndereco(doc, pessoa.endereco, margin, yPosition);
-    yPosition += 10;
-
-    yPosition = this.gerarSecaoComposicaoFamiliar(doc, pessoa.composicaoFamiliar, margin, yPosition);
-    yPosition += 10;
+    let y = this.gerarCabecalho(doc, logoBase64, pessoa, margin, logoSize, headerHeight);
+    y = this.gerarSecaoInformacoesPessoais(doc, pessoa, margin, y);
+    y = this.gerarSecaoEndereco(doc, pessoa.endereco, margin, y);
+    y = this.gerarSecaoComposicaoFamiliar(doc, pessoa.composicaoFamiliar, margin, y);
 
     if (pessoa.dependentes && pessoa.dependentes.length > 0) {
-      yPosition = this.gerarSecaoDependentes(doc, pessoa.dependentes, margin, yPosition);
-      yPosition += 10;
+      y = this.gerarSecaoDependentes(doc, pessoa.dependentes, margin, y);
     }
 
-    yPosition = this.gerarSecaoObservacoes(doc, pessoa, margin, yPosition);
-
+    y = this.gerarSecaoObservacoes(doc, pessoa, margin, y);
     await this.gerarSecaoAnexos(doc, pessoa.anexos || [], margin);
-    
     this.gerarRodape(doc);
   }
 
-  private gerarCabecalho(doc: any, pessoa: PessoaIdosa, margin: number, yPosition: number): void {
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Ficha de Pessoa Idosa', doc.internal.pageSize.width / 2, yPosition, { align: 'center' });
-    
-    yPosition += 15;
+  private gerarCabecalho(doc: any, logoBase64: string, pessoa: PessoaIdosa, margin: number, logoSize: number, headerHeight: number): number {
+    doc.addImage(logoBase64, 'PNG', margin, margin, logoSize, logoSize);
+
     doc.setFontSize(14);
-    doc.text(`Nome: ${pessoa.nome}`, margin, yPosition);
-    
-    yPosition += 10;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Associação Católica Sagrada Família - Lar Misericordioso', margin + logoSize + 10, margin + 12);
     doc.setFontSize(12);
-    doc.text(`Data de Cadastro: ${new Date(pessoa.dataCadastro).toLocaleDateString('pt-BR')}`, margin, yPosition);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')} - Campo Grande/MS`, margin + logoSize + 10, margin + 22);
+    const baseY = margin + headerHeight;
+    doc.line(margin, baseY, doc.internal.pageSize.width - margin, baseY);
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Ficha de Pessoa Idosa', doc.internal.pageSize.width / 2, baseY + 10, { align: 'center' });
     
-    yPosition += 8;
-    doc.text(`Status: ${pessoa.ativo ? 'Ativo' : 'Inativo'}`, margin, yPosition);
+    let y = baseY + 20;
+    doc.setFontSize(14);
+    doc.text(`Nome: ${pessoa.nome}`, margin, y);
+    y += 8;
+    
+    doc.setFontSize(12);
+    doc.text(`Data de Cadastro: ${new Date(pessoa.dataCadastro).toLocaleDateString('pt-BR')}`, margin, y);
+    y += 6;
+    
+    doc.text(`Status: ${pessoa.ativo ? 'Ativo' : 'Inativo'}`, margin, y);
+    y += 6;
+    
+    return y;
   }
 
   private gerarSecaoInformacoesPessoais(doc: any, pessoa: PessoaIdosa, margin: number, yPosition: number): number {
+    yPosition += 5;
+
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('Informações Pessoais', margin, yPosition);
@@ -210,6 +219,9 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
       doc.addPage();
       yPosition = margin;
     }
+    else {
+      yPosition += 5;
+    }
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
@@ -245,6 +257,9 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     if (yPosition > doc.internal.pageSize.height - 60) {
       doc.addPage();
       yPosition = margin;
+    }
+    else {
+      yPosition += 5;
     }
 
     doc.setFontSize(14);
@@ -292,6 +307,9 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     if (yPosition > doc.internal.pageSize.height - 40) {
       doc.addPage();
       yPosition = margin;
+    }
+    else {
+      yPosition += 5;
     }
 
     doc.setFontSize(14);
@@ -342,6 +360,9 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     if (yPosition > doc.internal.pageSize.height - 40) {
       doc.addPage();
       yPosition = margin;
+    }
+    else {
+      yPosition += 5;
     }
 
     doc.setFontSize(14);
@@ -501,6 +522,10 @@ export class PessoaIdosaViewComponent implements OnInit, OnDestroy {
     if (!path) return undefined;
     const parts = path.split('/');
     return parts[parts.length - 1] || undefined;
+  }
+
+  private carregarLogoEConverterParaBase64(): Promise<string> {
+    return loadAndResizeImageAsBase64({ src: '/asfa-logo.png', crossOrigin: 'anonymous', maxWidth: 80, maxHeight: 80, outputType: 'image/png' });
   }
 
   navigate(path: string) {
