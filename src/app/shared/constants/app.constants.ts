@@ -16,7 +16,7 @@ export const TIPOS_ANEXO = [
   { id: 2, tipo: 2, label: 'CPF', icon: 'bi-card-text' },
   { id: 3, tipo: 3, label: 'RG', icon: 'bi-person-vcard' },
   { id: 4, tipo: 4, label: 'Comprovante Endereço', icon: 'bi-house' },
-  { id: 5, tipo: 5, label: 'Foto Cartão SUS', icon: 'bi-heart-pulse' },
+  { id: 5, tipo: 5, label: 'Foto Cartão SUS', icon: 'bi-postcard-heart' },
   { id: 6, tipo: 6, label: 'Cadastro NIS', icon: 'bi-clipboard-data' },
   { id: 7, tipo: 7, label: 'Termo Autorização', icon: 'bi-pen' }
 ];

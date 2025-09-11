@@ -42,7 +42,7 @@ import { Anexo } from '../../../models/pessoa-idosa.model';
                 {{ getFileName(tipo.id) }}
               </ng-container>
               <ng-template #noFile>
-                <i class="bi bi-file-earmark"></i>
+                <i class="bi bi-file-earmark-text"></i>
                 Nenhum arquivo selecionado
               </ng-template>
             </div>
@@ -54,7 +54,7 @@ import { Anexo } from '../../../models/pessoa-idosa.model';
               Baixar
             </button>
             <button type="button" class="btn-remove" (click)="openRemoveConfirm(getAnexo(tipo.id)!)" title="Remover arquivo">
-              <i class="bi bi-trash3"></i>
+              <i class="bi bi-trash"></i>
               Remover
             </button>
           </div>
@@ -71,7 +71,7 @@ import { Anexo } from '../../../models/pessoa-idosa.model';
               Enviado
             </div>
             <div class="meta-item">
-              <i class="bi bi-check2-circle"></i>
+              <i class="bi bi-check-circle"></i>
               Arquivo válido
             </div>
           </div>

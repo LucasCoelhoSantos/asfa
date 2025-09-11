@@ -6,8 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './home.html',
-  styleUrl: './home.scss'
+  templateUrl: './home.html'
 })
 export class HomeComponent {
   private router = inject(Router);

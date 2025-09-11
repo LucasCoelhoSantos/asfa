@@ -1,49 +1,39 @@
 @use "sass:color";
 @use "../node_modules/bootstrap/scss/bootstrap" as *;
-@import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css?icons=arrow-left,arrow-right,box-arrow-in-right,box-arrow-right,plus-circle,check-circle,pause-circle,play-circle,pencil,trash,eye,eye-slash,search,download,person,person-circle,people,people-fill,person-plus,person-vcard,hammer,file-earmark-pdf,file-earmark-text,paperclip,folder2-open,info-circle,check-circle-fill,exclamation-triangle-fill,calendar-check,clipboard-data,house,geo-alt,postcard-heart,card-text,pen,globe,facebook,instagram,x-circle');
 
 :root {
-  /* Cores Primárias */
   --asfa-primary: #3085da;
   --asfa-primary-light: #42a5f5;
   --asfa-primary-dark: #1565c0;
   
-  /* Cores de Sucesso */
   --asfa-success: #388e3c;
   --asfa-success-light: #4caf50;
   
-  /* Cores de Aviso */
   --asfa-warning: #ff9800;
   --asfa-warning-light: #ffb74d;
   
-  /* Cores de Perigo */
   --asfa-danger: #e74c3c;
   --asfa-danger-light: #ef5350;
   
-  /* Cores de Informação */
   --asfa-info: #17a2b8;
   --asfa-info-light: #29b6f6;
   
-  /* Cores Neutras */
   --asfa-secondary: #6c757d;
   --asfa-light: #f8f9fa;
   --asfa-dark: #343a40;
   
-  /* Cores de Texto */
   --asfa-text-primary: #2c3e50;
   --asfa-text-secondary: #6c757d;
   --asfa-text-muted: #909bad;
   
-  /* Cores de Fundo */
   --asfa-bg-primary: #ffffff;
   --asfa-bg-secondary: #f8f9fa;
   --asfa-bg-dark: #343a40;
   
-  /* Cores de Borda */
   --asfa-border: #dee2e6;
   --asfa-border-light: #e9ecef;
   
-  /* Cores de Sombra */
   --asfa-shadow: rgba(0, 0, 0, 0.1);
 }
 

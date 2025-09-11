@@ -26,7 +26,7 @@
       </div>
       <div class="btn-group">
         <button class="btn btn-outline-primary" (click)="exportarPdf()">
-          <i class="bi bi-file-pdf"></i> Exportar PDF
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
         </button>
         <button class="btn btn-primary" (click)="editar()">
           <i class="bi bi-pencil"></i> Editar
@@ -397,7 +397,7 @@
                      style="min-height: 160px;">
                   <i class="bi" [ngClass]="{
                     'bi-file-earmark-pdf text-danger': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'pdf',
-                    'bi-file-earmark text-secondary': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'other'
+                    'bi-file-earmark-text text-secondary': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'other'
                   }" style="font-size: 3rem;"></i>
                 </div>
                 <span class="badge position-absolute top-0 start-0 m-2" [class]="getTipoAnexoBadgeClass(anexo?.tipoAnexo)">
