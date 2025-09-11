@@ -12,14 +12,19 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   { 
-    path: 'usuario', 
-    canActivate: [AuthGuard, RoleGuard(['admin'])],
-    loadChildren: () => import('./features/usuario/usuario.routes').then(m => m.USUARIO_ROUTES)
-  },
-  { 
     path: 'perfil', 
     canActivate: [AuthGuard],
     loadComponent: () => import('./features/usuario/usuario-form').then(m => m.UsuarioFormComponent)
+  },
+  { 
+    path: 'ajuda', 
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./features/ajuda/ajuda').then(m => m.AjudaComponent)
+  },
+  { 
+    path: 'usuario', 
+    canActivate: [AuthGuard, RoleGuard(['admin'])],
+    loadChildren: () => import('./features/usuario/usuario.routes').then(m => m.USUARIO_ROUTES)
   },
   { 
     path: 'pessoa-idosa', 
