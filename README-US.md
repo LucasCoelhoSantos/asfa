@@ -63,25 +63,6 @@
         app.routes.ts       	// Main routes
 ```
 
-## Available Screens
-
-Currently, the system includes the following implemented screens:
-
-1. User Login Screen:
-Allows user authentication.
-
-2. Main Menu:
-Main screen for managing records. Allows viewing, adding, editing, or deactivating registrations of elderly individuals.
-
-3. Elderly Registration:
-Form for entering or editing data of elderly individuals.
-
-4. Dependent Registration:
-Part of the elderly registration form, used to record dependents associated with elderly individuals.
-
-5. User Registration:
-Form for entering or editing system user data.
-
 ## Future Implementations
 
 - Referrals;

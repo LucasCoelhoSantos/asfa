@@ -63,25 +63,6 @@ O **ASFA** é uma aplicação web desenvolvida em **Angular 20.1.0** e **Firebas
         app.routes.ts       	// Rotas principais
 ```
 
-## Telas Disponíveis
-
-Atualmente, o sistema conta com as seguintes telas implementadas:
-
-1. Tela de Login de Usuário:
-Permite a autenticação dos usuários.
-
-2. Menu Principal:
-Tela principal para gerenciamento dos registros. Permite visualizar, adicionar, editar ou inativar cadastros de pessoas idosas.
-
-3. Cadastro de Pessoas Idosas:
-Formulário para inserção ou edição dos dados das pessoas idosas.
-
-4. Cadastro de Dependentes:
-É uma parte do formulário de pessoas idosas, é usado para registro de dependentes associados às pessoas idosas.
-
-5. Cadastro de usuários:
-Formulário para inserção ou edição dos dados dos usuários do sistema, apenas para usuários admins.
-
 ## Futuras Implementações
 
 - Encaminhamentos;
