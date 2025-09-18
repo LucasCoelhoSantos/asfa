@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { RoleGuard } from './core/guards/role.guard';
+import { AutenticacaoGuard } from './core/guards/auth.guard';
+import { CargoGuard } from './core/guards/cargo.guard';
+import { CargoUsuario } from './models/enums';
 
 export const routes: Routes = [
   { 
     path: '',
-    loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
+    loadComponent: () => import('./features/inicio/inicio').then(m => m.HomeComponent)
   },
   { 
     path: 'login', 
@@ -13,22 +14,22 @@ export const routes: Routes = [
   },
   { 
     path: 'perfil', 
-    canActivate: [AuthGuard],
+    canActivate: [AutenticacaoGuard],
     loadComponent: () => import('./features/usuario/usuario-form').then(m => m.UsuarioFormComponent)
   },
   { 
     path: 'ajuda', 
-    canActivate: [AuthGuard],
+    canActivate: [AutenticacaoGuard],
     loadComponent: () => import('./features/ajuda/ajuda').then(m => m.AjudaComponent)
   },
   { 
     path: 'usuario', 
-    canActivate: [AuthGuard, RoleGuard(['admin'])],
+    canActivate: [AutenticacaoGuard, CargoGuard([CargoUsuario.Administrador])],
     loadChildren: () => import('./features/usuario/usuario.routes').then(m => m.USUARIO_ROUTES)
   },
   { 
     path: 'pessoa-idosa', 
-    canActivate: [AuthGuard],
+    canActivate: [AutenticacaoGuard],
     loadChildren: () => import('./features/pessoa-idosa/pessoa-idosa.routes').then(m => m.PESSOA_IDOSA_ROUTES)
   },
   { path: '**', redirectTo: '' }

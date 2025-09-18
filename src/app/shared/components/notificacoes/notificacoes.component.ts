@@ -1,28 +1,28 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificacaoService } from '../../../core/services/notificacao.service';
 
 @Component({
-  selector: 'app-notifications',
+  selector: 'app-notificacoes',
   standalone: true,
   imports: [CommonModule],
   template: `
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
       <div 
-        *ngFor="let notification of notifications()"
+        *ngFor="let notificacao of notificacoes()"
         class="toast show"
         role="alert"
         aria-live="assertive"
         aria-atomic="true"
-        (click)="removeNotification(notification.id)"
+        (click)="removeNotificacao(notificacao.id)"
         style="cursor: pointer; min-width: 300px; max-width: 400px;"
       >
-        <div class="toast-header" [class]="'bg-' + getBootstrapClass(notification.type) + ' text-white'">
-          <strong class="me-auto">{{ getNotificationTitle(notification.type) }}</strong>
-          <button type="button" class="btn-close btn-close-white" (click)="removeNotification(notification.id)" aria-label="Fechar"></button>
+        <div class="toast-header" [class]="'bg-' + getBootstrapClass(notificacao.tipo) + ' text-white'">
+          <strong class="me-auto">{{ getNotificationTitle(notificacao.tipo) }}</strong>
+          <button type="button" class="btn-close btn-close-white" (click)="removeNotificacao(notificacao.id)" aria-label="Fechar"></button>
         </div>
         <div class="toast-body">
-          {{ notification.message }}
+          {{ notificacao.mensagem }}
         </div>
       </div>
     </div>
@@ -61,12 +61,12 @@ import { NotificationService } from '../../../core/services/notification.service
     }
   `]
 })
-export class NotificationsComponent {
-  notificationService = inject(NotificationService);
-  notifications = this.notificationService.getNotifications();
+export class NotificacoesComponent {
+  notificacaoService = inject(NotificacaoService);
+  notificacoes = this.notificacaoService.obterNotificacoes();
 
-  removeNotification(id: string) {
-    this.notificationService.removeNotification(id);
+  removeNotificacao(id: string) {
+    this.notificacaoService.removerNotificacao(id);
   }
 
   getBootstrapClass(type: string): string {

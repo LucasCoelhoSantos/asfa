@@ -6,12 +6,12 @@ import { Router } from '@angular/router';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './home.html'
+  templateUrl: './inicio.html'
 })
 export class HomeComponent {
   private router = inject(Router);
 
-  goLogin() {
+  irParaLogin() {
     this.router.navigate(['/login']);
   }
 }

@@ -6,11 +6,11 @@ import imageCompression from 'browser-image-compression';
 export class AnexoService {
   private storage = inject(Storage);
 
-  async uploadAnexo(pessoaId: string, tipoAnexo: number, file: File): Promise<{ url: string, path: string }> {
-    this.validateFile(file);
+  async uploadAnexo(pessoaId: string, categoria: number, arquivo: File): Promise<{ url: string, path: string }> {
+    this.validarArquivo(arquivo);
     
-    const processedFile = await this.comprimirArquivo(file);
-    const path = this.generateStoragePath(pessoaId, tipoAnexo, processedFile);
+    const processedFile = await this.comprimirArquivo(arquivo);
+    const path = this.gerarCaminhoDeArmazenamento(pessoaId, categoria, processedFile);
     const storageRef = ref(this.storage, path);
     
     await uploadBytes(storageRef, processedFile);
@@ -19,53 +19,53 @@ export class AnexoService {
     return { url, path };
   }
 
-  private validateFile(file: File): void {
-    if (!this.isFileAllowed(file)) {
+  private validarArquivo(arquivo: File): void {
+    if (!this.eUmArquivoPermitido(arquivo)) {
       throw new Error('Tipo de arquivo não permitido.');
     }
   }
 
-  private generateStoragePath(pessoaId: string, tipoAnexo: number, file: File): string {
-    const safeFileName = this.sanitizeFileName(file.name);
-    return `pessoas-idosas/${pessoaId}/anexos/tipo/${tipoAnexo}_${Date.now()}_${safeFileName}`;
+  private gerarCaminhoDeArmazenamento(pessoaId: string, categoria: number, arquivo: File): string {
+    const nomeDeArquivoSeguro = this.limparNomeDoArquivo(arquivo.name);
+    return `pessoas-idosas/${pessoaId}/anexos/categoria/${categoria}_${Date.now()}_${nomeDeArquivoSeguro}`;
   }
 
-  private sanitizeFileName(fileName: string): string {
+  private limparNomeDoArquivo(fileName: string): string {
     return fileName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
   }
 
-  getDownloadUrl(path: string): Promise<string> {
+  obterUrlDeDownload(path: string): Promise<string> {
     const storageRef = ref(this.storage, path);
     return getDownloadURL(storageRef);
   }
 
-  deleteAnexo(path: string): Promise<void> {
+  deletarAnexo(path: string): Promise<void> {
     const storageRef = ref(this.storage, path);
     return deleteObject(storageRef);
   }
 
-  isFileAllowed(file: File): boolean {
+  eUmArquivoPermitido(arquivo: File): boolean {
     const allowed = ['image/png', 'image/jpeg', 'application/pdf'];
-    return allowed.includes(file.type);
+    return allowed.includes(arquivo.type);
   }
 
-  private async comprimirArquivo(file: File): Promise<File> {
-    if (!file.type.startsWith('image/')) {
-      return file;
+  private async comprimirArquivo(arquivo: File): Promise<File> {
+    if (!arquivo.type.startsWith('image/')) {
+      return arquivo;
     }
 
     const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
       useWebWorker: true,
-      fileType: file.type
+      fileType: arquivo.type
     };
 
     try {
-      const compressedFile = await imageCompression(file, options);
+      const compressedFile = await imageCompression(arquivo, options);
       return compressedFile;
     } catch (error) {
-      return file;
+      return arquivo;
     }
   }
 }

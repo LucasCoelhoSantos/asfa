@@ -1,0 +1,73 @@
+<div class="anexos-container">
+  <div class="anexo-item" *ngFor="let categoria of categoriasAnexo" [class.has-file]="existeArquivo(categoria.id)">
+    <div class="anexo-header">
+      <h4 class="anexo-title">
+        <i [class]="categoria.icon"></i>
+        {{ categoria.label }}
+      </h4>
+      <span class="anexo-status" [class.has-file]="existeArquivo(categoria.id)" [class.not-uploaded]="!existeArquivo(categoria.id)">
+        {{ existeArquivo(categoria.id) ? 'Arquivo Enviado' : 'Pendente' }}
+      </span>
+    </div>
+    
+    <div class="upload-area">
+      <div class="file-input-group">
+        <div class="file-input-wrapper">
+          <input type="file" accept=".png,.jpeg,.jpg,.pdf" (change)="aoSelecionarArquivo($event, categoria.id)" />
+          <button type="button" class="file-input-button">
+            <i class="bi bi-folder2-open"></i>
+            {{ existeArquivo(categoria.id) ? 'Alterar Arquivo' : 'Selecionar Arquivo' }}
+          </button>
+        </div>
+        
+        <div class="file-info" [class.has-file]="existeArquivo(categoria.id)">
+          <ng-container *ngIf="existeArquivo(categoria.id); else noFile">
+            <i class="bi bi-check-circle-fill text-success"></i>
+            {{ obterNomeDoArquivo(categoria.id) }}
+          </ng-container>
+          <ng-template #noFile>
+            <i class="bi bi-file-earmark-text"></i>
+            Nenhum arquivo selecionado
+          </ng-template>
+        </div>
+      </div>
+      
+      <div class="file-actions" *ngIf="existeArquivo(categoria.id)">
+        <button type="button" class="btn-download" (click)="baixar(obterAnexo(categoria.id)!)" title="Baixar arquivo">
+          <i class="bi bi-download"></i>
+          Baixar
+        </button>
+        <button type="button" class="btn-remove" (click)="abrirConfirmacaoRemover(obterAnexo(categoria.id)!)" title="Remover arquivo">
+          <i class="bi bi-trash"></i>
+          Remover
+        </button>
+      </div>
+    </div>
+    
+    <div class="file-details" *ngIf="existeArquivo(categoria.id)">
+      <div class="file-name">
+        <i class="bi bi-paperclip"></i>
+        {{ obterNomeDoArquivo(categoria.id) }}
+      </div>
+      <div class="file-meta">
+        <div class="meta-item">
+          <i class="bi bi-calendar-check"></i>
+          Enviado
+        </div>
+        <div class="meta-item">
+          <i class="bi bi-check-circle"></i>
+          Arquivo válido
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-modal 
+  [mostrar]="showRemoveModal" 
+  [titulo]="'Remover arquivo'" 
+  [mensagem]="'Tem certeza que deseja remover este arquivo?'"
+  [confirmarTexto]="'Remover'"
+  (confirmar)="confirmarRemover()"
+  (cancelar)="cancelarRemover()"
+></app-modal>

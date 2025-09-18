@@ -1,9 +1,9 @@
-export type UsuarioRole = 'admin' | 'user';
+import { CargoUsuario } from './enums';
 
 export interface Usuario {
   id: string;
   nome: string;
   email: string;
-  role: UsuarioRole;
+  cargo: CargoUsuario;
   ativo: boolean;
 }

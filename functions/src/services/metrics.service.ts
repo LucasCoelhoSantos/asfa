@@ -1,7 +1,7 @@
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { Collection, METRIC_FIELDS } from '../types';
 
-export class MetricsService {
+export class ServicoMetricas {
   private static readonly METRICS_DOC_ID = 'global';
 
   static async incrementMetric(field: string, delta: number): Promise<void> {

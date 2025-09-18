@@ -1,7 +1,6 @@
 <app-main-menu></app-main-menu>
 
 <div class="container mt-4">
-  <!-- Loading -->
   <div *ngIf="loading" class="text-center py-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Carregando...</span>
@@ -9,7 +8,6 @@
     <p class="mt-3">Carregando dados da pessoa idosa...</p>
   </div>
 
-  <!-- Error -->
   <div *ngIf="error && !loading" class="alert alert-danger" role="alert">
     <h4 class="alert-heading">Erro ao carregar dados</h4>
     <p>Não foi possível carregar os dados da pessoa idosa. Verifique se o registro existe e tente novamente.</p>
@@ -17,9 +15,7 @@
     <button class="btn btn-primary" (click)="voltar()">Voltar à Lista</button>
   </div>
 
-  <!-- Conteúdo Principal -->
   <div *ngIf="!loading && !error && pessoaIdosa">
-    <!-- Cabeçalho -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h1 class="h2 mb-1">Visualizando <strong>{{ pessoaIdosa.nome }}</strong></h1>
@@ -37,7 +33,6 @@
       </div>
     </div>
 
-    <!-- Informações Básicas -->
     <div class="card mb-4">
       <div class="card-header bg-primary text-white">
         <h5 class="card-title mb-0">
@@ -98,7 +93,6 @@
       </div>
     </div>
 
-    <!-- Endereço -->
     <div class="card mb-4">
       <div class="card-header bg-info text-white">
         <h5 class="card-title mb-0">
@@ -145,7 +139,6 @@
       </div>
     </div>
 
-    <!-- Composição Familiar -->
     <div class="card mb-4">
       <div class="card-header bg-warning text-dark">
         <h5 class="card-title mb-0">
@@ -206,7 +199,6 @@
           </div>
         </div>
 
-        <!-- Informações Adicionais de Saúde -->
         <div class="row mt-3">
           <div class="col-12">
             <h6 class="fw-bold">Informações de Saúde:</h6>
@@ -253,7 +245,6 @@
       </div>
     </div>
 
-    <!-- Dependentes -->
     <div class="card mb-4" *ngIf="pessoaIdosa.dependentes && pessoaIdosa.dependentes.length > 0">
       <div class="card-header bg-success text-white">
         <h5 class="card-title mb-0">
@@ -309,7 +300,6 @@
       </div>
     </div>
 
-    <!-- Informações Adicionais -->
     <div class="card mb-4">
       <div class="card-header bg-secondary text-white">
         <h5 class="card-title mb-0">
@@ -368,7 +358,6 @@
       </div>
     </div>
 
-    <!-- Anexos -->
     <div class="card mb-4">
       <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">
@@ -386,22 +375,22 @@
           <div class="col-12 col-sm-6 col-lg-4" *ngFor="let anexo of pessoaIdosa.anexos; trackBy: trackByAnexo">
             <div class="card h-100 shadow-sm">
               <div class="position-relative" style="aspect-ratio: 1/1; overflow: hidden;">
-                <img *ngIf="inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'image'"
+                <img *ngIf="inferirTipoArquivo(anexo?.nomeArquivo, anexo?.path) === 'image'"
                      [src]="anexo.url"
                      [alt]="anexo.nomeArquivo || 'Imagem'"
                      loading="lazy"
                      class="w-100 h-100"
                      style="object-fit: cover;">
-                <div *ngIf="inferFileKind(anexo?.nomeArquivo, anexo?.path) !== 'image'"
+                <div *ngIf="inferirTipoArquivo(anexo?.nomeArquivo, anexo?.path) !== 'image'"
                      class="d-flex align-items-center justify-content-center bg-light w-100 h-100"
                      style="min-height: 160px;">
                   <i class="bi" [ngClass]="{
-                    'bi-file-earmark-pdf text-danger': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'pdf',
-                    'bi-file-earmark-text text-secondary': inferFileKind(anexo?.nomeArquivo, anexo?.path) === 'other'
+                    'bi-file-earmark-pdf text-danger': inferirTipoArquivo(anexo?.nomeArquivo, anexo?.path) === 'pdf',
+                    'bi-file-earmark-text text-secondary': inferirTipoArquivo(anexo?.nomeArquivo, anexo?.path) === 'other'
                   }" style="font-size: 3rem;"></i>
                 </div>
-                <span class="badge position-absolute top-0 start-0 m-2" [class]="getTipoAnexoBadgeClass(anexo?.tipoAnexo)">
-                  {{ getTipoAnexoLabel(anexo?.tipoAnexo) }}
+                <span class="badge position-absolute top-0 start-0 m-2" [class]="obterCategoriaAnexoBadgeClass(anexo?.categoria)">
+                  {{ obterCategoriaAnexoLabel(anexo?.categoria) }}
                 </span>
               </div>
               <div class="card-body p-2">

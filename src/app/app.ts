@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NotificationsComponent } from './shared/components/notifications/notifications.component';
+import { NotificacoesComponent } from './shared/components/notificacoes/notificacoes.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NotificationsComponent],
+  imports: [RouterOutlet, NotificacoesComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

@@ -3,19 +3,17 @@
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-xl-11">
-      <!-- Header Section -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 class="h2 mb-1 fw-bold text-primary">Pessoas Idosas Cadastradas</h1>
           <p class="text-muted mb-0">Gerencie as pessoas idosas cadastradas no sistema</p>
         </div>
-        <button class="btn btn-primary btn-lg" (click)="navigate('/pessoa-idosa/novo')">
+        <button class="btn btn-primary btn-lg" (click)="navegar('/pessoa-idosa/novo')">
           <i class="bi bi-plus-circle me-2"></i>
           Adicionar Pessoa
         </button>
       </div>
       
-      <!-- Filtros Container -->
       <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-light">
           <h3 class="h5 mb-0 fw-semibold">Filtros de Pesquisa</h3>
@@ -32,7 +30,7 @@
                   type="text" 
                   class="form-control" 
                   placeholder="Nome" 
-                  (input)="setFiltro('nome', getValue($event))" 
+                  (input)="definirFiltro('nome', obterValor($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -40,14 +38,14 @@
                 <input 
                   type="date" 
                   class="form-control" 
-                  (input)="setFiltro('dataNascimento', getValue($event))" 
+                  (input)="definirFiltro('dataNascimento', obterValor($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
                 <label class="form-label fw-semibold">Estado Civil</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltro('estadoCivil', getValue($event))"
+                  (change)="definirFiltro('estadoCivil', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let ec of estadosCivis" [value]="ec">{{ ec }}</option>
@@ -60,7 +58,7 @@
                   class="form-control" 
                   placeholder="000.000.000-00" 
                   appMask="cpf" 
-                  (input)="setFiltro('cpf', getValue($event))" 
+                  (input)="definirFiltro('cpf', obterValor($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -70,7 +68,7 @@
                   class="form-control" 
                   placeholder="00.000.000-0" 
                   appMask="rg" 
-                  (input)="setFiltro('rg', getValue($event))" 
+                  (input)="definirFiltro('rg', obterValor($event))" 
                 />
               </div>
               <div class="col-12 col-md-6 col-lg-3">
@@ -80,7 +78,7 @@
                   class="form-control" 
                   placeholder="00000-000" 
                   appMask="cep" 
-                  (input)="setFiltro('cep', getValue($event))" 
+                  (input)="definirFiltro('cep', obterValor($event))" 
                 />
               </div>
             </div>
@@ -96,7 +94,7 @@
                     class="form-check-input" 
                     type="checkbox" 
                     id="filtroAlfabetizado" 
-                    (change)="setFiltroAvancado('alfabetizado', getChecked($event))" 
+                    (change)="definirFiltroAvancado('alfabetizado', obterMarcado($event))" 
                   />
                   <label class="form-check-label" for="filtroAlfabetizado">
                     Alfabetizado
@@ -109,7 +107,7 @@
                     class="form-check-input" 
                     type="checkbox" 
                     id="filtroEstudaAtualmente" 
-                    (change)="setFiltroAvancado('estudaAtualmente', getChecked($event))" 
+                    (change)="definirFiltroAvancado('estudaAtualmente', obterMarcado($event))" 
                   />
                   <label class="form-check-label" for="filtroEstudaAtualmente">
                     Estuda Atualmente
@@ -120,7 +118,7 @@
                 <label class="form-label fw-semibold">Nível/Série Atual</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('nivelSerie', getValue($event))"
+                  (change)="definirFiltroAvancado('nivelSerie', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let nivel of niveisSerie" [value]="nivel">{{ nivel }}</option>
@@ -130,7 +128,7 @@
                 <label class="form-label fw-semibold">Curso Técnico/Formação</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('cursoFormacao', getValue($event))"
+                  (change)="definirFiltroAvancado('cursoFormacao', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let curso of cursosFormacao" [value]="curso">{{ curso }}</option>
@@ -140,7 +138,7 @@
                 <label class="form-label fw-semibold">Benefício</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('beneficio', getValue($event))"
+                  (change)="definirFiltroAvancado('beneficio', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let beneficio of beneficios" [value]="beneficio">{{ beneficio }}</option>
@@ -150,7 +148,7 @@
                 <label class="form-label fw-semibold">Situação Ocupacional</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('situacaoOcupacional', getValue($event))"
+                  (change)="definirFiltroAvancado('situacaoOcupacional', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let situacao of situacoesOcupacionais" [value]="situacao">{{ situacao }}</option>
@@ -160,7 +158,7 @@
                 <label class="form-label fw-semibold">Problema de Saúde</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('problemaDeSaude', getValue($event))"
+                  (change)="definirFiltroAvancado('problemaDeSaude', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let problema of problemasSaude" [value]="problema">{{ problema }}</option>
@@ -170,7 +168,7 @@
                 <label class="form-label fw-semibold">Aposentado</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('aposentado', getValue($event))"
+                  (change)="definirFiltroAvancado('aposentado', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let aposentado of aposentados" [value]="aposentado">{{ aposentado }}</option>
@@ -180,7 +178,7 @@
                 <label class="form-label fw-semibold">Moradia</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('moradia', getValue($event))"
+                  (change)="definirFiltroAvancado('moradia', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let moradia of moradias" [value]="moradia">{{ moradia }}</option>
@@ -190,7 +188,7 @@
                 <label class="form-label fw-semibold">Deficiência</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltroAvancado('deficiencia', getValue($event))"
+                  (change)="definirFiltroAvancado('deficiencia', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option *ngFor="let deficiencia of deficiencias" [value]="deficiencia">{{ deficiencia }}</option>
@@ -207,7 +205,7 @@
                 <label class="form-label fw-semibold">Status</label>
                 <select 
                   class="form-select" 
-                  (change)="setFiltro('ativo', getValue($event))"
+                  (change)="definirFiltro('ativo', obterValor($event))"
                 >
                   <option value="">Todos</option>
                   <option value="ativo">Ativo</option>
@@ -218,14 +216,13 @@
                 <label class="form-label fw-semibold">Itens por Página</label>
                 <select 
                   class="form-select" 
-                  (change)="setPageSize(+getValue($event))"
+                  (change)="definirTamanhoPagina(+obterValor($event))"
                 >
-                  <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size === -1 ? 'Todos' : size }}</option>
+                  <option *ngFor="let tamanho of opcoesTamanhoPagina" [value]="tamanho">{{ tamanho === -1 ? 'Todos' : tamanho }}</option>
                 </select>
               </div>
             </div>
             
-            <!-- Botões de Ação -->
             <div class="d-flex gap-4 mt-3">
               <button (click)="buscar()" class="btn btn-primary w-100">
                 <i class="bi bi-search me-2"></i>
@@ -244,7 +241,6 @@
         </div>
       </div>
       
-      <!-- Content Section -->
       <ng-container *ngIf="loading$ | async; else content">
         <app-table-skeleton [rows]="5"></app-table-skeleton>
       </ng-container>
@@ -300,7 +296,7 @@
                         <button 
                           *ngIf="pessoa.ativo" 
                           class="btn btn-outline-warning btn-sm" 
-                          (click)="openInativarConfirm(pessoa.id)"
+                          (click)="abrirConfirmacao('inativar', pessoa.id)"
                           title="Inativar"
                         >
                           <i class="bi bi-pause-circle"></i>
@@ -309,7 +305,7 @@
                         <button 
                           *ngIf="!pessoa.ativo" 
                           class="btn btn-outline-success btn-sm" 
-                          (click)="openAtivarConfirm(pessoa.id)"
+                          (click)="abrirConfirmacao('ativar', pessoa.id)"
                           title="Ativar"
                         >
                           <i class="bi bi-play-circle"></i>
@@ -322,20 +318,19 @@
               </table>
             </div>
             
-            <!-- Paginação -->
-            <div class="d-flex justify-content-center mt-4" *ngIf="pageSize > 0 && resultado.total > pageSize">
+            <div class="d-flex justify-content-center mt-4" *ngIf="indicePagina > 0 && resultado.total > indicePagina">
               <nav aria-label="Navegação de páginas">
                 <ul class="pagination">
-                  <li class="page-item" [class.disabled]="pageIndex === 0">
-                    <button class="page-link" (click)="setPageIndex(pageIndex - 1)" [disabled]="pageIndex === 0">
+                  <li class="page-item" [class.disabled]="indicePagina === 0">
+                    <button class="page-link" (click)="definirIndicePagina(indicePagina - 1)" [disabled]="indicePagina === 0">
                       Anterior
                     </button>
                   </li>
                   <li class="page-item active">
-                    <span class="page-link">Página {{ pageIndex + 1 }} de {{ math.ceil(resultado.total / pageSize) }}</span>
+                    <span class="page-link">Página {{ indicePagina + 1 }} de {{ math.ceil(resultado.total / indicePagina) }}</span>
                   </li>
-                  <li class="page-item" [class.disabled]="!resultado.hasMore">
-                    <button class="page-link" (click)="setPageIndex(pageIndex + 1)" [disabled]="!resultado.hasMore">
+                  <li class="page-item" [class.disabled]="!resultado.temMais">
+                    <button class="page-link" (click)="definirIndicePagina(indicePagina + 1)" [disabled]="!resultado.temMais">
                       Próxima
                     </button>
                   </li>
@@ -359,23 +354,11 @@
   </div>
 </div>
 
-<!-- Modais de confirmação -->
 <app-modal 
-  [show]="showInativarModal" 
-  [title]="'Inativar registro'" 
-  [message]="'Tem certeza que deseja inativar este registro?'"
-  [confirmText]="'Inativar'"
-  [cancelText]="'Cancelar'"
-  (confirm)="confirmInativar()"
-  (cancel)="cancelInativar()"
-></app-modal>
-
-<app-modal 
-  [show]="showAtivarModal" 
-  [title]="'Ativar registro'" 
-  [message]="'Tem certeza que deseja ativar este registro?'"
-  [confirmText]="'Ativar'"
-  [cancelText]="'Cancelar'"
-  (confirm)="confirmAtivar()"
-  (cancel)="cancelAtivar()"
+  [mostrar]="mostrarModalConfirmacao" 
+  [titulo]="tituloConfirmacao" 
+  [mensagem]="mensagemConfirmacao"
+  [confirmarTexto]="confirmarTexto"
+  (confirmar)="confirmarAcao()"
+  (cancelar)="cancelarAcao()"
 ></app-modal>

@@ -4,18 +4,18 @@
   </div>
   
   <div class="card-body p-4">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="aoEnviar()">
       <!-- Informações Básicas -->
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Básicas</h4>
         <div class="row g-3">
           <div class="col-12 col-md-6">
             <label for="nome" class="form-label fw-semibold">Nome Completo *</label>
-            <input 
-              id="nome" 
+            <input
+              id="nome"
               type="text"
-              class="form-control" 
-              formControlName="nome" 
+              class="form-control"
+              formControlName="nome"
               placeholder="Digite o nome completo"
               [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched"
             />
@@ -26,10 +26,10 @@
           
           <div class="col-12 col-md-6">
             <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento *</label>
-            <input 
-              id="dataNascimento" 
-              type="date" 
-              class="form-control" 
+            <input
+              id="dataNascimento"
+              type="date"
+              class="form-control"
               formControlName="dataNascimento"
               [class.is-invalid]="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched"
             />
@@ -40,11 +40,11 @@
           
           <div class="col-12 col-md-6">
             <label for="parentesco" class="form-label fw-semibold">Parentesco *</label>
-            <input 
-              id="parentesco" 
+            <input
+              id="parentesco"
               type="text"
-              class="form-control" 
-              formControlName="parentesco" 
+              class="form-control"
+              formControlName="parentesco"
               placeholder="Ex: Filho, Neto, etc."
               [class.is-invalid]="form.get('parentesco')?.invalid && form.get('parentesco')?.touched"
             />
@@ -61,23 +61,23 @@
         <div class="row g-3">
           <div class="col-12 col-md-6">
             <label for="ceinf" class="form-label fw-semibold">CEINF</label>
-            <input 
-              id="ceinf" 
+            <input
+              id="ceinf"
               type="text"
-              class="form-control" 
-              formControlName="ceinf" 
-              placeholder="Nome da instituição" 
+              class="form-control"
+              formControlName="ceinf"
+              placeholder="Nome da instituição"
             />
           </div>
           
           <div class="col-12 col-md-6">
             <label for="ceinfBairro" class="form-label fw-semibold">CEINF Bairro</label>
-            <input 
-              id="ceinfBairro" 
+            <input
+              id="ceinfBairro"
               type="text"
-              class="form-control" 
-              formControlName="ceinfBairro" 
-              placeholder="Bairro da instituição" 
+              class="form-control"
+              formControlName="ceinfBairro"
+              placeholder="Bairro da instituição"
             />
           </div>
         </div>
@@ -89,23 +89,23 @@
         <div class="row g-3">
           <div class="col-12 col-md-6">
             <label for="programaSaudePastoralCrianca" class="form-label fw-semibold">Programa Saúde Pastoral Criança</label>
-            <input 
-              id="programaSaudePastoralCrianca" 
+            <input
+              id="programaSaudePastoralCrianca"
               type="text"
-              class="form-control" 
-              formControlName="programaSaudePastoralCrianca" 
-              placeholder="Nome do programa" 
+              class="form-control"
+              formControlName="programaSaudePastoralCrianca"
+              placeholder="Nome do programa"
             />
           </div>
           
           <div class="col-12 col-md-6">
             <label for="programaSaudePastoralCriancaLocal" class="form-label fw-semibold">Local do Programa</label>
-            <input 
-              id="programaSaudePastoralCriancaLocal" 
+            <input
+              id="programaSaudePastoralCriancaLocal"
               type="text"
-              class="form-control" 
-              formControlName="programaSaudePastoralCriancaLocal" 
-              placeholder="Endereço/local" 
+              class="form-control"
+              formControlName="programaSaudePastoralCriancaLocal"
+              placeholder="Endereço/local"
             />
           </div>
         </div>
@@ -115,10 +115,10 @@
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Status</h4>
         <div class="form-check">
-          <input 
-            class="form-check-input" 
-            type="checkbox" 
-            id="ativo" 
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="ativo"
             formControlName="ativo"
           />
           <label class="form-check-label fw-semibold" for="ativo">
@@ -129,7 +129,7 @@
       
       <!-- Ações do formulário -->
       <div class="d-flex gap-2 justify-content-end pt-3 border-top">
-        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+        <button type="button" class="btn btn-outline-secondary" (click)="aoCancelar()">
           <i class="bi bi-x-circle me-1"></i>
           Cancelar
         </button>

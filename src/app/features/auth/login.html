@@ -6,18 +6,17 @@
           <div class="text-center mb-4">
             <img src="asfa-logo.png" alt="Logo ASFA" class="img-fluid mb-3" style="max-width: 120px;" />
             <h4 class="text-muted">Associação Católica Sagrada Família</h4>
+            <h2 class="text-center mb-4 fw-bold text-primary">Login</h2>
           </div>
           
-          <h2 class="text-center mb-4 fw-bold text-primary">Login</h2>
-          
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <form [formGroup]="form" (ngSubmit)="aoEnviar()">
             <div class="mb-3">
               <label for="email" class="form-label fw-semibold">E-mail</label>
-              <input 
-                id="email" 
-                type="email" 
-                class="form-control" 
-                formControlName="email" 
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
                 [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
                 placeholder="Digite seu e-mail"
               />
@@ -27,23 +26,23 @@
             </div>
             
             <div class="mb-4">
-              <label for="password" class="form-label fw-semibold">Senha</label>
-              <input 
-                id="password" 
-                type="password" 
-                class="form-control" 
-                formControlName="password" 
-                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+              <label for="senha" class="form-label fw-semibold">Senha</label>
+              <input
+                id="senha"
+                type="password"
+                class="form-control"
+                formControlName="senha"
+                [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
                 placeholder="Digite sua senha"
               />
-              <div class="invalid-feedback" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+              <div class="invalid-feedback" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
                 Senha obrigatória (mínimo 6 caracteres).
               </div>
             </div>
             
-            <button 
-              type="submit" 
-              class="btn btn-primary w-100 py-2 fw-semibold" 
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2 fw-semibold"
               [disabled]="form.invalid || loading"
             >
               <span *ngIf="!loading">Entrar</span>
@@ -55,14 +54,14 @@
               </span>
             </button>
             
+            <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" (click)="irParaInicio()">
+              <span>Voltar</span>
+            </button>
+
             <div class="alert alert-danger mt-3" *ngIf="error" role="alert">
               {{ error }}
             </div>
           </form>
-
-          <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" (click)="goHome()">
-            <span>Voltar</span>
-          </button>
         </div>
       </div>
     </div>

@@ -5,24 +5,23 @@ import { CommonModule } from '@angular/common';
   selector: 'app-modal',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './modal.html',
-  //styleUrls: ['./modal.scss']
+  templateUrl: './modal.html'
 })
 export class ModalComponent {
-  @Input() show: boolean = false;
-  @Input() title: string = '';
-  @Input() message: string = '';
-  @Input() confirmText: string = 'Confirmar';
-  @Input() cancelText: string = 'Cancelar';
+  @Input() mostrar: boolean = false;
+  @Input() titulo: string = '';
+  @Input() mensagem: string = '';
+  @Input() confirmarTexto: string = 'Confirmar';
+  @Input() cancelarTexto: string = 'Cancelar';
 
-  @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() confirmar = new EventEmitter<void>();
+  @Output() cancelar = new EventEmitter<void>();
 
-  onConfirm() {
-    this.confirm.emit();
+  aoConfirmar() {
+    this.confirmar.emit();
   }
 
-  onCancel() {
-    this.cancel.emit();
+  aoCancelar() {
+    this.cancelar.emit();
   }
 }

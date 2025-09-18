@@ -17,18 +17,18 @@
            [class.active]="isActiveRoute('/pessoa-idosa')"
            [class.bg-white]="isActiveRoute('/pessoa-idosa')"
            [class.text-primary]="isActiveRoute('/pessoa-idosa')"
-           (click)="navigate('/pessoa-idosa')"
+           (click)="navegar('/pessoa-idosa')"
            style="cursor: pointer; text-decoration: none;">
           <i class="bi bi-people me-2"></i>
           Pessoas Idosas
         </a>
         <ng-container *ngIf="userWithRole$ | async as user">
           <a class="nav-link text-white px-3 py-2 rounded ms-2" 
-             *ngIf="user.role === 'admin'"
+             *ngIf="user.cargo === 'Administrador'"
              [class.active]="isActiveRoute('/usuario')"
              [class.bg-white]="isActiveRoute('/usuario')"
              [class.text-primary]="isActiveRoute('/usuario')"
-             (click)="navigate('/usuario')"
+             (click)="navegar('/usuario')"
              style="cursor: pointer; text-decoration: none;">
             <i class="bi bi-person me-2"></i>
             Usuários
@@ -53,13 +53,13 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li>
-              <a class="dropdown-item" (click)="navigate('/perfil')">
+              <a class="dropdown-item" (click)="navegar('/perfil')">
                 <i class="bi bi-person me-2"></i>
                 Meu Perfil
               </a>
             </li>
             <li>
-              <a class="dropdown-item" (click)="navigate('/ajuda')">
+              <a class="dropdown-item" (click)="navegar('/ajuda')">
                 <i class="bi bi-question-circle me-2"></i>
                 Ajuda
               </a>
@@ -103,11 +103,11 @@
               </div>
             </div>
             <div class="d-grid gap-2">
-              <button class="btn btn-outline-light btn-sm" (click)="navigate('/perfil')">
+              <button class="btn btn-outline-light btn-sm" (click)="navegar('/perfil')">
                 <i class="bi bi-person me-2"></i>
                 Meu Perfil
               </button>
-              <button class="btn btn-outline-light btn-sm" (click)="navigate('/ajuda')">
+              <button class="btn btn-outline-light btn-sm" (click)="navegar('/ajuda')">
                 <i class="bi bi-question-circle me-2"></i>
                 Ajuda
               </button>
@@ -123,18 +123,18 @@
                [class.active]="isActiveRoute('/pessoa-idosa')"
                [class.bg-white]="isActiveRoute('/pessoa-idosa')"
                [class.text-primary]="isActiveRoute('/pessoa-idosa')"
-               (click)="navigate('/pessoa-idosa')"
+               (click)="navegar('/pessoa-idosa')"
                style="cursor: pointer; text-decoration: none;">
               <i class="bi bi-people me-2"></i>
               Pessoas Idosas
             </a>
             <ng-container *ngIf="userWithRole$ | async as user">
               <a class="nav-link text-white-50 py-2 px-3 rounded mt-2" 
-                 *ngIf="user.role === 'admin'"
+                 *ngIf="user.cargo === 'Administrador'"
                  [class.active]="isActiveRoute('/usuario')"
                  [class.bg-white]="isActiveRoute('/usuario')"
                  [class.text-primary]="isActiveRoute('/usuario')"
-                 (click)="navigate('/usuario')"
+                 (click)="navegar('/usuario')"
                  style="cursor: pointer; text-decoration: none;">
                 <i class="bi bi-person me-2"></i>
                 Usuários

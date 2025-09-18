@@ -1,7 +1,7 @@
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { AuditService } from '../services/audit.service';
-import { MetricsService } from '../services/metrics.service';
-import { StorageService } from '../services/storage.service';
+import { ServicoAuditoria } from '../services/audit.service';
+import { ServicoMetricas } from '../services/metrics.service';
+import { ServicoArmazenamento } from '../services/storage.service';
 import { PessoaIdosaData, AuditAction } from '../types';
 
 export const onPessoaIdosaCreated = onDocumentCreated('pessoas-idosas/{id}', async (event) => {
@@ -14,7 +14,7 @@ export const onPessoaIdosaCreated = onDocumentCreated('pessoas-idosas/{id}', asy
   }
 
   try {
-    await AuditService.writePessoaIdosaAudit(
+    await ServicoAuditoria.writePessoaIdosaAudit(
       id,
       AuditAction.CREATE,
       null,
@@ -22,7 +22,7 @@ export const onPessoaIdosaCreated = onDocumentCreated('pessoas-idosas/{id}', asy
       after.createdBy || null
     );
 
-    await MetricsService.incrementPessoas(1);
+    await ServicoMetricas.incrementPessoas(1);
     console.log(`Pessoa idosa criada: ${id}`);
   } catch (error) {
     console.error('Erro ao processar criação de pessoa idosa:', error);
@@ -47,7 +47,7 @@ export const onPessoaIdosaUpdated = onDocumentUpdated('pessoas-idosas/{id}', asy
     }
 
     // Auditoria
-    await AuditService.writePessoaIdosaAudit(
+    await ServicoAuditoria.writePessoaIdosaAudit(
       id,
       action,
       before,
@@ -56,13 +56,13 @@ export const onPessoaIdosaUpdated = onDocumentUpdated('pessoas-idosas/{id}', asy
     );
 
     // Limpar anexos removidos
-    const removedPaths = StorageService.extractRemovedAnexoPaths(
+    const removedPaths = ServicoArmazenamento.extractRemovedAnexoPaths(
       before?.anexos,
       after?.anexos
     );
 
     if (removedPaths.length > 0) {
-      await StorageService.deleteFiles(removedPaths);
+      await ServicoArmazenamento.deleteFiles(removedPaths);
       console.log(`${removedPaths.length} anexos removidos para pessoa ${id}`);
     }
 
@@ -79,15 +79,15 @@ export const onPessoaIdosaDeleted = onDocumentDeleted('pessoas-idosas/{id}', asy
   try {
     // Deletar anexos do storage
     const anexos = before?.anexos || [];
-    const anexoPaths = StorageService.getAnexoPaths(anexos);
+    const anexoPaths = ServicoArmazenamento.getAnexoPaths(anexos);
     
     if (anexoPaths.length > 0) {
-      await StorageService.deleteFiles(anexoPaths);
+      await ServicoArmazenamento.deleteFiles(anexoPaths);
       console.log(`${anexoPaths.length} anexos removidos para pessoa ${id}`);
     }
 
     // Auditoria
-    await AuditService.writePessoaIdosaAudit(
+    await ServicoAuditoria.writePessoaIdosaAudit(
       id,
       AuditAction.DELETE,
       before,
@@ -96,7 +96,7 @@ export const onPessoaIdosaDeleted = onDocumentDeleted('pessoas-idosas/{id}', asy
     );
 
     // Decrementar métrica
-    await MetricsService.incrementPessoas(-1);
+    await ServicoMetricas.incrementPessoas(-1);
 
     console.log(`Pessoa idosa deletada: ${id}`);
   } catch (error) {

@@ -3,22 +3,19 @@
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-xl-11">
-      <!-- Header Section -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 class="h2 mb-1 fw-bold text-primary">Usuários do Sistema</h1>
           <p class="text-muted mb-0">Gerencie os usuários e permissões do sistema</p>
         </div>
-        <button class="btn btn-primary btn-lg" (click)="navigate('/usuario/novo')">
+        <button class="btn btn-primary btn-lg" (click)="navegar('/usuario/novo')">
           <i class="bi bi-plus-circle me-2"></i>
           Adicionar Usuário
         </button>
       </div>
 
-      <!-- Content Section -->
       <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
-          <!-- Loading State -->
           <div class="text-center py-5" *ngIf="(usuarios$ | async) === null">
             <div class="spinner-border text-primary mb-3" role="status">
               <span class="visually-hidden">Carregando...</span>
@@ -26,7 +23,6 @@
             <p class="text-muted">Carregando usuários...</p>
           </div>
 
-          <!-- Users Table -->
           <div *ngIf="(usuarios$ | async) as usuarios">
             <div class="table-responsive">
               <table class="table table-hover mb-0">
@@ -44,7 +40,7 @@
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                          <span class="fw-semibold">{{ getUserInitials(usuario.email) }}</span>
+                          <span class="fw-semibold">{{ obterIniciaisDoUsuario(usuario.email) }}</span>
                         </div>
                         <div>
                           <div class="fw-semibold">{{ usuario.nome }}</div>
@@ -55,9 +51,9 @@
                       <span class="text-muted">{{ usuario.email }}</span>
                     </td>
                     <td>
-                      <span class="badge badge-role" style="min-width: 88px" [class.bg-warning]="usuario.role === 'admin'" [class.bg-info]="usuario.role !== 'admin'">
-                        <i class="bi me-1" [class.bi-hammer]="usuario.role === 'admin'" [class.bi-person]="usuario.role !== 'admin'"></i>
-                        {{ usuario.role === 'admin' ? 'Admin' : 'Usuário' }}
+                      <span class="badge badge-role" style="min-width: 88px" [class.bg-warning]="usuario.cargo === 'Administrador'" [class.bg-info]="usuario.cargo !== 'Administrador'">
+                        <i class="bi me-1" [class.bi-hammer]="usuario.cargo === 'Administrador'" [class.bi-person]="usuario.cargo !== 'Administrador'"></i>
+                        {{ usuario.cargo === 'Administrador' ? 'Admin' : 'Usuário' }}
                       </span>
                     </td>
                     <td>
@@ -67,29 +63,29 @@
                     </td>
                     <td>
                       <div class="btn-group" role="group">
-                        <button 
-                          class="btn btn-outline-primary btn-sm btn-equal" 
-                          (click)="editar(usuario.id)" 
+                        <button
+                          class="btn btn-outline-primary btn-sm btn-equal"
+                          (click)="editar(usuario.id)"
                           title="Editar usuário"
                         >
                           <i class="bi bi-pencil me-1"></i>
                           Editar
                         </button>
                         
-                        <button 
-                          *ngIf="!usuario.ativo" 
-                          class="btn btn-outline-success btn-sm btn-equal" 
-                          (click)="solicitarAtivar(usuario.id)" 
+                        <button
+                          *ngIf="!usuario.ativo"
+                          class="btn btn-outline-success btn-sm btn-equal"
+                          (click)="solicitarAlterarAtivo(usuario.id, true)"
                           title="Ativar usuário"
                         >
                           <i class="bi bi-check-circle me-1"></i>
                           Ativar
                         </button>
                         
-                        <button 
-                          *ngIf="usuario.ativo" 
-                          class="btn btn-outline-warning btn-sm btn-equal" 
-                          (click)="solicitarInativar(usuario.id)" 
+                        <button
+                          *ngIf="usuario.ativo"
+                          class="btn btn-outline-warning btn-sm btn-equal"
+                          (click)="solicitarAlterarAtivo(usuario.id, false)"
                           title="Inativar usuário"
                         >
                           <i class="bi bi-pause-circle me-1"></i>
@@ -102,14 +98,13 @@
               </table>
             </div>
 
-            <!-- Empty State -->
             <div class="text-center py-5" *ngIf="usuarios.length === 0">
               <div class="display-1 text-muted mb-3">
-              <i class="bi bi-people-fill" style="font-size: 4rem;"></i>
-            </div>
+                <i class="bi bi-people-fill" style="font-size: 4rem;"></i>
+              </div>
               <h3 class="h4 text-muted mb-2">Nenhum usuário cadastrado</h3>
               <p class="text-muted mb-3">Comece adicionando o primeiro usuário ao sistema</p>
-              <button class="btn btn-primary btn-lg" (click)="navigate('/usuario/novo')">
+              <button class="btn btn-primary btn-lg" (click)="navegar('/usuario/novo')">
                 <i class="bi bi-plus-circle me-2"></i>
                 Adicionar Primeiro Usuário
               </button>
@@ -121,24 +116,11 @@
   </div>
 </div>
 
-<!-- Ativar Confirmation Modal -->
 <app-modal
-  [show]="showAtivarModal"
-  title="Ativar Usuário"
-  message="Tem certeza que deseja ativar este usuário?"
-  confirmText="Ativar"
-  cancelText="Cancelar"
-  (confirm)="confirmarAtivar()"
-  (cancel)="cancelarAtivar()">
-</app-modal>
-
-<!-- Inativar Confirmation Modal -->
-<app-modal
-  [show]="showInativarModal"
-  title="Inativar Usuário"
-  message="Tem certeza que deseja inativar este usuário?"
-  confirmText="Inativar"
-  cancelText="Cancelar"
-  (confirm)="confirmarInativar()"
-  (cancel)="cancelarInativar()">
+  [mostrar]="mostrarModalRemover"
+  [titulo]="tituloModal + ' Usuário'"
+  [mensagem]="'Tem certeza que deseja ' + mensagemModal + ' este usuário?'"
+  [confirmarTexto]="tituloModal"
+  (confirmar)="confirmarAlterarAtivo()"
+  (cancelar)="cancelarAlterarAtivo()">
 </app-modal>

@@ -1,6 +1,6 @@
-export enum Usuario {
-  Admin = 'admin',
-  User = 'user'
+export enum CargoUsuario {
+  Administrador = 'Administrador',
+  Usuario = 'Usuário'
 }
 
 export enum Beneficio {
@@ -22,7 +22,7 @@ export enum Renda {
 
 export enum SituacaoOcupacional {
   AssalariadoCarteiraAssinadaOuFuncionarioPublico = 'Assalariado (Carteira Assinada) ou Funcionário Público',
-  AssalariadoSemarteiraAssinada = 'Assalariado (Sem Carteira Assinada)',
+  AssalariadoSemCarteiraAssinada = 'Assalariado (Sem Carteira Assinada)',
   Aposentado = 'Aposentado',
   Pensionista = 'Pensionista',
   Diarista = 'Diarista',
@@ -53,7 +53,7 @@ export enum Deficiencia {
   Outra = 'Outra'
 }
 
-export enum NivelSerieAtualConcluido {
+export enum Escolaridade {
   EducacaoInfantil = 'Educação Infantil',
   EnsinoFundamentalCompleto = 'Ensino Fundamental Completo',
   EnsinoFundamentalIncompleto = 'Ensino Fundamental Incompleto',
@@ -63,7 +63,7 @@ export enum NivelSerieAtualConcluido {
   SuperiorIncompleto = 'Superior Incompleto'
 }
 
-export enum CursoTecnicoFormacaoProfissional {
+export enum TipoFormacaoProfissional {
   Nao = 'Não',
   Tecnico = 'Técnico',
   MOVA = 'MOVA',
@@ -80,7 +80,7 @@ export enum ProblemaDeSaude {
   Cardiaca = 'Cardíaca',
   Osteoporose = 'Osteoporose',
   Artrose = 'Artrose',
-  Colunas = 'Colunas',
+  Coluna = 'Coluna',
   Epilepsia = 'Epilepsia',
   HIV = 'HIV',
   Hanseniase = 'Hanseníase',
@@ -95,4 +95,11 @@ export enum Moradia {
   Cedida = 'Cedida',
   Institucionalizada = 'Institucionalizada',
   Outro = 'Outro'
+}
+
+export enum EstadoCivil {
+  Solteiro = 'Solteiro(a)',
+  Casado = 'Casado(a)',
+  Divorciado = 'Divorciado(a)',
+  Viuvo = 'Viúvo(a)'
 }

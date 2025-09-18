@@ -1,7 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { AuditRecord, AuditAction, Collection, UsuarioData, PessoaIdosaData } from '../types';
 
-export class AuditService {
+export class ServicoAuditoria {
   private static nowTs(): number {
     return Date.now();
   }

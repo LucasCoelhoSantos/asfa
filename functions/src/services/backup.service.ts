@@ -2,7 +2,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { BACKUP_CONFIG } from '../types';
 
-export class BackupService {
+export class ServicoBackup {
   private static generateBackupPrefix(): string {
     const date = new Date();
     const yyyy = date.getUTCFullYear();

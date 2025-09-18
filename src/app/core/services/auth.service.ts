@@ -5,17 +5,17 @@ import { from, Observable, map, switchMap, of } from 'rxjs';
 import { Usuario } from '../../models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
+export class AutenticacaoService {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
 
-  user$: Observable<User | null> = new Observable((subscriber) => {
+  usuario$: Observable<User | null> = new Observable((subscriber) => {
     return onAuthStateChanged(this.auth, subscriber);
   });
 
-  isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user));
+  estaLogado$: Observable<boolean> = this.usuario$.pipe(map(user => !!user));
 
-  userWithRole$: Observable<Usuario | null> = this.user$.pipe(
+  usuarioComCargo$: Observable<Usuario | null> = this.usuario$.pipe(
     switchMap(user => {
       if (!user) return of(null);
       const docRef = doc(this.firestore, 'usuarios', user.uid);
@@ -23,13 +23,13 @@ export class AuthService {
     })
   );
 
-  login(email: string, password: string): Observable<User> {
-    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+  entrar(email: string, senha: string): Observable<User> {
+    return from(signInWithEmailAndPassword(this.auth, email, senha)).pipe(
       map(cred => cred.user)
     );
   }
-
-  logout(): Observable<void> {
+  
+  sair(): Observable<void> {
     return from(signOut(this.auth));
   }
 }

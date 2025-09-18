@@ -1,15 +1,15 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AutenticacaoService } from '../services/auth.service';
 import { map, take } from 'rxjs';
 
-export const AuthGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+export const AutenticacaoGuard: CanActivateFn = () => {
+  const authService = inject(AutenticacaoService);
   const router = inject(Router);
-  return authService.isLoggedIn$.pipe(
+  return authService.estaLogado$.pipe(
     take(1),
-    map(isLoggedIn => {
-      return isLoggedIn ? true : router.createUrlTree(['/login']);
+    map(estaLogado => {
+      return estaLogado ? true : router.createUrlTree(['/login']);
     })
   );
 };

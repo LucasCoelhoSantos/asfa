@@ -9,7 +9,6 @@ import { SkeletonComponent } from './skeleton.component';
   template: `
     <div class="card border-0 shadow-sm">
       <div class="card-body p-4">
-        <!-- Header Skeleton -->
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div class="skeleton-title">
             <app-skeleton type="title" width="200px"></app-skeleton>
@@ -20,7 +19,6 @@ import { SkeletonComponent } from './skeleton.component';
           </div>
         </div>
         
-        <!-- Filters Skeleton -->
         <div class="d-flex gap-3 mb-4 flex-wrap">
           <app-skeleton type="text" width="150px" height="40px"></app-skeleton>
           <app-skeleton type="text" width="150px" height="40px"></app-skeleton>
@@ -28,7 +26,6 @@ import { SkeletonComponent } from './skeleton.component';
           <app-skeleton type="text" width="150px" height="40px"></app-skeleton>
         </div>
         
-        <!-- Table Skeleton -->
         <div class="table-responsive">
           <table class="table table-hover">
             <thead class="table-light">

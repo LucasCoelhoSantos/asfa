@@ -2,11 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsuarioService } from '../../core/services/usuario.service';
-import { AuthService } from '../../core/services/auth.service';
+import { AutenticacaoService } from '../../core/services/auth.service';
 import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { ROLES_USUARIO_OPTIONS } from '../../shared/constants/app.constants';
+import { CargoUsuario } from '../../models/enums';
+import { CARGOS_USUARIO_OPCOES } from '../../shared/constants/app.constants';
 
 @Component({
   selector: 'app-usuario-form',
@@ -17,67 +18,67 @@ import { ROLES_USUARIO_OPTIONS } from '../../shared/constants/app.constants';
 export class UsuarioFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private usuarioService = inject(UsuarioService);
-  private authService = inject(AuthService);
+  private autenticacaoService = inject(AutenticacaoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   form: FormGroup;
-  loading = false;
-  error: string | null = null;
-  editMode = false;
-  isProfileMode = false;
+  carregando = false;
+  erro: string | null = null;
+  eModoEdicao = false;
+  eModoPerfil = false;
   usuarioId: string | null = null;
-  roles = ROLES_USUARIO_OPTIONS;
-  showPassword = false;
+  cargos: CargoUsuario[] = CARGOS_USUARIO_OPCOES as CargoUsuario[];
+  mostrarSenha = false;
 
   constructor() {
     this.form = this.fb.group({
       nome: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       senha: ['', []],
-      role: ['', [Validators.required]],
+      cargo: ['', [Validators.required]],
       ativo: [true]
     });
   }
 
   async ngOnInit() {
-    this.isProfileMode = this.route.snapshot.url[0]?.path === 'perfil';
+    this.eModoPerfil = this.route.snapshot.url[0]?.path === 'perfil';
     
-    if (this.isProfileMode) {
-      this.editMode = true;
-      this.loading = true;
+    if (this.eModoPerfil) {
+      this.eModoEdicao = true;
+      this.carregando = true;
       try {
-        const user = await firstValueFrom(this.authService.userWithRole$);
-        if (user && 'nome' in user && 'email' in user) {
+        const usuario = await firstValueFrom(this.autenticacaoService.usuarioComCargo$);
+        if (usuario && 'nome' in usuario && 'email' in usuario) {
           this.form.patchValue({
-            nome: user.nome,
-            email: user.email,
+            nome: usuario.nome,
+            email: usuario.email,
             senha: ''
           });
         }
         this.form.get('senha')?.clearValidators();
         this.form.get('senha')?.updateValueAndValidity();
       } catch (e) {
-        this.error = 'Erro ao carregar dados do usuário.';
+        this.erro = 'Erro ao carregar dados do usuário.';
       }
-      this.loading = false;
+      this.carregando = false;
     } else {
       this.usuarioId = this.route.snapshot.paramMap.get('id');
-      this.editMode = !!this.usuarioId;
+      this.eModoEdicao = !!this.usuarioId;
       
-      if (this.editMode && this.usuarioId) {
-        this.loading = true;
+      if (this.eModoEdicao && this.usuarioId) {
+        this.carregando = true;
         try {
-          const usuario = await firstValueFrom(this.usuarioService.getById(this.usuarioId));
+          const usuario = await firstValueFrom(this.usuarioService.obterPorId(this.usuarioId));
           if (usuario) {
             this.form.patchValue({ ...usuario, senha: '' });
           }
           this.form.get('senha')?.clearValidators();
           this.form.get('senha')?.updateValueAndValidity();
         } catch (e) {
-          this.error = 'Erro ao carregar dados.';
+          this.erro = 'Erro ao carregar dados.';
         }
-        this.loading = false;
+        this.carregando = false;
       } else {
         this.form.get('senha')?.setValidators([Validators.required, Validators.minLength(6)]);
         this.form.get('senha')?.updateValueAndValidity();
@@ -85,39 +86,39 @@ export class UsuarioFormComponent implements OnInit {
     }
   }
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
+  alternarSenha() {
+    this.mostrarSenha = !this.mostrarSenha;
   }
 
-  async onSubmit() {
+  async aoEnviar() {
     if (this.form.invalid) return;
-    this.loading = true;
-    this.error = null;
-    const { nome, email, senha, role, ativo } = this.form.value;
+    this.carregando = true;
+    this.erro = null;
+    const { nome, email, senha, cargo, ativo } = this.form.value;
     
     try {
-      if (this.isProfileMode) {
-        const updateData: any = { nome, email };
+      if (this.eModoPerfil) {
+        const dadosEditados: any = { nome, email };
         if (senha && senha.trim()) {
-          updateData.senha = senha;
+          dadosEditados.senha = senha;
         }
-        await this.usuarioService.updateSelf(updateData);
+        await this.usuarioService.editarPerfil(dadosEditados);
         this.router.navigate(['/pessoa-idosa']);
-      } else if (this.editMode && this.usuarioId) {
-        await this.usuarioService.update(this.usuarioId, { nome, email, role, ativo });
+      } else if (this.eModoEdicao && this.usuarioId) {
+        await this.usuarioService.editar(this.usuarioId, { nome, email, cargo, ativo });
         this.router.navigate(['/usuario']);
       } else {
-        await this.usuarioService.create({ nome, email, role, ativo: true }, senha);
+        await this.usuarioService.criar({ nome, email, cargo, ativo: true }, senha);
         this.router.navigate(['/usuario']);
       }
     } catch (e) {
-      this.error = 'Erro ao salvar.';
+      this.erro = 'Erro ao salvar.';
     }
-    this.loading = false;
+    this.carregando = false;
   }
 
   voltarParaLista() {
-    if (this.isProfileMode) {
+    if (this.eModoPerfil) {
       this.router.navigate(['/pessoa-idosa']);
     } else {
       this.router.navigate(['/usuario']);

@@ -1,0 +1,111 @@
+<div *ngIf="formGroup" [formGroup]="formGroup" class="container-fluid p-0">
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <label for="cep" class="form-label fw-semibold text-dark">
+        CEP <span class="text-danger">*</span>
+      </label>
+      <div class="input-group">
+        <input 
+          id="cep"
+          class="form-control"
+          formControlName="cep"
+          maxlength="9"
+          placeholder="00000-000"
+          appMask="cep"
+          (blur)="borrarCep()"
+          [class.is-invalid]="cepError"
+        />
+        <button 
+          type="button"
+          class="btn btn-primary d-flex align-items-center gap-1"
+          (click)="buscarCep()"
+          [disabled]="cepLoading || !formGroup.get('cep')?.value"
+        >
+          <span *ngIf="!cepLoading" class="d-flex align-items-center gap-1">
+            <i class="bi bi-search"></i>
+            Buscar
+          </span>
+          <span *ngIf="cepLoading" class="d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Buscando...
+          </span>
+        </button>
+      </div>
+      <div *ngIf="cepError" class="invalid-feedback d-flex align-items-center gap-1">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ cepError }}
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <label for="moradia" class="form-label fw-semibold text-dark">
+        Tipo de Moradia <span class="text-danger">*</span>
+      </label>
+      <select id="moradia" class="form-select" formControlName="moradia">
+        <option value="">Selecione o tipo</option>
+        <option *ngFor="let moradia of moradiasOptions" [value]="moradia">{{ moradia }}</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-lg-8">
+      <label for="logradouro" class="form-label fw-semibold text-dark">
+        Logradouro <span class="text-danger">*</span>
+      </label>
+      <input 
+        id="logradouro" 
+        class="form-control" 
+        formControlName="logradouro" 
+        placeholder="Rua, Avenida, etc." 
+      />
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <label for="numero" class="form-label fw-semibold text-dark">
+        Número <span class="text-danger">*</span>
+      </label>
+      <input 
+        id="numero" 
+        class="form-control" 
+        formControlName="numero" 
+        placeholder="123" 
+      />
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <label for="bairro" class="form-label fw-semibold text-dark">
+        Bairro <span class="text-danger">*</span>
+      </label>
+      <input 
+        id="bairro" 
+        class="form-control" 
+        formControlName="bairro" 
+        placeholder="Nome do bairro" 
+      />
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <label for="cidade" class="form-label fw-semibold text-dark">
+        Cidade <span class="text-danger">*</span>
+      </label>
+      <input 
+        id="cidade" 
+        class="form-control" 
+        formControlName="cidade" 
+        placeholder="Nome da cidade" 
+      />
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <label for="estado" class="form-label fw-semibold text-dark">
+        Estado <span class="text-danger">*</span>
+      </label>
+      <input 
+        id="estado" 
+        class="form-control" 
+        formControlName="estado" 
+        maxlength="2" 
+        placeholder="UF" 
+      />
+    </div>
+  </div>
+</div>

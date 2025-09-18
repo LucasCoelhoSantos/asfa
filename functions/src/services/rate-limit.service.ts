@@ -1,7 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { RateLimitData, Collection, RATE_LIMIT_CONFIG } from '../types';
 
-export class RateLimitService {
+export class ServicoRateLimit {
   static async checkRateLimit(uid: string): Promise<boolean> {
     try {
       const db = getFirestore();

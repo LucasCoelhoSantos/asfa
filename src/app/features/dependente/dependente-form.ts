@@ -1,14 +1,13 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Dependente } from '../../models/pessoa-idosa.model';
+import { Dependente } from '../../models/dependente.model';
 
 @Component({
   selector: 'app-dependente-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './dependente-form.html',
-  //styleUrls: ['./dependente-form.scss']
+  templateUrl: './dependente-form.html'
 })
 export class DependenteFormComponent implements OnInit {
   @Input() dependente?: Dependente;
@@ -37,12 +36,12 @@ export class DependenteFormComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  aoEnviar() {
     if (this.form.invalid) return;
     this.save.emit(this.form.value);
   }
-
-  onCancel() {
+  
+  aoCancelar() {
     this.cancel.emit();
   }
 }

@@ -1,7 +1,7 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AutenticacaoService } from '../../../core/services/auth.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -14,11 +14,11 @@ export class MainMenuComponent {
   menuOpen = signal(false);
   currentRoute = signal('');
 
-  private authService = inject(AuthService);
+  private authService = inject(AutenticacaoService);
   private router = inject(Router);
 
-  user$ = this.authService.user$;
-  userWithRole$ = this.authService.userWithRole$;
+  user$ = this.authService.usuario$;
+  userWithRole$ = this.authService.usuarioComCargo$;
 
   constructor() {
     this.router.events.pipe(
@@ -28,7 +28,7 @@ export class MainMenuComponent {
     });
   }
 
-  navigate(path: string) {
+  navegar(path: string) {
     this.router.navigate([path]);
     this.menuOpen.set(false);
   }
@@ -63,7 +63,7 @@ export class MainMenuComponent {
   }
 
   logout() {
-    this.authService.logout().subscribe(() => {
+    this.authService.sair().subscribe(() => {
       this.router.navigate(['/login']);
     });
   }

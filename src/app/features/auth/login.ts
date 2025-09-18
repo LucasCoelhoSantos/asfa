@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { AutenticacaoService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.html',
-  //styleUrls: ['./login.scss']
+  templateUrl: './login.html'
 })
 export class LoginComponent {
   form: FormGroup;
@@ -18,26 +17,26 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private autenticacaoService: AutenticacaoService,
     private router: Router
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      senha: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  onSubmit() {
+  aoEnviar() {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = null;
-    const { email, password } = this.form.value;
-    this.authService.login(email, password).subscribe({
+    const { email, senha } = this.form.value;
+    this.autenticacaoService.entrar(email, senha).subscribe({
       next: () => {
         this.router.navigate(['/pessoa-idosa']);
       },
       error: (err) => {
-        this.error = this.getErrorMessage(err);
+        this.error = this.obterMensagemDeErro(err);
         this.loading = false;
       },
       complete: () => {
@@ -46,7 +45,7 @@ export class LoginComponent {
     });
   }
 
-  getErrorMessage(error: any): string {
+  obterMensagemDeErro(error: any): string {
     if (error?.code === 'auth/user-not-found' || error?.code === 'auth/wrong-password' || error?.code === 'auth/invalid-credential' || error?.code === 'auth/invalid-email') {
       return 'E-mail ou senha inválidos.';
     }
@@ -56,7 +55,7 @@ export class LoginComponent {
     return 'Erro ao fazer login. Tente novamente.';
   }
 
-  goHome() {
+  irParaInicio() {
     this.router.navigate(['/']);
   }
 }

@@ -1,7 +1,7 @@
 import { getStorage } from 'firebase-admin/storage';
 import { AnexoData } from '../types';
 
-export class StorageService {
+export class ServicoArmazenamento {
   static async deleteFile(path: string): Promise<void> {
     if (!path) return;
     

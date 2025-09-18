@@ -1,30 +1,30 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PessoaIdosaService, FiltrosPessoaIdosa, PaginacaoResult } from './pessoa-idosa.service';
+import { PessoaIdosaService, FiltrosPessoaIdosa, ResultadoPaginacao } from './pessoa-idosa.service';
 import { PessoaIdosa } from '../../models/pessoa-idosa.model';
 import { Router } from '@angular/router';
 import { MainMenuComponent } from '../../shared/components/main-menu/main-menu';
 import { TableSkeletonComponent } from '../../shared/components/skeleton/table-skeleton.component';
 import { ModalComponent } from '../../shared/components/modal/modal';
-import { NotificationService } from '../../core/services/notification.service';
+import { NotificacaoService } from '../../core/services/notificacao.service';
 import { CpfPipe } from '../../shared/pipes/cpf.pipe';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 import { CepPipe } from '../../shared/pipes/cep.pipe';
 import { RgPipe } from '../../shared/pipes/rg.pipe';
-import { loadAndResizeImageAsBase64 } from '../../shared/utils/image.utils';
+import { PdfService } from '../../shared/services/pdf.service';
 import { MaskDirective } from '../../shared/directives/mask.directive';
 import { Observable, Subject, BehaviorSubject, takeUntil } from 'rxjs';
 import { 
-  ESTADOS_CIVIS, 
-  MORADIAS_OPTIONS,
-  BENEFICIOS_OPTIONS,
-  RENDAS_OPTIONS,
-  SITUACOES_OCUPACIONAIS_OPTIONS,
-  APOSENTADOS_OPTIONS,
-  DEFICIENCIAS_OPTIONS,
-  NIVEIS_SERIE_OPTIONS,
-  CURSOS_FORMACAO_OPTIONS,
-  PROBLEMAS_SAUDE_OPTIONS
+  ESTADO_CIVIL_OPCOES, 
+  MORADIAS_OPCOES,
+  BENEFICIOS_OPCOES,
+  RENDAS_OPCOES,
+  SITUACOES_OCUPACIONAIS_OPCOES,
+  APOSENTADO_OPCOES,
+  DEFICIENCIA_OPCOES,
+  ESCOLARIDADE_OPCOES,
+  TIPO_FORMACAO_PROFISSIONAL_OPCOES,
+  PROBLEMA_DE_SAUDE_OPCOES
 } from '../../shared/constants/app.constants';
 const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
 
@@ -37,12 +37,13 @@ const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
 export class PessoaIdosaListComponent implements OnInit, OnDestroy {
   private pessoaIdosaService = inject(PessoaIdosaService);
   private router = inject(Router);
-  private notificationService = inject(NotificationService);
+  private notificationService = inject(NotificacaoService);
   private cdr = inject(ChangeDetectorRef);
-  private destroy$ = new Subject<void>();
+  private pdfService = inject(PdfService);
+  private readonly destroy$ = new Subject<void>();
 
-  pessoas$!: Observable<PaginacaoResult>;
-  loading$ = new BehaviorSubject<boolean>(false);
+  pessoas$!: Observable<ResultadoPaginacao>;
+  public readonly loading$ = new BehaviorSubject<boolean>(false);
 
   filtro: FiltrosPessoaIdosa = {
     nome: '',
@@ -53,24 +54,24 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     cep: ''
   };
 
-  pageSizeOptions = PAGE_SIZE_OPTIONS;
-  pageSize = 20;
-  pageIndex = 0;
-  lastDoc: any = null;
+  opcoesTamanhoPagina = PAGE_SIZE_OPTIONS;
+  tamanhoPagina = 20;
+  indicePagina = 0;
+  ultimoDocumento: any = null;
   total = 0;
-  hasMore = false;
+  temMais = false;
 
-  estadosCivis = ESTADOS_CIVIS;
+  estadosCivis = ESTADO_CIVIL_OPCOES;
   
-  beneficios = BENEFICIOS_OPTIONS;
-  rendas = RENDAS_OPTIONS;
-  situacoesOcupacionais = SITUACOES_OCUPACIONAIS_OPTIONS;
-  aposentados = APOSENTADOS_OPTIONS;
-  deficiencias = DEFICIENCIAS_OPTIONS;
-  niveisSerie = NIVEIS_SERIE_OPTIONS;
-  cursosFormacao = CURSOS_FORMACAO_OPTIONS;
-  problemasSaude = PROBLEMAS_SAUDE_OPTIONS;
-  moradias = MORADIAS_OPTIONS;
+  beneficios = BENEFICIOS_OPCOES;
+  rendas = RENDAS_OPCOES;
+  situacoesOcupacionais = SITUACOES_OCUPACIONAIS_OPCOES;
+  aposentados = APOSENTADO_OPCOES;
+  deficiencias = DEFICIENCIA_OPCOES;
+  niveisSerie = ESCOLARIDADE_OPCOES;
+  cursosFormacao = TIPO_FORMACAO_PROFISSIONAL_OPCOES;
+  problemasSaude = PROBLEMA_DE_SAUDE_OPCOES;
+  moradias = MORADIAS_OPCOES;
 
   filtroAvancado = {
     alfabetizado: false,
@@ -86,10 +87,27 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     moradias: ''
   };
 
-  showInativarModal = false;
-  showAtivarModal = false;
+  mostrarModalConfirmacao = false;
   private idPendenteAcao: string | null = null;
   private acaoPendente: 'ativar' | 'inativar' | null = null;
+
+  get tituloConfirmacao(): string {
+    if (this.acaoPendente === 'ativar') return 'Ativar registro';
+    if (this.acaoPendente === 'inativar') return 'Inativar registro';
+    return '';
+  }
+
+  get mensagemConfirmacao(): string {
+    if (this.acaoPendente === 'ativar') return 'Tem certeza que deseja ativar este registro?';
+    if (this.acaoPendente === 'inativar') return 'Tem certeza que deseja inativar este registro?';
+    return '';
+  }
+
+  get confirmarTexto(): string {
+    if (this.acaoPendente === 'ativar') return 'Ativar';
+    if (this.acaoPendente === 'inativar') return 'Inativar';
+    return '';
+  }
 
   ngOnInit() {
     this.carregarDadosIniciais();
@@ -105,10 +123,10 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     this.pessoaIdosaService.aplicarFiltros({});
     this.pessoas$ = this.pessoaIdosaService.pessoas$!;
     
-    this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      this.total = result.total;
-      this.hasMore = result.hasMore;
-      this.lastDoc = result.lastDoc;
+    this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
+      this.total = resultado.total;
+      this.temMais = resultado.temMais;
+      this.ultimoDocumento = resultado.ultimoDocumento;
       this.loading$.next(false);
       this.cdr.detectChanges();
     });
@@ -116,16 +134,16 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
 
   buscar() {
     this.loading$.next(true);
-    this.pageIndex = 0;
-    this.lastDoc = null;
+    this.indicePagina = 0;
+    this.ultimoDocumento = null;
     
     this.pessoaIdosaService.aplicarFiltros(this.filtro);
     this.pessoas$ = this.pessoaIdosaService.pessoas$!;
     
-    this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(result => {
-      this.total = result.total;
-      this.hasMore = result.hasMore;
-      this.lastDoc = result.lastDoc;
+    this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
+      this.total = resultado.total;
+      this.temMais = resultado.temMais;
+      this.ultimoDocumento = resultado.ultimoDocumento;
       this.loading$.next(false);
       this.cdr.detectChanges();
     });
@@ -158,7 +176,7 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     this.buscar();
   }
 
-  setFiltro(campo: keyof FiltrosPessoaIdosa, valor: string | boolean | undefined) {
+  definirFiltro(campo: keyof FiltrosPessoaIdosa, valor: string | boolean | undefined) {
     if (campo === 'ativo') {
       this.filtro.ativo = valor === 'ativo' ? true : valor === 'inativo' ? false : undefined;
     } else {
@@ -166,16 +184,16 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     }
   }
   
-  setPageSize(size: number) { 
-    this.pageSize = size; 
+  definirTamanhoPagina(tamanho: number) { 
+    this.tamanhoPagina = tamanho; 
     this.buscar();
   }
 
-  setPageIndex(index: number) {
-    if (index < 0) return;
-    this.pageIndex = index;
+  definirIndicePagina(indice: number) {
+    if (indice < 0) return;
+    this.indicePagina = indice;
     this.loading$.next(true);
-    this.pessoaIdosaService.setPaginacao(this.pageSize, this.lastDoc);
+    this.pessoaIdosaService.definirPaginacao(this.tamanhoPagina, this.ultimoDocumento);
   }
 
   editar(id: string) {
@@ -186,75 +204,51 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     this.router.navigate(['/pessoa-idosa', id, 'visualizar']);
   }
 
-  openInativarConfirm(id: string) {
+  abrirConfirmacao(acao: 'ativar' | 'inativar', id: string) {
     this.idPendenteAcao = id;
-    this.acaoPendente = 'inativar';
-    this.showInativarModal = true;
+    this.acaoPendente = acao;
+    this.mostrarModalConfirmacao = true;
   }
 
-  cancelInativar() {
-    this.showInativarModal = false;
+  cancelarAcao() {
+    this.mostrarModalConfirmacao = false;
     this.idPendenteAcao = null;
     this.acaoPendente = null;
   }
 
-  confirmInativar() {
-    if (!this.idPendenteAcao) return;
-    this.pessoaIdosaService.inativar(this.idPendenteAcao).subscribe({
+  confirmarAcao() {
+    if (!this.idPendenteAcao || !this.acaoPendente) return;
+    const acao = this.acaoPendente;
+    const id = this.idPendenteAcao;
+
+    const obs = acao === 'ativar'
+      ? this.pessoaIdosaService.ativar(id)
+      : this.pessoaIdosaService.inativar(id);
+
+    obs.subscribe({
       next: () => {
-        this.notificationService.showSuccess('Registro inativado com sucesso.');
+        const sucesso = acao === 'ativar' ? 'Registro ativado com sucesso.' : 'Registro inativado com sucesso.';
+        this.notificationService.mostrarSucesso(sucesso);
         this.buscar();
       },
       error: () => {
-        this.notificationService.showError('Erro ao inativar registro.');
+        const erro = acao === 'ativar' ? 'Erro ao ativar registro.' : 'Erro ao inativar registro.';
+        this.notificationService.mostrarErro(erro);
       }
     });
-    this.cancelInativar();
-  }
-
-  openAtivarConfirm(id: string) {
-    this.idPendenteAcao = id;
-    this.acaoPendente = 'ativar';
-    this.showAtivarModal = true;
-  }
-
-  cancelAtivar() {
-    this.showAtivarModal = false;
-    this.idPendenteAcao = null;
-    this.acaoPendente = null;
-  }
-
-  confirmAtivar() {
-    if (!this.idPendenteAcao) return;
-    this.pessoaIdosaService.ativar(this.idPendenteAcao).subscribe({
-      next: () => {
-        this.notificationService.showSuccess('Registro ativado com sucesso.');
-        this.buscar();
-      },
-      error: () => {
-        this.notificationService.showError('Erro ao ativar registro.');
-      }
-    });
-    this.cancelAtivar();
+    this.cancelarAcao();
   }
 
   exportarPdf() {
-    Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable')
-    ]).then(([{ default: jsPDF }, autoTable]) => {
-      const doc = new jsPDF();
-      
-      this.carregarLogoEConverterParaBase64().then(logoBase64 => {
-        this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
-          const pessoasFiltradas = this.aplicarFiltrosAvancados(resultado.pessoas);
-          this.gerarPdf(doc, autoTable, pessoasFiltradas, logoBase64);
-          doc.save('pessoas-idosas.pdf');
-          this.notificationService.showSuccess('PDF gerado com sucesso!');
-        });
-      }).catch(() => {
-        this.notificationService.showError('Erro ao carregar logo. PDF não foi gerado.');
-      });
+    this.pessoas$.pipe(takeUntil(this.destroy$)).subscribe(resultado => {
+      const pessoasFiltradas = this.aplicarFiltrosAvancados(resultado.pessoas);
+      this.pdfService.gerarPdfLista(pessoasFiltradas, {
+        nome: this.filtro.nome,
+        cpf: this.filtro.cpf,
+        estadoCivil: this.filtro.estadoCivil,
+        ativo: this.filtro.ativo
+      }).then(() => this.notificationService.mostrarSucesso('PDF gerado com sucesso!'))
+        .catch(() => this.notificationService.mostrarErro('Erro ao gerar PDF.'));
     });
   }
 
@@ -279,147 +273,21 @@ export class PessoaIdosaListComponent implements OnInit, OnDestroy {
     });
   }
 
-  private gerarPdf(doc: any, autoTable: any, pessoasFiltradas: PessoaIdosa[], logoBase64: string): void {
-    const logoSize = 26;
-    const headerHeight = 35;
-    const margin = 20;
-    
-    this.gerarCabecalho(doc, logoBase64, margin, logoSize, headerHeight);
-    this.gerarInformacoesFiltros(doc, pessoasFiltradas, margin, headerHeight);
-    this.gerarTabela(doc, autoTable, pessoasFiltradas, margin, headerHeight);
-    this.gerarRodape(doc);
+  navegar(caminho: string) {
+    this.router.navigate([caminho]);
   }
 
-  private carregarLogoEConverterParaBase64(): Promise<string> {
-    return loadAndResizeImageAsBase64({ src: '/asfa-logo.png', crossOrigin: 'anonymous', maxWidth: 80, maxHeight: 80, outputType: 'image/png' });
-  }
-
-  private gerarCabecalho(doc: any, logoBase64: string, margin: number, logoSize: number, headerHeight: number): void {
-    doc.addImage(logoBase64, 'PNG', margin, margin, logoSize, logoSize);
-    
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Associação Católica Sagrada Família - Lar Misericordioso', margin + logoSize + 10, margin + 12);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')} - Campo Grande/MS`, margin + logoSize + 10, margin + 22);
-    doc.line(margin, margin + headerHeight, doc.internal.pageSize.width - margin, margin + headerHeight);
-    
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Relatório de Pessoas Idosas Cadastradas', doc.internal.pageSize.width / 2, margin + headerHeight + 10, { align: 'center' });
-  }
-
-  private gerarInformacoesFiltros(doc: any, pessoasFiltradas: PessoaIdosa[], margin: number, headerHeight: number): void {
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    let yPosition = margin + headerHeight + 20;
-    
-    const filtrosAplicados = [];
-    if (this.filtro.nome) filtrosAplicados.push(`Nome: ${this.filtro.nome}`);
-    if (this.filtro.cpf) filtrosAplicados.push(`CPF: ${this.filtro.cpf}`);
-    if (this.filtro.estadoCivil) filtrosAplicados.push(`Estado Civil: ${this.filtro.estadoCivil}`);
-    if (this.filtro.ativo !== undefined) filtrosAplicados.push(`Status: ${this.filtro.ativo ? 'Ativo' : 'Inativo'}`);
-    
-    if (filtrosAplicados.length > 0) {
-      doc.text('Filtros aplicados: ' + filtrosAplicados.join(', '), margin, yPosition);
-      yPosition += 8;
-    }
-    
-    doc.text(`Total de registros: ${pessoasFiltradas.length}`, margin, yPosition);
-  }
-
-  private gerarTabela(doc: any, autoTable: any, pessoasFiltradas: PessoaIdosa[], margin: number, headerHeight: number): void {
-    const yPosition = margin + headerHeight + 30;
-    
-    const headers = ['Nome', 'Data Nasc.', 'Estado Civil', 'CPF', 'RG', 'CEP', 'Status'];
-    const rows = pessoasFiltradas.map(pessoa => [
-      pessoa.nome,
-      new Date(pessoa.dataNascimento).toLocaleDateString('pt-BR'),
-      pessoa.estadoCivil || '-',
-      pessoa.cpf || '-',
-      pessoa.rg || '-',
-      pessoa.endereco?.cep || '-',
-      pessoa.ativo ? 'Ativo' : 'Inativo'
-    ]);
-
-    try {
-      autoTable.default(doc, {
-        head: [headers],
-        body: rows,
-        startY: yPosition,
-        styles: { 
-          fontSize: 9,
-          cellPadding: 3
-        },
-        headStyles: {
-          fillColor: [70, 130, 180],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        alternateRowStyles: {
-          fillColor: [245, 245, 245]
-        },
-        margin: { left: margin, right: margin }
-      });
-    } catch (error) {
-      this.desenharTabelaManual(doc, headers, rows, yPosition, margin);
-    }
-  }
-
-  private desenharTabelaManual(doc: any, headers: string[], rows: string[][], startY: number, margin: number): void {
-    const colWidth = 25;
-    const rowHeight = 8;
-    
-    doc.setFillColor(70, 130, 180);
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    
-    headers.forEach((header, index) => {
-      const x = margin + (index * colWidth);
-      doc.rect(x, startY, colWidth, rowHeight, 'F');
-      doc.text(header, x + 2, startY + 5);
-    });
-    
-    doc.setTextColor(0, 0, 0);
-    rows.forEach((row, rowIndex) => {
-      const y = startY + rowHeight + (rowIndex * rowHeight);
-      
-      row.forEach((cell, colIndex) => {
-        const x = margin + (colIndex * colWidth);
-        doc.rect(x, y, colWidth, rowHeight, 'S');
-        doc.text(cell || '-', x + 2, y + 5);
-      });
-    });
-  }
-
-  private gerarRodape(doc: any): void {
-    const pageHeight = doc.internal.pageSize.height;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'italic');
-    doc.text(
-      `Gerado em: ${new Date().toLocaleString('pt-BR')}`, 
-      doc.internal.pageSize.width / 2, 
-      pageHeight - 15, 
-      { align: 'center' }
-    );
-  }
-
-  navigate(path: string) {
-    this.router.navigate([path]);
-  }
-
-  getValue(event: Event): string {
-    return (event.target as HTMLInputElement | HTMLSelectElement).value || '';
+  obterValor(evento: Event): string {
+    return (evento.target as HTMLInputElement | HTMLSelectElement).value || '';
   }
   
-  getChecked(event: Event): boolean {
-    return (event.target as HTMLInputElement).checked;
+  obterMarcado(evento: Event): boolean {
+    return (evento.target as HTMLInputElement).checked;
   }
   
   get math() { return Math; }
 
-  setFiltroAvancado(campo: keyof typeof this.filtroAvancado, valor: any): void {
+  definirFiltroAvancado(campo: keyof typeof this.filtroAvancado, valor: any): void {
     (this.filtroAvancado as any)[campo] = valor;
   }
 }

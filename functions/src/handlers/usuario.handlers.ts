@@ -1,8 +1,8 @@
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { getAuth } from 'firebase-admin/auth';
-import { AuditService } from '../services/audit.service';
-import { MetricsService } from '../services/metrics.service';
-import { RateLimitService } from '../services/rate-limit.service';
+import { ServicoAuditoria } from '../services/audit.service';
+import { ServicoMetricas } from '../services/metrics.service';
+import { ServicoRateLimit } from '../services/rate-limit.service';
 import { UsuarioData, AuditAction } from '../types';
 
 export const onUsuarioCreated = onDocumentCreated('usuarios/{uid}', async (event) => {
@@ -15,7 +15,7 @@ export const onUsuarioCreated = onDocumentCreated('usuarios/{uid}', async (event
   }
 
   try {
-    await AuditService.writeUserAudit(
+    await ServicoAuditoria.writeUserAudit(
       uid,
       AuditAction.CREATE,
       null,
@@ -23,7 +23,7 @@ export const onUsuarioCreated = onDocumentCreated('usuarios/{uid}', async (event
       after.createdBy || null
     );
 
-    await MetricsService.incrementUsuarios(1);
+    await ServicoMetricas.incrementUsuarios(1);
     console.log(`Usuário criado: ${uid}`);
   } catch (error) {
     console.error('Erro ao processar criação de usuário:', error);
@@ -59,7 +59,7 @@ export const onUsuarioUpdated = onDocumentUpdated('usuarios/{uid}', async (event
     }
 
     // Auditoria
-    await AuditService.writeUserAudit(
+    await ServicoAuditoria.writeUserAudit(
       uid,
       AuditAction.UPDATE,
       before,
@@ -84,10 +84,10 @@ export const onUsuarioDeleted = onDocumentDeleted('usuarios/{uid}', async (event
     console.log(`Usuário ${uid} removido do Auth`);
 
     // Limpar rate limits
-    await RateLimitService.clearRateLimit(uid);
+    await ServicoRateLimit.clearRateLimit(uid);
 
     // Auditoria
-    await AuditService.writeUserAudit(
+    await ServicoAuditoria.writeUserAudit(
       uid,
       AuditAction.DELETE,
       before,
@@ -96,7 +96,7 @@ export const onUsuarioDeleted = onDocumentDeleted('usuarios/{uid}', async (event
     );
 
     // Decrementar métrica
-    await MetricsService.incrementUsuarios(-1);
+    await ServicoMetricas.incrementUsuarios(-1);
 
     console.log(`Usuário deletado: ${uid}`);
   } catch (error) {

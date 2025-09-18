@@ -13,11 +13,11 @@ export interface FiltrosPessoaIdosa {
   cep?: string;
 }
 
-export interface PaginacaoResult {
+export interface ResultadoPaginacao {
   pessoas: PessoaIdosa[];
-  lastDoc: DocumentSnapshot | null;
+  ultimoDocumento: DocumentSnapshot | null;
   total: number;
-  hasMore: boolean;
+  temMais: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,20 +27,20 @@ export class PessoaIdosaService {
   private collectionRef = collection(this.firestore, this.collectionName);
 
   private cache = new Map<string, PessoaIdosa>();
-  private pessoasSubject = new BehaviorSubject<PaginacaoResult>({ pessoas: [], lastDoc: null, total: 0, hasMore: false });
-  pessoas$ = this.pessoasSubject.asObservable();
+  private pessoasSubject = new BehaviorSubject<ResultadoPaginacao>({ pessoas: [], ultimoDocumento: null, total: 0, temMais: false });
+  public readonly pessoas$ = this.pessoasSubject.asObservable();
 
-  getAll(): Observable<PessoaIdosa[]> {
-    const q = query(this.collectionRef, where('ativo', '==', true), orderBy('nome'));
-    return collectionData(q, { idField: 'id' }) as Observable<PessoaIdosa[]>;
+  obterTodos(): Observable<PessoaIdosa[]> {
+    const consulta = query(this.collectionRef, where('ativo', '==', true), orderBy('nome'));
+    return collectionData(consulta, { idField: 'id' }) as Observable<PessoaIdosa[]>;
   }
 
-  getById(id: string): Observable<PessoaIdosa | undefined> {
-    const docRef = doc(this.firestore, this.collectionName, id);
-    return docData(docRef).pipe(
-      map(doc => {
-        if (doc) {
-          const pessoa = this.convertToPessoaIdosa({ data: () => doc, id });
+  obterPorId(id: string): Observable<PessoaIdosa | undefined> {
+    const referenciaDocumento = doc(this.firestore, this.collectionName, id);
+    return docData(referenciaDocumento).pipe(
+      map(documento => {
+        if (documento) {
+          const pessoa = this.converterParaPessoaIdosa({ data: () => documento, id });
           this.cache.set(id, pessoa);
           return pessoa;
         }
@@ -49,18 +49,18 @@ export class PessoaIdosaService {
     );
   }
 
-  create(pessoa: PessoaIdosa): Observable<string> {
+  criar(pessoa: PessoaIdosa): Observable<string> {
     return from(addDoc(this.collectionRef, pessoa)).pipe(
-      map(docRef => {
+      map(referenciaDocumento => {
         this.cache.clear();
-        return docRef.id;
+        return referenciaDocumento.id;
       })
     );
   }
 
-  update(id: string, pessoa: Partial<PessoaIdosa>): Observable<void> {
-    const docRef = doc(this.firestore, this.collectionName, id);
-    return from(updateDoc(docRef, pessoa)).pipe(
+  atualizar(id: string, pessoa: Partial<PessoaIdosa>): Observable<void> {
+    const referenciaDocumento = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(referenciaDocumento, pessoa)).pipe(
       map(() => {
         this.cache.delete(id);
       })
@@ -68,16 +68,16 @@ export class PessoaIdosaService {
   }
 
   inativar(id: string): Observable<void> {
-    return this.updateStatus(id, false);
+    return this.atualizarStatus(id, false);
   }
 
   ativar(id: string): Observable<void> {
-    return this.updateStatus(id, true);
+    return this.atualizarStatus(id, true);
   }
 
-  private updateStatus(id: string, ativo: boolean): Observable<void> {
-    const docRef = doc(this.firestore, this.collectionName, id);
-    return from(updateDoc(docRef, { ativo })).pipe(
+  private atualizarStatus(id: string, ativo: boolean): Observable<void> {
+    const referenciaDocumento = doc(this.firestore, this.collectionName, id);
+    return from(updateDoc(referenciaDocumento, { ativo })).pipe(
       map(() => {
         this.cache.delete(id);
       })
@@ -85,117 +85,117 @@ export class PessoaIdosaService {
   }
 
   aplicarFiltros(filtros: FiltrosPessoaIdosa): void {
-    this.getPaginated(20, null, filtros).then(result => {
-      this.pessoasSubject.next(result);
+    this.obterPaginado(20, null, filtros).then(resultado => {
+      this.pessoasSubject.next(resultado);
     });
   }
 
-  setPaginacao(pageSize: number, lastDoc: DocumentSnapshot | null = null): void {
-    this.getPaginated(pageSize, lastDoc, {}).then(result => {
-      this.pessoasSubject.next(result);
+  definirPaginacao(tamanhoPagina: number, ultimoDocumento: DocumentSnapshot | null = null): void {
+    this.obterPaginado(tamanhoPagina, ultimoDocumento, {}).then(resultado => {
+      this.pessoasSubject.next(resultado);
     });
   }
 
-  private convertToPessoaIdosa(doc: any): PessoaIdosa {
-    const data = doc.data();
+  private converterParaPessoaIdosa(documento: any): PessoaIdosa {
+    const dados = documento.data();
     
     return {
-      id: doc.id,
-      dataCadastro: this.convertDate(data.dataCadastro),
-      nome: data.nome || '',
-      dataNascimento: this.convertDate(data.dataNascimento),
-      ativo: data.ativo ?? true,
-      estadoCivil: data.estadoCivil || '',
-      cpf: data.cpf || '',
-      rg: data.rg || '',
-      orgaoEmissor: data.orgaoEmissor || '',
-      religiao: data.religiao || '',
-      naturalidade: data.naturalidade || '',
-      telefone: data.telefone || '',
-      prontuarioSaude: data.prontuarioSaude || '',
-      aposentadoConsegueSeManterComSuaRenda: data.aposentadoConsegueSeManterComSuaRenda ?? false,
-      comoComplementa: data.comoComplementa || '',
-      beneficio: data.beneficio || '',
-      observacao: data.observacao || '',
-      historicoFamiliarSocial: data.historicoFamiliarSocial || '',
-      composicaoFamiliar: data.composicaoFamiliar || {},
-      endereco: data.endereco || {},
-      dependentes: data.dependentes || [],
-      anexos: data.anexos || []
+      id: documento.id,
+      dataCadastro: this.converterData(dados.dataCadastro),
+      nome: dados.nome || '',
+      dataNascimento: this.converterData(dados.dataNascimento),
+      ativo: dados.ativo ?? true,
+      estadoCivil: dados.estadoCivil || '',
+      cpf: dados.cpf || '',
+      rg: dados.rg || '',
+      orgaoEmissor: dados.orgaoEmissor || '',
+      religiao: dados.religiao || '',
+      naturalidade: dados.naturalidade || '',
+      telefone: dados.telefone || '',
+      prontuarioSaude: dados.prontuarioSaude || '',
+      aposentadoConsegueSeManterComSuaRenda: dados.aposentadoConsegueSeManterComSuaRenda ?? false,
+      comoComplementa: dados.comoComplementa || '',
+      beneficio: dados.beneficio || '',
+      observacao: dados.observacao || '',
+      historicoFamiliarSocial: dados.historicoFamiliarSocial || '',
+      composicaoFamiliar: dados.composicaoFamiliar || {},
+      endereco: dados.endereco || {},
+      dependentes: dados.dependentes || [],
+      anexos: dados.anexos || []
     };
   }
 
-  private convertDate(dataField: any): Date {
-    if (!dataField) return new Date();
+  private converterData(campoData: any): Date {
+    if (!campoData) return new Date();
     
-    if (dataField instanceof Date) return dataField;
+    if (campoData instanceof Date) return campoData;
     
-    if (dataField && typeof dataField.toDate === 'function') {
-      return dataField.toDate();
+    if (campoData && typeof campoData.toDate === 'function') {
+      return campoData.toDate();
     }
     
-    if (typeof dataField === 'string') {
-      const parsed = new Date(dataField);
-      return isNaN(parsed.getTime()) ? new Date() : parsed;
+    if (typeof campoData === 'string') {
+      const dataConvertida = new Date(campoData);
+      return isNaN(dataConvertida.getTime()) ? new Date() : dataConvertida;
     }
     
-    if (typeof dataField === 'number') {
-      return new Date(dataField);
+    if (typeof campoData === 'number') {
+      return new Date(campoData);
     }
     
     return new Date();
   }
 
-  private async getPaginated(pageSize: number, lastDoc: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): Promise<PaginacaoResult> {
-    const constraints = this.buildQueryConstraints(pageSize, lastDoc, filtros);
-    const q = query(this.collectionRef, ...constraints);
-    const snap = await getDocs(q);
+  private async obterPaginado(tamanhoPagina: number, ultimoDocumento: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): Promise<ResultadoPaginacao> {
+    const restricoes = this.construirRestricoesConsulta(tamanhoPagina, ultimoDocumento, filtros);
+    const consulta = query(this.collectionRef, ...restricoes);
+    const snapshot = await getDocs(consulta);
     
-    return this.processQueryResult(snap, pageSize);
+    return this.processarResultadoConsulta(snapshot, tamanhoPagina);
   }
 
-  private buildQueryConstraints(pageSize: number, lastDoc: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): QueryConstraint[] {
-    const constraints: QueryConstraint[] = [
+  private construirRestricoesConsulta(tamanhoPagina: number, ultimoDocumento: DocumentSnapshot | null, filtros: FiltrosPessoaIdosa): QueryConstraint[] {
+    const restricoes: QueryConstraint[] = [
       orderBy('nome'),
-      limit(pageSize + 1)
+      limit(tamanhoPagina + 1)
     ];
 
     if (filtros.ativo !== undefined) {
-      constraints.unshift(where('ativo', '==', filtros.ativo));
+      restricoes.unshift(where('ativo', '==', filtros.ativo));
     }
 
-    if (lastDoc) {
-      constraints.push(startAfter(lastDoc));
+    if (ultimoDocumento) {
+      restricoes.push(startAfter(ultimoDocumento));
     }
     
     if (filtros.nome?.trim()) {
-      constraints.push(
+      restricoes.push(
         where('nome', '>=', filtros.nome),
         where('nome', '<=', filtros.nome + '\uf8ff')
       );
     }
     
     if (filtros.cpf?.trim()) {
-      constraints.push(where('cpf', '==', filtros.cpf));
+      restricoes.push(where('cpf', '==', filtros.cpf));
     }
     
     if (filtros.estadoCivil?.trim()) {
-      constraints.push(where('estadoCivil', '==', filtros.estadoCivil));
+      restricoes.push(where('estadoCivil', '==', filtros.estadoCivil));
     }
 
-    return constraints;
+    return restricoes;
   }
 
-  private processQueryResult(snap: any, pageSize: number): PaginacaoResult {
-    const docs = snap.docs;
-    const hasMore = docs.length > pageSize;
-    const pessoas = (hasMore ? docs.slice(0, pageSize) : docs).map((d: any) => this.convertToPessoaIdosa(d));
+  private processarResultadoConsulta(snapshot: any, tamanhoPagina: number): ResultadoPaginacao {
+    const documentos = snapshot.docs;
+    const temMais = documentos.length > tamanhoPagina;
+    const pessoas = (temMais ? documentos.slice(0, tamanhoPagina) : documentos).map((documento: any) => this.converterParaPessoaIdosa(documento));
 
     return {
       pessoas,
-      lastDoc: docs.length > 0 ? docs[docs.length - 1] : null,
+      ultimoDocumento: documentos.length > 0 ? documentos[documentos.length - 1] : null,
       total: pessoas.length,
-      hasMore
+      temMais
     };
   }
 }

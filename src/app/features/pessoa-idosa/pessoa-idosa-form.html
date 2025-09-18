@@ -15,7 +15,7 @@
         </div>
         
         <div class="card-body p-4">
-          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <form [formGroup]="form" (ngSubmit)="aoSubmeter()">
             <!-- Informações Pessoais -->
             <div class="mb-4">
               <div class="border-bottom border-2 border-primary pb-2 mb-3">
@@ -603,9 +603,9 @@
               </div>
               
               <!-- Modal de dependente -->
-              <div *ngIf="showDependenteForm" class="dependente-form-modal">
+              <div *ngIf="mostrarFormularioDependente" class="dependente-form-modal">
                 <app-dependente-form
-                  [dependente]="dependenteEditValue"
+                  [dependente]="valorEdicaoDependente"
                   (save)="salvarDependente($event)"
                   (cancel)="cancelarDependente()">
                 </app-dependente-form>
@@ -613,13 +613,13 @@
               
               <!-- Modal de confirmação -->
               <app-modal
-                [show]="showRemoveModal"
-                title="Remover dependente"
-                message="Tem certeza que deseja remover este dependente?"
-                confirmText="Sim"
-                cancelText="Não"
-                (confirm)="removerDependente()"
-                (cancel)="cancelarRemoverDependente()">
+                [mostrar]="mostrarModalRemocao"
+                titulo="Remover dependente"
+                mensagem="Tem certeza que deseja remover este dependente?"
+                confirmarTexto="Sim"
+                cancelarTexto="Não"
+                (confirmar)="removerDependente()"
+                (cancelar)="cancelarRemoverDependente()">
               </app-modal>
             </div>
 
@@ -631,9 +631,9 @@
               <app-anexo-form 
                 #anexoForm
                 [anexos]="anexos"
-                (upload)="onUploadAnexo($event)"
-                (removerAnexo)="onRemoverAnexo($event)"
-                (baixarAnexo)="onBaixarAnexo($event)">
+                (upload)="aoUploadAnexo($event)"
+                (removerAnexo)="aoRemoverAnexo($event)"
+                (baixarAnexo)="aoBaixarAnexo($event)">
               </app-anexo-form>
             </div>
 
