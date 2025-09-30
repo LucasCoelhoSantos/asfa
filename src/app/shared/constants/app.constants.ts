@@ -1,5 +1,5 @@
+import { CargoUsuario } from '../../modules/usuario/domain/value-objects/enums';
 import { 
-  CargoUsuario,
   Moradia, 
   Beneficio, 
   Renda, 
@@ -10,7 +10,7 @@ import {
   TipoFormacaoProfissional, 
   ProblemaDeSaude,
   EstadoCivil
-} from '../../models/enums';
+} from '../../modules/pessoa-idosa/domain/value-objects/enums';
 
 export const CATEGORIAS_ANEXO = [
   { id: 1, categoria: 1, label: 'Foto de Perfil', icon: 'bi-person-circle', class: 'bg-primary' },

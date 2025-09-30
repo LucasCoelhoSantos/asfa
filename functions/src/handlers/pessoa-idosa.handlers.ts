@@ -2,9 +2,9 @@ import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from 'firebas
 import { ServicoAuditoria } from '../services/audit.service';
 import { ServicoMetricas } from '../services/metrics.service';
 import { ServicoArmazenamento } from '../services/storage.service';
-import { PessoaIdosaData, AuditAction } from '../types';
+import { PessoaIdosaData, AuditAction, Collection } from '../types';
 
-export const onPessoaIdosaCreated = onDocumentCreated('pessoas-idosas/{id}', async (event) => {
+export const onPessoaIdosaCreated = onDocumentCreated(`${Collection.PESSOAS_IDOSAS}/{id}`, async (event) => {
   const id = event.params.id as string;
   const after = event.data?.data() as PessoaIdosaData;
 
@@ -29,7 +29,7 @@ export const onPessoaIdosaCreated = onDocumentCreated('pessoas-idosas/{id}', asy
   }
 });
 
-export const onPessoaIdosaUpdated = onDocumentUpdated('pessoas-idosas/{id}', async (event) => {
+export const onPessoaIdosaUpdated = onDocumentUpdated(`${Collection.PESSOAS_IDOSAS}/{id}`, async (event) => {
   const id = event.params.id as string;
   const before = event.data?.before.data() as PessoaIdosaData;
   const after = event.data?.after.data() as PessoaIdosaData;
@@ -72,7 +72,7 @@ export const onPessoaIdosaUpdated = onDocumentUpdated('pessoas-idosas/{id}', asy
   }
 });
 
-export const onPessoaIdosaDeleted = onDocumentDeleted('pessoas-idosas/{id}', async (event) => {
+export const onPessoaIdosaDeleted = onDocumentDeleted(`${Collection.PESSOAS_IDOSAS}/{id}`, async (event) => {
   const id = event.params.id as string;
   const before = event.data?.data() as PessoaIdosaData;
 

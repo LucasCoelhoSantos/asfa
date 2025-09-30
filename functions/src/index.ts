@@ -7,6 +7,13 @@ import { ServicoRateLimit } from './services/rate-limit.service';
 import { ServicoBackup } from './services/backup.service';
 import { onUsuarioCreated, onUsuarioUpdated, onUsuarioDeleted } from './handlers/usuario.handlers';
 import { onPessoaIdosaCreated, onPessoaIdosaUpdated, onPessoaIdosaDeleted } from './handlers/pessoa-idosa.handlers';
+import { 
+  onPessoaIdosaCreatedEmail, 
+  onPessoaIdosaUpdatedEmail, 
+  onBackupCreatedEmail, 
+  onUsuarioCreatedEmail,
+  verificarAniversarios 
+} from './handlers/email.handlers';
 import { BACKUP_CONFIG } from './types';
 
 // ========== HTTPS Callable Functions ==========
@@ -42,6 +49,15 @@ export { onUsuarioCreated, onUsuarioUpdated, onUsuarioDeleted };
 // Pessoas Idosas
 export { onPessoaIdosaCreated, onPessoaIdosaUpdated, onPessoaIdosaDeleted };
 
+// ========== Email Triggers ==========
+// Notificações por Email
+export { 
+  onPessoaIdosaCreatedEmail, 
+  onPessoaIdosaUpdatedEmail, 
+  onBackupCreatedEmail, 
+  onUsuarioCreatedEmail 
+};
+
 // ========== Scheduled Functions ==========
 export const weeklyBackup = onSchedule(BACKUP_CONFIG.schedule, async (_event) => {
   try {
@@ -50,3 +66,6 @@ export const weeklyBackup = onSchedule(BACKUP_CONFIG.schedule, async (_event) =>
     console.error('Erro no backup semanal:', error);
   }
 });
+
+// Verificação de Aniversários (diário às 8h)
+export { verificarAniversarios };

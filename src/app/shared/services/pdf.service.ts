@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { loadAndResizeImageAsBase64 } from '../utils/image.utils';
-import { PessoaIdosa } from '../../models/pessoa-idosa.model';
-import { Anexo } from '../../models/anexo.model';
-import { Endereco } from '../../models/endereco.model';
-import { ComposicaoFamiliar } from '../../models/composicao-familiar.model';
-import { Dependente } from '../../models/dependente.model';
+import { PessoaIdosa } from '../../modules/pessoa-idosa/domain/entities/pessoa-idosa.entity';
+import { Anexo } from '../../modules/pessoa-idosa/domain/value-objects/anexo.vo';
+import { Endereco } from '../../modules/pessoa-idosa/domain/value-objects/endereco.vo';
+import { ComposicaoFamiliar } from '../../modules/pessoa-idosa/domain/value-objects/composicao-familiar.vo';
+import { Dependente } from '../../modules/dependente/domain/entities/dependente.entity';
 import { CATEGORIAS_ANEXO } from '../constants/app.constants';
 import { ROTULOS_PDF, TEMA_PDF } from '../constants/pdf.constants';
 import type { jsPDF } from 'jspdf';
@@ -15,7 +15,7 @@ export class PdfService {
 
   async carregarLogoEConverterParaBase64(): Promise<string> {
     if (this.logoBase64Cache) return Promise.resolve(this.logoBase64Cache);
-    return await loadAndResizeImageAsBase64({ src: '/asfa-logo.png', crossOrigin: 'anonymous', maxWidth: 80, maxHeight: 80, outputType: 'image/png' })
+    return await loadAndResizeImageAsBase64({ src: 'assets/images/asfa-logo.png', crossOrigin: 'anonymous', maxWidth: 80, maxHeight: 80, outputType: 'image/png' })
       .then(base64 => {
         this.logoBase64Cache = base64;
         return base64;

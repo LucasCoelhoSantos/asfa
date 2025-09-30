@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { EnderecoDTO } from '../../../models/endereco.model';
+import { EnderecoDTO } from '../../../modules/pessoa-idosa/domain/value-objects/endereco.vo';
 
 export interface RespostaViaCep {
   cep: string;

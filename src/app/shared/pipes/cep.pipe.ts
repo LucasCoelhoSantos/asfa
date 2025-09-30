@@ -8,6 +8,6 @@ import { MaskUtils } from '../utils/mask.utils';
 export class CepPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    return MaskUtils.applyCepMask(value);
+    return MaskUtils.aplicaMascaraDeCEP(value);
   }
 } 

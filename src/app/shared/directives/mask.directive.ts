@@ -18,19 +18,19 @@ export class MaskDirective {
     switch (this.maskType) {
       case 'cpf':
         value = value.substring(0, 11);
-        value = MaskUtils.applyCpfMask(value);
+        value = MaskUtils.aplicaMascaraDeCPF(value);
         break;
       case 'rg':
         value = value.substring(0, 9);
-        value = MaskUtils.applyRgMask(value);
+        value = MaskUtils.aplicaMascaraDeRG(value);
         break;
       case 'cep':
         value = value.substring(0, 8);
-        value = MaskUtils.applyCepMask(value);
+        value = MaskUtils.aplicaMascaraDeCEP(value);
         break;
       case 'phone':
         value = value.substring(0, 11);
-        value = MaskUtils.applyPhoneMask(value);
+        value = MaskUtils.aplicaMascaraDeTelefone(value);
         break;
     }
     
@@ -47,19 +47,19 @@ export class MaskDirective {
     switch (this.maskType) {
       case 'cpf':
         value = value.substring(0, 11);
-        value = MaskUtils.applyCpfMask(value);
+        value = MaskUtils.aplicaMascaraDeCPF(value);
         break;
       case 'rg':
         value = value.substring(0, 9);
-        value = MaskUtils.applyRgMask(value);
+        value = MaskUtils.aplicaMascaraDeRG(value);
         break;
       case 'cep':
         value = value.substring(0, 8);
-        value = MaskUtils.applyCepMask(value);
+        value = MaskUtils.aplicaMascaraDeCEP(value);
         break;
       case 'phone':
         value = value.substring(0, 11);
-        value = MaskUtils.applyPhoneMask(value);
+        value = MaskUtils.aplicaMascaraDeTelefone(value);
         break;
     }
     

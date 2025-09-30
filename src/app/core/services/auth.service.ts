@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, signOut, User, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from '@angular/fire/auth';
 import { Firestore, doc, docData } from '@angular/fire/firestore';
 import { from, Observable, map, switchMap, of } from 'rxjs';
-import { Usuario } from '../../models/usuario.model';
+import { Usuario } from '../../modules/usuario/domain/entities/usuario.entity';
 
 @Injectable({ providedIn: 'root' })
 export class AutenticacaoService {
@@ -10,7 +10,12 @@ export class AutenticacaoService {
   private firestore = inject(Firestore);
 
   usuario$: Observable<User | null> = new Observable((subscriber) => {
-    return onAuthStateChanged(this.auth, subscriber);
+    const unsubscriber = onAuthStateChanged(
+      this.auth,
+      (usuario) => subscriber.next(usuario),
+      (erro) => subscriber.error(erro)
+    );
+    return () => unsubscriber();
   });
 
   estaLogado$: Observable<boolean> = this.usuario$.pipe(map(user => !!user));

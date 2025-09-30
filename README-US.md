@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="./public/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
+	<img src="src/assets/images/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
 	<h1>ASFA - ASFA - Catholic Association of the Holy Family</h1>
 	<h2>Elderly People Management System</h2>
 	<a href="./README.md">[br]</a>
@@ -7,7 +7,7 @@
 
 ## About the Project
 
-**ASFA** is a web application developed using **Angular 20.1.0** and **Firebase**. The goal of the system is to facilitate the management of elderly individuals who attend the Catholic Association of the Holy Family, allowing the registration of their personal information, dependent data, and the generation of PDF reports for documentation and printing purposes.
+**ASFA** is a PWA developed using **Angular 20.1.0** and **Firebase**. The goal of the system is to facilitate the management of elderly individuals who attend the Catholic Association of the Holy Family, allowing the registration of their personal information, dependent data, and the generation of PDF reports for documentation and printing purposes.
 
 ## Features
 
@@ -39,29 +39,6 @@
 
 ### APIs Externas
 - **ViaCEP**: Postal Code Web Service
-
-## Requirements
-
-- A computer or mobile device with an internet connection.
-
-## Project Structure
-
-```
-/asfa
-    /public                 	// Shared files
-    /src
-	    /app
-		    /core           	// Services, singletons, guards, interceptors, helpers
-			    /guards
-				/interceptors
-			    /services
-		    /features       	// Feature modules
-		    /models         	// Interfaces and types
-		    /shared         	// Reusable components, pipes, directives
-		/environments   		// Environment configurations
-        app.config.ts       	// Global providers
-        app.routes.ts       	// Main routes
-```
 
 ## Future Implementations
 

@@ -8,6 +8,6 @@ import { MaskUtils } from '../utils/mask.utils';
 export class CpfPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    return MaskUtils.applyCpfMask(value);
+    return MaskUtils.aplicaMascaraDeCPF(value);
   }
 } 

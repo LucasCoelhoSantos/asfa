@@ -8,6 +8,6 @@ import { MaskUtils } from '../utils/mask.utils';
 export class TelefonePipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    return MaskUtils.applyPhoneMask(value);
+    return MaskUtils.aplicaMascaraDeTelefone(value);
   }
 } 

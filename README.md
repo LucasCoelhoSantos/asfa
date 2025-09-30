@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="./public/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
+	<img src="src/assets/images/asfa-logo.png" alt="ASFA" widthwidth="250" height="250" />
 	<h1>ASFA - Associação Católica Sagrada Família</h1>
 	<h2>Sistema de Gestão de Pessoas Idosas</h2>
 	<a href="./README-US.md">[🇺🇸]</a>
@@ -7,7 +7,7 @@
 
 ## Sobre o Projeto
 
-O **ASFA** é uma aplicação web desenvolvida em **Angular 20.1.0** e **Firebase**. O objetivo do sistema é facilitar o controle das pessoas idosas que frequentam a Associação Católica Sagrada Família, permitindo o registro de suas informações pessoais, dados de seus dependentes, e a geração de relatórios em PDF para para fins de documentação e impressão.
+O **ASFA** é um PWA desenvolvido em **Angular 20.1.0** e **Firebase**. O objetivo do sistema é facilitar o controle das pessoas idosas que frequentam a Associação Católica Sagrada Família, permitindo o registro de suas informações pessoais, dados de seus dependentes, e a geração de relatórios em PDF para para fins de documentação e impressão.
 
 ## Funcionalidades
 
@@ -39,29 +39,6 @@ O **ASFA** é uma aplicação web desenvolvida em **Angular 20.1.0** e **Firebas
 
 ### APIs Externas
 - **ViaCEP** - Consulta de endereços por CEP
-
-## Requisitos
-
-- Computador ou celular com conexão com internet.
-
-## Estrutura do Projeto
-
-```
-/asfa
-    /public                 	// Arquivos compartilhados
-    /src
-	    /app
-		    /core           	// Serviços, singleton, guards, interceptors, helpers
-			    /guards
-				/interceptors
-			    /services
-		    /features       	// Módulos de funcionalidades
-		    /models         	// Interfaces e tipos
-		    /shared         	// Componentes, pipes, diretivas reutilizáveis
-		/environments       	// Configurações de ambiente
-        app.config.ts			// Providers globais
-        app.routes.ts       	// Rotas principais
-```
 
 ## Futuras Implementações
 

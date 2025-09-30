@@ -1,0 +1,69 @@
+<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100 bg-primary">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <img src="assets/images/asfa-logo.png" alt="Logo ASFA" class="img-fluid mb-3" style="max-width: 120px;" />
+            <h4 class="text-muted">Associação Católica Sagrada Família</h4>
+            <h2 class="text-center mb-4 fw-bold text-primary">Login</h2>
+          </div>
+          
+          <form [formGroup]="form" (ngSubmit)="aoEnviar()">
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">E-mail</label>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+                placeholder="Digite seu e-mail"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+                E-mail obrigatório e válido.
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="senha" class="form-label fw-semibold">Senha</label>
+              <input
+                id="senha"
+                type="password"
+                class="form-control"
+                formControlName="senha"
+                [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
+                placeholder="Digite sua senha"
+              />
+              <div class="invalid-feedback" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
+                Senha obrigatória (mínimo 6 caracteres).
+              </div>
+            </div>
+            
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2 fw-semibold"
+              [disabled]="form.invalid || loading"
+            >
+              <span *ngIf="!loading">Entrar</span>
+              <span *ngIf="loading" class="d-flex align-items-center justify-content-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                  <span class="visualmente oculto">Carregando...</span>
+                </div>
+                Entrando...
+              </span>
+            </button>
+            
+            <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" (click)="irParaInicio()">
+              <span>Voltar</span>
+            </button>
+
+            <div class="alert alert-danger mt-3" *ngIf="error" role="alert">
+              {{ error }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

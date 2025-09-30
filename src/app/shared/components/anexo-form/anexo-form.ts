@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CATEGORIAS_ANEXO } from '../../constants/app.constants';
 import { ModalComponent } from '../../components/modal/modal';
-import { Anexo } from '../../../models/anexo.model';
+import { Anexo } from '../../../modules/pessoa-idosa/domain/value-objects/anexo.vo';
 
 @Component({
   selector: 'app-anexo-form',

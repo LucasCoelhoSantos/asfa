@@ -8,6 +8,6 @@ import { MaskUtils } from '../utils/mask.utils';
 export class RgPipe implements PipeTransform {
   transform(value: string | null | undefined): string {
     if (!value) return '';
-    return MaskUtils.applyRgMask(value);
+    return MaskUtils.aplicaMascaraDeRG(value);
   }
 }

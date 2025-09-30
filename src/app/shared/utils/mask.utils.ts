@@ -1,8 +1,5 @@
 export class MaskUtils {
-  /**
-   * Aplica máscara de CPF
-   */
-  static applyCpfMask(value: string): string {
+  static aplicaMascaraDeCPF(value: string): string {
     if (!value) return '';
     
     const cpf = value.replace(/\D/g, '');
@@ -18,10 +15,7 @@ export class MaskUtils {
     }
   }
 
-  /**
-   * Aplica máscara de RG
-   */
-  static applyRgMask(value: string): string {
+  static aplicaMascaraDeRG(value: string): string {
     if (!value) return '';
     
     const rg = value.replace(/\D/g, '');
@@ -37,10 +31,7 @@ export class MaskUtils {
     }
   }
 
-  /**
-   * Aplica máscara de CEP
-   */
-  static applyCepMask(value: string): string {
+  static aplicaMascaraDeCEP(value: string): string {
     if (!value) return '';
     
     const cep = value.replace(/\D/g, '');
@@ -52,10 +43,7 @@ export class MaskUtils {
     }
   }
 
-  /**
-   * Aplica máscara de telefone
-   */
-  static applyPhoneMask(value: string): string {
+  static aplicaMascaraDeTelefone(value: string): string {
     if (!value) return '';
     
     const phone = value.replace(/\D/g, '');
@@ -71,26 +59,17 @@ export class MaskUtils {
     }
   }
 
-  /**
-   * Remove todas as máscaras de um valor
-   */
-  static removeMask(value: string): string {
+  static removeMascara(value: string): string {
     return value ? value.replace(/\D/g, '') : '';
   }
 
-  /**
-   * Valida se um CPF está completo
-   */
   static isCpfComplete(value: string): boolean {
-    const cpf = this.removeMask(value);
+    const cpf = this.removeMascara(value);
     return cpf.length === 11;
   }
 
-  /**
-   * Valida se um CEP está completo
-   */
   static isCepComplete(value: string): boolean {
-    const cep = this.removeMask(value);
+    const cep = this.removeMascara(value);
     return cep.length === 8;
   }
 }

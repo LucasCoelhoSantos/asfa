@@ -3,9 +3,9 @@ import { getAuth } from 'firebase-admin/auth';
 import { ServicoAuditoria } from '../services/audit.service';
 import { ServicoMetricas } from '../services/metrics.service';
 import { ServicoRateLimit } from '../services/rate-limit.service';
-import { UsuarioData, AuditAction } from '../types';
+import { UsuarioData, AuditAction, Collection } from '../types';
 
-export const onUsuarioCreated = onDocumentCreated('usuarios/{uid}', async (event) => {
+export const onUsuarioCreated = onDocumentCreated(`${Collection.USUARIOS}/{uid}`, async (event) => {
   const uid = event.params.uid as string;
   const after = event.data?.data() as UsuarioData;
 
@@ -30,7 +30,7 @@ export const onUsuarioCreated = onDocumentCreated('usuarios/{uid}', async (event
   }
 });
 
-export const onUsuarioUpdated = onDocumentUpdated('usuarios/{uid}', async (event) => {
+export const onUsuarioUpdated = onDocumentUpdated(`${Collection.USUARIOS}/{uid}`, async (event) => {
   const uid = event.params.uid as string;
   const before = event.data?.before.data() as UsuarioData;
   const after = event.data?.after.data() as UsuarioData;
@@ -73,7 +73,7 @@ export const onUsuarioUpdated = onDocumentUpdated('usuarios/{uid}', async (event
   }
 });
 
-export const onUsuarioDeleted = onDocumentDeleted('usuarios/{uid}', async (event) => {
+export const onUsuarioDeleted = onDocumentDeleted(`${Collection.USUARIOS}/{uid}`, async (event) => {
   const uid = event.params.uid as string;
   const before = event.data?.data() as UsuarioData;
 

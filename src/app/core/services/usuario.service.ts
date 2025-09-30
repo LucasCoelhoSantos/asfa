@@ -1,64 +1,33 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, doc, docData, updateDoc, setDoc } from '@angular/fire/firestore';
-import { Auth, createUserWithEmailAndPassword, updateEmail, User } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
-import { Usuario } from '../../models/usuario.model';
+import { Usuario } from '../../modules/usuario/domain/entities/usuario.entity';
+import { USUARIO_REPOSITORY } from '../../modules/usuario/domain/repositories/usuario.repository';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
-  private firestore = inject(Firestore);
-  private auth = inject(Auth);
-  private collectionRef = collection(this.firestore, 'usuarios');
+  private repo = inject(USUARIO_REPOSITORY);
 
   obterTodos(): Observable<Usuario[]> {
-    return collectionData(this.collectionRef, { idField: 'id' }) as Observable<Usuario[]>;
+    return this.repo.listar();
   }
 
   obterPorId(id: string): Observable<Usuario | undefined> {
-    const docRef = doc(this.firestore, 'usuarios', id);
-    return docData(docRef, { idField: 'id' }) as Observable<Usuario | undefined>;
+    return this.repo.obterPorId(id);
   }
 
   async criar(usuario: Omit<Usuario, 'id'>, senha: string): Promise<void> {
-    const cred = await createUserWithEmailAndPassword(this.auth, usuario.email, senha);
-    
-    await setDoc(doc(this.firestore, 'usuarios', cred.user.uid), {
-      nome: usuario.nome,
-      email: usuario.email,
-      cargo: usuario.cargo,
-      ativo: usuario.ativo,
-      createdAt: new Date(),
-      createdBy: this.auth.currentUser?.uid
-    });
+    await this.repo.criar({ ...usuario, senha });
   }
 
   async editarPerfil(usuario: Partial<Usuario>): Promise<void> {
-    const usuarioAtual = this.auth.currentUser;
-    if (!usuarioAtual) return;
-
-    if (usuario.email && usuarioAtual.email !== usuario.email) {
-      await updateEmail(usuarioAtual, usuario.email);
-    }
-
-    const docRef = doc(this.firestore, 'usuarios', usuarioAtual.uid);
-    await updateDoc(docRef, usuario);
+    await this.repo.atualizarPerfil(usuario);
   }
 
   async editar(id: string, usuario: Partial<Usuario>): Promise<void> {
-    const docRef = doc(this.firestore, 'usuarios', id);
-    await updateDoc(docRef, {
-      ...usuario,
-      updatedAt: new Date(),
-      updatedBy: this.auth.currentUser?.uid
-    });
+    await this.repo.atualizarPorId(id, usuario);
   }
 
   async setarAtivo(id: string, ativo: boolean): Promise<void> {
-    const docRef = doc(this.firestore, 'usuarios', id);
-    await updateDoc(docRef, {
-      ativo,
-      updatedAt: new Date(),
-      updatedBy: this.auth.currentUser?.uid
-    });
+    await this.repo.setAtivo(id, ativo);
   }
 }

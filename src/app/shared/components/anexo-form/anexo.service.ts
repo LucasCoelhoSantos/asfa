@@ -1,21 +1,24 @@
 import { Injectable, inject } from '@angular/core';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import imageCompression from 'browser-image-compression';
+import { STORAGE_PORT, StoragePort, UploadResultado } from './storage.port';
 
 @Injectable({ providedIn: 'root' })
 export class AnexoService {
+  private storagePort = inject(STORAGE_PORT, { optional: true });
   private storage = inject(Storage);
 
-  async uploadAnexo(pessoaId: string, categoria: number, arquivo: File): Promise<{ url: string, path: string }> {
+  async uploadAnexo(pessoaId: string, categoria: number, arquivo: File): Promise<UploadResultado> {
     this.validarArquivo(arquivo);
     
     const processedFile = await this.comprimirArquivo(arquivo);
+    if (this.storagePort) {
+      return this.storagePort.upload(pessoaId, categoria, processedFile);
+    }
     const path = this.gerarCaminhoDeArmazenamento(pessoaId, categoria, processedFile);
     const storageRef = ref(this.storage, path);
-    
     await uploadBytes(storageRef, processedFile);
     const url = await getDownloadURL(storageRef);
-    
     return { url, path };
   }
 
