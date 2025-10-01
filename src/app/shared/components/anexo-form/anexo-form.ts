@@ -1,110 +1,93 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CATEGORIAS_ANEXO } from '../../constants/app.constants';
-import { ModalComponent } from '../../components/modal/modal';
-import { Anexo } from '../../../modules/pessoa-idosa/domain/value-objects/anexo.vo';
+import { lastValueFrom } from 'rxjs';
+import { STORAGE_PORT, StoragePort, UploadResultado } from '../../ports/storage.port';
+import { Anexo } from '../../../domains/pessoa-idosa/domain/value-objects/anexo.vo';
+import { CATEGORIAS_ANEXO } from '../../constants/app.constants'; 
+
+interface CategoriaAnexo {
+  readonly id: number;
+  readonly categoria: number;
+  readonly label: string;
+  readonly icon: string;
+  readonly class: string;
+}
 
 @Component({
   selector: 'app-anexo-form',
   standalone: true,
-  imports: [CommonModule, ModalComponent],
+  imports: [CommonModule],
   templateUrl: './anexo-form.html',
   styleUrls: ['./anexo-form.scss']
 })
-export class AnexoFormComponent implements OnInit {
+export class AnexoFormComponent {
+  private storagePort: StoragePort = inject(STORAGE_PORT);
+
   @Input() anexos: Anexo[] = [];
-  @Output() upload = new EventEmitter<{ categoria: number, arquivo: File }>();
-  @Output() removerAnexo = new EventEmitter<Anexo>();
-  @Output() baixarAnexo = new EventEmitter<Anexo>();
+  @Output() anexosChange = new EventEmitter<Anexo[]>();
 
-  categoriasAnexo = CATEGORIAS_ANEXO;
-  
-  private arquivosSelecionados: Map<number, { arquivo: File, nome: string }> = new Map();
-  showRemoveModal = false;
-  private anexoPendenteRemocao: Anexo | null = null;
+  public readonly categorias = CATEGORIAS_ANEXO;
+  public uploadEmAndamento: { [categoriaId: number]: boolean } = {};
 
-  ngOnInit() {
-    this.anexos.forEach(anexo => {
-      if (anexo.nomeArquivo) {
-        this.arquivosSelecionados.set(anexo.categoria, {
-          arquivo: new File([], anexo.nomeArquivo),
-          nome: anexo.nomeArquivo
-        });
-      }
-    });
+  // Método auxiliar para encontrar um anexo existente para uma categoria
+  public getAnexoPorCategoria(categoriaId: number): Anexo | undefined {
+    return this.anexos.find(anexo => anexo.categoria === categoriaId);
   }
 
-  obterAnexo(categoriaId: number): Anexo | undefined {
-    return this.anexos.find(a => a.categoria === categoriaId);
-  }
-
-  existeArquivo(categoriaId: number): boolean {
-    return this.obterAnexo(categoriaId) !== undefined || this.arquivosSelecionados.has(categoriaId);
-  }
-
-  obterNomeDoArquivo(categoriaId: number): string {
-    const anexo = this.obterAnexo(categoriaId);
-    if (anexo?.nomeArquivo) {
-      return anexo.nomeArquivo;
-    }
-    
-    const arquivoSelectionado = this.arquivosSelecionados.get(categoriaId);
-    if (arquivoSelectionado) {
-      return arquivoSelectionado.nome;
-    }
-    
-    return 'Arquivo enviado';
-  }
-
-  aoSelecionarArquivo(event: Event, categoria: number) {
+  async onFileSelected(event: Event, categoria: CategoriaAnexo): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const allowed = ['image/png', 'image/jpeg', 'application/pdf'];
-      if (!allowed.includes(file.type)) {
-        alert('Tipo de arquivo não permitido. Use apenas PNG, JPEG ou PDF.');
-        return;
-      }
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const anexoExistente = this.getAnexoPorCategoria(categoria.id);
+    if (anexoExistente) {
+      await this.removerAnexo(anexoExistente);
+    }
+
+    const arquivo = input.files[0];
+    this.uploadEmAndamento[categoria.id] = true;
+
+    try {
+      const caminho = `anexos/${Date.now()}_${arquivo.name}`;
+      const resultado: UploadResultado = await lastValueFrom(
+        this.storagePort.upload(arquivo, caminho)
+      );
       
-      this.arquivosSelecionados.set(categoria, {
-        arquivo: file,
-        nome: file.name
+      const novoAnexo = Anexo.criar({
+        categoria: categoria.id,
+        nomeArquivo: arquivo.name,
+        url: resultado.url,
+        path: resultado.path
       });
-      
-      this.upload.emit({ categoria, arquivo: file });
+
+      this.anexos = [...this.anexos, novoAnexo];
+      this.anexosChange.emit(this.anexos);
+
+    } catch (error) {
+      console.error(`Erro no upload para a categoria ${categoria.label}:`, error);
+    } finally {
+      this.uploadEmAndamento[categoria.id] = false;
+      input.value = '';
     }
   }
 
-  abrirConfirmacaoRemover(anexo: Anexo) {
-    this.anexoPendenteRemocao = anexo;
-    this.showRemoveModal = true;
-  }
+  async removerAnexo(anexoParaRemover: Anexo): Promise<void> {
+    if (!confirm(`Tem certeza que deseja remover o anexo "${anexoParaRemover.nomeArquivo}"?`)) {
+      return;
+    }
 
-  cancelarRemover() {
-    this.anexoPendenteRemocao = null;
-    this.showRemoveModal = false;
-  }
+    this.uploadEmAndamento[anexoParaRemover.categoria] = true;
+    try {
+      await lastValueFrom(this.storagePort.delete(anexoParaRemover.path));
+      
+      this.anexos = this.anexos.filter(anexo => anexo.path !== anexoParaRemover.path);
+      this.anexosChange.emit(this.anexos);
 
-  confirmarRemover() {
-    if (!this.anexoPendenteRemocao) return;
-    this.arquivosSelecionados.delete(this.anexoPendenteRemocao.categoria);
-    this.removerAnexo.emit(this.anexoPendenteRemocao);
-    this.anexoPendenteRemocao = null;
-    this.showRemoveModal = false;
-  }
-
-  baixar(anexo: Anexo) {
-    this.baixarAnexo.emit(anexo);
-  }
-
-  limparArquivoSelecionado(categoria: number) {
-    this.arquivosSelecionados.delete(categoria);
-  }
-
-  atualizarArquivoSelecionado(categoria: number, nomeArquivo: string) {
-    this.arquivosSelecionados.set(categoria, {
-      arquivo: new File([], nomeArquivo),
-      nome: nomeArquivo
-    });
+    } catch (error) {
+      console.error('Erro ao remover anexo:', error);
+    } finally {
+        this.uploadEmAndamento[anexoParaRemover.categoria] = false;
+    }
   }
 }

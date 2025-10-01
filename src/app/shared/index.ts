@@ -16,6 +16,4 @@ export * from './components/notificacoes/notificacoes.component';
 export * from './components/skeleton/skeleton.component';
 export * from './components/skeleton/table-skeleton.component';
 export * from './components/endereco-form/endereco-form';
-export * from './components/endereco-form/endereco.service';
 export * from './components/anexo-form/anexo-form';
-export * from './components/anexo-form/anexo.service';

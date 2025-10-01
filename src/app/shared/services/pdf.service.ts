@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { loadAndResizeImageAsBase64 } from '../utils/image.utils';
-import { PessoaIdosa } from '../../modules/pessoa-idosa/domain/entities/pessoa-idosa.entity';
-import { Anexo } from '../../modules/pessoa-idosa/domain/value-objects/anexo.vo';
-import { Endereco } from '../../modules/pessoa-idosa/domain/value-objects/endereco.vo';
-import { ComposicaoFamiliar } from '../../modules/pessoa-idosa/domain/value-objects/composicao-familiar.vo';
-import { Dependente } from '../../modules/dependente/domain/entities/dependente.entity';
+import { PessoaIdosa } from '../../domains/pessoa-idosa/domain/entities/pessoa-idosa.entity';
+import { Anexo } from '../../domains/pessoa-idosa/domain/value-objects/anexo.vo';
+import { Endereco } from '../../domains/pessoa-idosa/domain/value-objects/endereco.vo';
+import { ComposicaoFamiliar } from '../../domains/pessoa-idosa/domain/value-objects/composicao-familiar.vo';
+import { Dependente } from '../../domains/dependente/domain/entities/dependente.entity';
 import { CATEGORIAS_ANEXO } from '../constants/app.constants';
 import { ROTULOS_PDF, TEMA_PDF } from '../constants/pdf.constants';
 import type { jsPDF } from 'jspdf';

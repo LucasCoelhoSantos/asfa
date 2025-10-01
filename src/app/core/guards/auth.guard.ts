@@ -1,12 +1,13 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AutenticacaoService } from '../services/auth.service';
 import { map, take } from 'rxjs';
+import { SessaoService } from '../services/sessao.service';
 
 export const AutenticacaoGuard: CanActivateFn = () => {
-  const authService = inject(AutenticacaoService);
+  const sessaoService = inject(SessaoService);
   const router = inject(Router);
-  return authService.estaLogado$.pipe(
+
+  return sessaoService.estaLogado$.pipe(
     take(1),
     map(estaLogado => {
       return estaLogado ? true : router.createUrlTree(['/login']);

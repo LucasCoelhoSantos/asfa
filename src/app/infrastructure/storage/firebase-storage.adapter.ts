@@ -1,29 +1,32 @@
 import { Injectable, inject } from '@angular/core';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
-import { StoragePort, UploadResultado } from '../../shared/components/anexo-form/storage.port';
+import { from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { StoragePort, UploadResultado } from '../../shared/ports/storage.port';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class FirebaseStorageAdapter implements StoragePort {
-  private storage = inject(Storage);
+  private storage: Storage = inject(Storage);
 
-  async upload(pessoaId: string, categoria: number, arquivo: File): Promise<UploadResultado> {
-    const path = this.gerarCaminhoDeArmazenamento(pessoaId, categoria, arquivo);
+  upload(arquivo: File, path: string): Observable<UploadResultado> {
     const storageRef = ref(this.storage, path);
-    await uploadBytes(storageRef, arquivo);
-    const url = await getDownloadURL(storageRef);
-    return { url, path };
+    
+    return from(uploadBytes(storageRef, arquivo)).pipe(
+      switchMap(uploadResult => from(getDownloadURL(uploadResult.ref))),
+      map(url => {
+        return {
+          url: url,
+          path: path,
+          nome: arquivo.name,
+        };
+      })
+    );
   }
 
-  async remover(path: string): Promise<void> {
+  delete(path: string): Observable<void> {
     const storageRef = ref(this.storage, path);
-    await deleteObject(storageRef);
-  }
-
-  private gerarCaminhoDeArmazenamento(pessoaId: string, categoria: number, arquivo: File): string {
-    const timestamp = Date.now();
-    const safeName = arquivo.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
-    return `pessoas-idosas/${pessoaId}/${categoria}/${timestamp}-${safeName}`;
+    return from(deleteObject(storageRef));
   }
 }
-
-
