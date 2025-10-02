@@ -2,67 +2,75 @@
 
 <div class="container-fluid py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="h5 m-0">Pessoas Idosas</h2>
-    <div class="d-flex gap-2">
-      <button class="btn btn-primary btn-sm" (click)="navegar('/pessoa-idosa/novo')">Novo</button>
-      <button class="btn btn-outline-dark btn-sm" (click)="exportarPdf()">Exportar PDF</button>
-    </div>
+    <h1 class="h4 mb-0">Gestão de Pessoas Idosas</h1>
+    <a routerLink="/pessoa-idosa/novo" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Novo Cadastro
+    </a>
   </div>
-  <div class="card">
+
+  <div class="card shadow-sm">
     <div class="card-body">
-      <div class="row g-2 mb-3">
-        <div class="col-12 col-md-4">
-          <input class="form-control form-control-sm" placeholder="Nome" [value]="filtro.nome || ''" (input)="definirFiltro('nome', obterValor($event))" />
-        </div>
-        <div class="col-12 col-md-3">
-          <input class="form-control form-control-sm" placeholder="CPF" [value]="filtro.cpf || ''" (input)="definirFiltro('cpf', obterValor($event))" />
-        </div>
-        <div class="col-12 col-md-3">
-          <select class="form-select form-select-sm" (change)="definirFiltro('ativo', obterValor($event))">
-            <option value="">Todos</option>
-            <option value="ativo">Ativos</option>
-            <option value="inativo">Inativos</option>
-          </select>
-        </div>
-        <div class="col-12 col-md-2 d-grid">
-          <button class="btn btn-secondary btn-sm" (click)="buscar()">Buscar</button>
-        </div>
-      </div>
-      <div *ngIf="loading$ | async" class="alert alert-secondary">Carregando...</div>
       <div class="table-responsive">
-        <table class="table table-sm align-middle">
-          <thead>
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
             <tr>
-              <th>Nome</th>
-              <th>CPF</th>
-              <th>Telefone</th>
-              <th>Ações</th>
+              <th scope="col">Nome</th>
+              <th scope="col">CPF</th>
+              <th scope="col">Telefone</th>
+              <th scope="col">Data de Nascimento</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="text-end">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let p of (pessoas$ | async)?.pessoas; trackBy: trackById">
-              <td>{{ p.nome }}</td>
-              <td>{{ p.cpf }}</td>
-              <td>{{ p.telefone }}</td>
-              <td>
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary" (click)="visualizar(p.id)">Ver</button>
-                  <button class="btn btn-outline-secondary" (click)="editar(p.id)">Editar</button>
-                  <button *ngIf="p.ativo" class="btn btn-outline-danger" (click)="abrirConfirmacao('inativar', p.id)">Inativar</button>
-                  <button *ngIf="!p.ativo" class="btn btn-outline-success" (click)="abrirConfirmacao('ativar', p.id)">Ativar</button>
-                </div>
-              </td>
-            </tr>
+            <ng-container *ngIf="page$ | async as page; else loading">
+              <tr *ngFor="let pessoa of page.pessoas">
+                <td>{{ pessoa.nome }}</td>
+                <td>{{ pessoa.cpf | cpf }}</td>
+                <td>{{ pessoa.telefone | telefone }}</td>
+                <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="badge" [ngClass]="{'bg-success': pessoa.ativo, 'bg-danger': !pessoa.ativo}">
+                    {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <a [routerLink]="['/pessoa-idosa', pessoa.id]" class="btn btn-sm btn-outline-info me-2" title="Visualizar">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a [routerLink]="['/pessoa-idosa', pessoa.id, 'editar']" class="btn btn-sm btn-outline-primary me-2" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <button *ngIf="pessoa.ativo" class="btn btn-sm btn-outline-danger" (click)="inativar(pessoa.id)" title="Inativar">
+                    <i class="bi bi-lock"></i>
+                  </button>
+                  <button *ngIf="!pessoa.ativo" class="btn btn-sm btn-outline-success" (click)="ativar(pessoa.id)" title="Ativar">
+                    <i class="bi bi-unlock"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="page.pessoas.length === 0">
+                <td colspan="6" class="text-center text-muted py-4">Nenhum registro encontrado.</td>
+              </tr>
+            </ng-container>
+            <ng-template #loading>
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                  </div>
+                </td>
+              </tr>
+            </ng-template>
           </tbody>
         </table>
       </div>
-      <div class="d-flex justify-content-between align-items-center mt-2">
-        <div>Total: {{ total }}</div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-secondary" (click)="definirIndicePagina(indicePagina - 1)">Anterior</button>
-          <button class="btn btn-sm btn-outline-secondary" [disabled]="!temMais" (click)="definirIndicePagina(indicePagina + 1)">Próxima</button>
-        </div>
-      </div>
+
+      <nav *ngIf="(page$ | async) as page" class="d-flex justify-content-end mt-3" aria-label="Paginação">
+        <button class="btn btn-primary" [disabled]="!page.temMais" (click)="carregarProximaPagina(page.cursor)">
+          Carregar Mais
+        </button>
+      </nav>
     </div>
   </div>
 </div>

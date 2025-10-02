@@ -1,127 +1,158 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { UsuarioService } from '../../../../../core/services/usuario.service';
-import { AutenticacaoService } from '../../../../../core/services/auth.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { map, Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
+
 import { MainMenuComponent } from '../../../../../shared/components/main-menu/main-menu';
-import { Router, ActivatedRoute } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { NotificacaoService } from '../../../../../core/services/notificacao.service';
+import { SessaoService } from '../../../../../core/services/sessao.service';
+import { UsuarioFacade } from '../../../application/usuario.facade';
 import { CargoUsuario } from '../../../domain/value-objects/enums';
-import { CARGOS_USUARIO_OPCOES } from '../../../../../shared/constants/app.constants';
+import { AtualizarDadosAdminProps, AtualizarPerfilProps, CriarUsuarioProps } from '../../../domain/entities/usuario.entity';
+import { DominioErro } from '../../../domain/errors/usuario.errors';
 
 @Component({
-  selector: 'app-usuario-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MainMenuComponent],
-  templateUrl: './usuario-form.html'
+    selector: 'app-usuario-form',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule, RouterModule, MainMenuComponent],
+    templateUrl: './usuario-form.html'
 })
 export class UsuarioFormComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private usuarioService = inject(UsuarioService);
-  private autenticacaoService = inject(AutenticacaoService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+    private fb = inject(FormBuilder);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+    private location = inject(Location);
+    private facade = inject(UsuarioFacade);
+    private sessaoService = inject(SessaoService);
+    private notificacaoService = inject(NotificacaoService);
 
-  form: FormGroup;
-  carregando = false;
-  erro: string | null = null;
-  eModoEdicao = false;
-  eModoPerfil = false;
-  usuarioId: string | null = null;
-  cargos: CargoUsuario[] = CARGOS_USUARIO_OPCOES as CargoUsuario[];
-  mostrarSenha = false;
+    form!: FormGroup;
+    eModoEdicao = false;
+    eModoPerfil = false;
+    usuarioId: string | null = null;
+    usuarioSessao$ = this.sessaoService.usuario$;
+    cargosUsuario = Object.entries(CargoUsuario).filter(([key]) => !isNaN(Number(key))).map(([key, value]) => ({ id: Number(key), nome: value as string }));
+  
+    ngOnInit(): void {
+        this.inicializarFormulario();
+        this.verificarModoEdicao();
+    }
 
-  constructor() {
-    this.form = this.fb.group({
-      nome: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', []],
-      cargo: ['', [Validators.required]],
-      ativo: [true]
-    });
-  }
+    private inicializarFormulario(): void {
+        this.form = this.fb.group({
+            nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+            email: ['', [Validators.required, Validators.email]],
+            cargo: [CargoUsuario.Usuario, [Validators.required]],
+            ativo: [true],
+        });
+    }
 
-  async ngOnInit() {
-    this.eModoPerfil = this.route.snapshot.url[0]?.path === 'perfil';
-    
-    if (this.eModoPerfil) {
-      this.eModoEdicao = true;
-      this.carregando = true;
-      try {
-        const usuario = await firstValueFrom(this.autenticacaoService.usuarioComCargo$);
-        if (usuario && 'nome' in usuario && 'email' in usuario) {
-          this.form.patchValue({
-            nome: usuario.nome,
-            email: usuario.email,
-            senha: ''
-          });
+    private verificarModoEdicao(): void {
+        this.route.url.subscribe(segments => {
+            this.eModoPerfil = segments.some(s => s.path === 'perfil');
+        });
+
+        const id$: Observable<string | null | undefined> = this.eModoPerfil
+            ? this.sessaoService.usuario$.pipe(map(u => u?.id))
+            : this.route.paramMap.pipe(map(params => params.get('id')));
+
+            id$.pipe(first()).subscribe(id => {
+                if (id) {
+                    this.eModoEdicao = true;
+                    this.usuarioId = id;
+                    this.carregarDadosUsuario(id);
+                    if (this.eModoPerfil) {
+                        this.form.get('cargo')?.disable();
+                        this.form.get('ativo')?.disable();
+                    }
+                }
+              });
+    }
+
+    private carregarDadosUsuario(id: string): void {
+        this.facade.obterPorId(id).pipe(first()).subscribe(usuario => {
+            if (usuario) {
+                this.form.patchValue({
+                    nome: usuario.nome,
+                    email: usuario.email,
+                    cargo: usuario.cargo,
+                    ativo: usuario.ativo,
+                });
+            } else {
+                this.notificacaoService.mostrarErro('Usuário não encontrado.');
+                this.voltar();
+            }
+        });
+    }
+
+    async aoSalvar(): Promise<void> {
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.notificacaoService.mostrarAviso('Por favor, preencha os campos obrigatórios.');
+            return;
         }
-        this.form.get('senha')?.clearValidators();
-        this.form.get('senha')?.updateValueAndValidity();
-      } catch (e) {
-        this.erro = 'Erro ao carregar dados do usuário.';
-      }
-      this.carregando = false;
-    } else {
-      this.usuarioId = this.route.snapshot.paramMap.get('id');
-      this.eModoEdicao = !!this.usuarioId;
-      
-      if (this.eModoEdicao && this.usuarioId) {
-        this.carregando = true;
+
         try {
-          const usuario = await firstValueFrom(this.usuarioService.obterPorId(this.usuarioId));
-          if (usuario) {
-            this.form.patchValue({ ...usuario, senha: '' });
-          }
-          this.form.get('senha')?.clearValidators();
-          this.form.get('senha')?.updateValueAndValidity();
-        } catch (e) {
-          this.erro = 'Erro ao carregar dados.';
+            if (this.eModoEdicao && this.usuarioId) {
+                await this.atualizarUsuario(this.usuarioId);
+            } else {
+                await this.criarUsuario();
+            }
+            this.notificacaoService.mostrarSucesso('Operação realizada com sucesso!');
+            this.voltarParaLista();
+        } catch (error) {
+            this.handleError(error);
         }
-        this.carregando = false;
-      } else {
-        this.form.get('senha')?.setValidators([Validators.required, Validators.minLength(6)]);
-        this.form.get('senha')?.updateValueAndValidity();
-      }
     }
-  }
 
-  alternarSenha() {
-    this.mostrarSenha = !this.mostrarSenha;
-  }
+    private async criarUsuario(): Promise<void> {
+        const props: CriarUsuarioProps = {
+            nome: this.form.value.nome,
+            email: this.form.value.email,
+            cargo: Number(this.form.value.cargo) as unknown as CargoUsuario,
+            ativo: this.form.value.ativo,
+        };
+        await this.facade.criar(props);
+    }
 
-  async aoEnviar() {
-    if (this.form.invalid) return;
-    this.carregando = true;
-    this.erro = null;
-    const { nome, email, senha, cargo, ativo } = this.form.value;
-    
-    try {
-      if (this.eModoPerfil) {
-        const dadosEditados: any = { nome, email };
-        if (senha && senha.trim()) {
-          dadosEditados.senha = senha;
+    private async atualizarUsuario(id: string): Promise<void> {
+        if (this.eModoPerfil) {
+            const props: AtualizarPerfilProps = {
+                nome: this.form.value.nome,
+                email: this.form.value.email
+            };
+            await this.facade.atualizarPerfil(id, props);
+        } else {
+            const props: AtualizarDadosAdminProps = {
+                nome: this.form.value.nome,
+                email: this.form.value.email,
+                cargo: Number(this.form.value.cargo) as unknown as CargoUsuario
+            };
+            await this.facade.atualizarUsuario(id, props);
         }
-        await this.usuarioService.editarPerfil(dadosEditados);
-        this.router.navigate(['/pessoa-idosa']);
-      } else if (this.eModoEdicao && this.usuarioId) {
-        await this.usuarioService.editar(this.usuarioId, { nome, email, cargo, ativo });
-        this.router.navigate(['/usuario']);
-      } else {
-        await this.usuarioService.criar({ nome, email, cargo, ativo: true }, senha);
-        this.router.navigate(['/usuario']);
-      }
-    } catch (e) {
-      this.erro = 'Erro ao salvar.';
     }
-    this.carregando = false;
-  }
 
-  voltarParaLista() {
-    if (this.eModoPerfil) {
-      this.router.navigate(['/pessoa-idosa']);
-    } else {
-      this.router.navigate(['/usuario']);
+    private handleError(error: unknown): void {
+        if (error instanceof DominioErro) {
+            this.notificacaoService.mostrarErro(error.message);
+        } else if (error instanceof Error) {
+            this.notificacaoService.mostrarErro(`Ocorreu um erro: ${error.message}`);
+        } else {
+            this.notificacaoService.mostrarErro('Ocorreu um erro inesperado. Tente novamente.');
+        }
     }
-  }
+
+    voltar(): void {
+        this.location.back();
+    }
+
+    private voltarParaLista(): void {
+        if (this.eModoPerfil) {
+            this.router.navigate(['/']);
+        } else {
+            this.router.navigate(['/usuario']);
+        }
+    }
 }

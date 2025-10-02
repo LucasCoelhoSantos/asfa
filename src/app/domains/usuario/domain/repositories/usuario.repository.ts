@@ -11,7 +11,7 @@ export interface UsuarioListFilters {
 export const USUARIO_REPOSITORY = new InjectionToken<UsuarioRepository>('USUARIO_REPOSITORY');
 
 export abstract class UsuarioRepository {
-  abstract listar(filtros?: UsuarioListFilters): Observable<Usuario[]>;
+  abstract listar(filtros: UsuarioListFilters): Observable<Usuario[]>;
   abstract obterPorId(id: string): Observable<Usuario | undefined>;
   abstract obterPorEmail(email: string): Observable<Usuario | undefined>;
   abstract criar(usuario: Usuario): Observable<string>;

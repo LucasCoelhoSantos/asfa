@@ -1,37 +1,29 @@
-<div class="anexo-container">
-  <p class="form-label">Anexos (limite de 1 por categoria)</p>
-  
-  <ul class="list-group">
-    <li *ngFor="let categoria of categorias" class="list-group-item d-flex justify-content-between align-items-center">
-      
-      <span class="categoria-descricao">{{ categoria.label }}</span>
-
-      <div class="anexo-actions">
-        <div *ngIf="uploadEmAndamento[categoria.id]" class="spinner-border spinner-border-sm" role="status">
-          <span class="visually-hidden">Loading...</span>
+<form [formGroup]="form" (ngSubmit)="aoSalvar()">
+    <div class="modal-body">
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria *</label>
+            <select id="categoria" class="form-select" formControlName="categoria">
+                <option [ngValue]="null" disabled>Selecione uma categoria</option>
+                @for (categoria of categorias; track categoria.id) {
+                    <option [value]="categoria.id">{{ categoria.label }}</option>
+                }
+                <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.label }}</option>
+            </select>
         </div>
 
-        <ng-container *ngIf="!uploadEmAndamento[categoria.id]">
-          <ng-container *ngIf="getAnexoPorCategoria(categoria.id) as anexo; else uploadTemplate">
-            <div class="anexo-existente">
-              <a [href]="anexo.url" target="_blank" class="anexo-link" title="Clique para ver o anexo">
-                <i class="bi bi-file-earmark-text"></i> {{ anexo.nomeArquivo }}
-              </a>
-              <button (click)="removerAnexo(anexo)" type="button" class="btn btn-sm btn-danger ms-2" title="Remover anexo">
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
-          </ng-container>
+        <div class="mb-3">
+            <label for="arquivo" class="form-label">Arquivo *</label>
+            <input type="file" id="arquivo" class="form-control" (change)="onFileSelected($event)">
+            <div class="form-text">Tamanho máximo: 5MB</div>
+        </div>
 
-          <ng-template #uploadTemplate>
-            <label class="btn btn-sm btn-outline-primary">
-              <i class="bi bi-upload"></i> Enviar Arquivo
-              <input type="file" (change)="onFileSelected($event, categoria)" class="d-none">
-            </label>
-          </ng-template>
-        </ng-container>
-
-      </div>
-    </li>
-  </ul>
-</div>
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome do Arquivo *</label>
+            <input type="text" id="nome" class="form-control" formControlName="nome" placeholder="Será preenchido automaticamente">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || !arquivoSelecionado">Salvar Anexo</button>
+    </div>
+</form>

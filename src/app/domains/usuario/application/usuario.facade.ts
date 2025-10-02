@@ -9,7 +9,7 @@ import {
     AtivarUsuarioUseCase,
     InativarUsuarioUseCase
 } from './use-cases/usuario.use-cases';
-import { Usuario, CriarUsuarioProps, AtualizarUsuarioProps, AtualizarPerfilProps } from '../domain/entities/usuario.entity';
+import { Usuario, CriarUsuarioProps, AtualizarDadosAdminProps, AtualizarPerfilProps } from '../domain/entities/usuario.entity';
 import { UsuarioListFilters } from '../domain/repositories/usuario.repository';
 
 @Injectable({ providedIn: 'root' })
@@ -22,7 +22,7 @@ export class UsuarioFacade {
     private readonly ativarUC = inject(AtivarUsuarioUseCase);
     private readonly inativarUC = inject(InativarUsuarioUseCase);
 
-    listar(filtros?: UsuarioListFilters): Observable<Usuario[]> {
+    listar(filtros: UsuarioListFilters): Observable<Usuario[]> {
         return this.listarUC.execute(filtros);
     }
 
@@ -34,12 +34,12 @@ export class UsuarioFacade {
         return this.criarUC.execute(props);
     }
 
-    atualizarUsuario(id: string, props: AtualizarUsuarioProps): Promise<void> {
+    atualizarUsuario(id: string, props: AtualizarDadosAdminProps): Promise<void> {
         return this.atualizarUsuarioUC.execute(id, props);
     }
 
-    atualizarPerfil(props: AtualizarPerfilProps): Promise<void> {
-        return this.atualizarPerfilUC.execute(props);
+    atualizarPerfil(id: string, props: AtualizarPerfilProps): Promise<void> {
+        return this.atualizarPerfilUC.execute(id, props);
     }
 
     ativar(id: string): Promise<void> {

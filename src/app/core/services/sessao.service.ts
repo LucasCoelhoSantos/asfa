@@ -1,19 +1,19 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, shareReplay } from 'rxjs/operators';
-import { AuthPort, AUTH_PORT } from '../ports/auth.port';
+import { AutenticacaoService } from './autenticacao.service';
 import { UsuarioSessao } from '../domain/entities/usuario-sessao.entity';
-import { USUARIO_REPOSITORY, UsuarioRepository } from '../../domains/usuario/domain/repositories/usuario.repository';
+import { USUARIO_REPOSITORY } from '../../domains/usuario/domain/repositories/usuario.repository';
 import { CargoUsuario } from '../../domains/usuario/domain/value-objects/enums';
 
 @Injectable({ providedIn: 'root' })
 export class SessaoService {
-  private authPort = inject(AUTH_PORT);
+  private autenticacaoService = inject(AutenticacaoService);
   private usuarioRepository = inject(USUARIO_REPOSITORY);
 
-  public readonly usuario$: Observable<UsuarioSessao | null> = this.authPort.identidade$.pipe(
+  public readonly usuario$: Observable<UsuarioSessao | null> = this.autenticacaoService.identidade$.pipe(
     switchMap(identidade => {
-      if (!identidade) {
+      if (!identidade?.uid) {
         return of(null);
       }
       return this.usuarioRepository.obterPorId(identidade.uid);
@@ -37,28 +37,11 @@ export class SessaoService {
   public temCargo(cargos: CargoUsuario[]): Observable<boolean> {
     return this.usuario$.pipe(
       map(usuario => {
-        if (!usuario || !usuario.cargo) return false;
+        if (!usuario?.cargo) {
+          return false;
+        }
         return cargos.includes(usuario.cargo);
       })
     );
-  }
-
-  public entrar(email: string, senha: string): Observable<UsuarioSessao> {
-    return this.authPort.entrar({ email, senha }).pipe(
-      switchMap(identidade => this.usuarioRepository.obterPorId(identidade.uid)),
-      map(usuario => {
-        if (!usuario) throw new Error('Usuário não encontrado após o login.');
-        return {
-          id: usuario.id,
-          nome: usuario.nome,
-          email: usuario.email,
-          cargo: usuario.cargo,
-        };
-      })
-    );
-  }
-  
-  public sair(): Observable<void> {
-    return this.authPort.sair();
   }
 }

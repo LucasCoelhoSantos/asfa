@@ -1,39 +1,42 @@
+import { CampoObrigatorioErro } from "../errors/pessoa-idosa.errors";
+import { CategoriaAnexo } from "./enums";
+
+export interface AnexoProps {
+    categoria: CategoriaAnexo;
+    url: string;
+    path: string;
+    nome: string;
+}
+
 export class Anexo {
-    readonly categoria: number;
+    readonly categoria: CategoriaAnexo;
     readonly url: string;
     readonly path: string;
-    readonly nomeArquivo?: string;
+    readonly nome: string;
 
-    private constructor(props: { categoria: number; url: string; path: string; nomeArquivo?: string }) {
+    private constructor(props: AnexoProps) {
+        if (!props.categoria) throw new CampoObrigatorioErro('Anexo: categoria')
+        if (!props.url) throw new CampoObrigatorioErro('Anexo: url')
+        if (!props.path) throw new CampoObrigatorioErro('Anexo: path')
+        if (!props.nome) throw new CampoObrigatorioErro('Anexo: nome')
+
         this.categoria = props.categoria;
         this.url = props.url;
         this.path = props.path;
-        this.nomeArquivo = props.nomeArquivo;
-        Anexo.validar(this);
+        this.nome = props.nome;
         Object.freeze(this);
     }
 
-    public static criar(props: { categoria: number; url: string; path: string; nomeArquivo?: string }): Anexo {
-        return new Anexo({
-            categoria: props.categoria,
-            url: props.url?.trim(),
-            path: props.path?.trim(),
-            nomeArquivo: props.nomeArquivo?.trim() || 'Anexo sem nome',
-        });
+    public static criar(props: AnexoProps): Anexo {
+        const categoriasValidas = Object.values(CategoriaAnexo).map(Number).filter(v => !isNaN(v));
+        if (!categoriasValidas.includes(props.categoria)) {
+            throw new Error(`Categoria de anexo inválida: ${props.categoria}`);
+        }
+        return new Anexo(props);
     }
 
-    private static validar(anexo: Anexo): void {
-        if (typeof anexo.categoria !== 'number' || anexo.categoria < 0) {
-            throw new Error('Categoria do anexo inválida');
-        }
-        try {
-            new URL(anexo.url);
-        } catch {
-            throw new Error('URL do anexo inválida');
-        }
-        if (!anexo.path) {
-            throw new Error('Path do anexo inválido');
-        }
+    public static rehidratar(props: AnexoProps): Anexo {
+        return new Anexo(props);
     }
 
     public toJSON() {
@@ -41,7 +44,7 @@ export class Anexo {
             categoria: this.categoria,
             url: this.url,
             path: this.path,
-            nomeArquivo: this.nomeArquivo
+            nome: this.nome
         };
     }
 }

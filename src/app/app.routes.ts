@@ -6,21 +6,21 @@ import { CargoUsuario } from './domains/usuario/domain/value-objects/enums';
 export const routes: Routes = [
   { 
     path: '',
-    loadComponent: () => import('./domains/inicio/presentation/pages/inicio/inicio').then(m => m.HomeComponent)
+    loadComponent: () => import('./pages/inicio/inicio').then(m => m.HomeComponent)
   },
   { 
     path: 'login', 
-    loadChildren: () => import('./domains/autenticacao/presentation/autenticacao-routing.module').then(m => m.AUTH_ROUTES)
+    loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
+  },
+  { 
+    path: 'ajuda', 
+    canActivate: [AutenticacaoGuard],
+    loadComponent: () => import('./pages/ajuda/ajuda').then(m => m.AjudaComponent)
   },
   { 
     path: 'perfil', 
     canActivate: [AutenticacaoGuard],
     loadComponent: () => import('./domains/usuario/presentation/pages/usuario-form/usuario-form').then(m => m.UsuarioFormComponent)
-  },
-  { 
-    path: 'ajuda', 
-    canActivate: [AutenticacaoGuard],
-    loadComponent: () => import('./domains/ajuda/presentation/pages/ajuda/ajuda').then(m => m.AjudaComponent)
   },
   { 
     path: 'usuario', 

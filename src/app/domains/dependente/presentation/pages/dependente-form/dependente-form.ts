@@ -1,47 +1,67 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Dependente } from '../../../domain/entities/dependente.entity';
+import { Dependente, DependenteProps } from '../../../domain/entities/dependente.entity';
+import { NotificacaoService } from '../../../../../core/services/notificacao.service';
 
 @Component({
-  selector: 'app-dependente-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './dependente-form.html'
+    selector: 'app-dependente-form',
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './dependente-form.html'
 })
-export class DependenteFormComponent implements OnInit {
-  @Input() dependente?: Dependente;
-  @Output() save = new EventEmitter<Dependente>();
-  @Output() cancel = new EventEmitter<void>();
+export class DependenteFormComponent implements OnInit, OnChanges {
+    @Input() dependente?: Dependente;
+    @Output() save = new EventEmitter<DependenteProps>();
+    @Output() cancel = new EventEmitter<void>();
 
-  form: FormGroup;
+    private fb = inject(FormBuilder);
+    private notificacaoService = inject(NotificacaoService);
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      nome: ['', Validators.required],
-      dataNascimento: ['', Validators.required],
-      parentesco: ['', Validators.required],
-      ceinf: [''],
-      ceinfBairro: [''],
-      programaSaudePastoralCrianca: [''],
-      programaSaudePastoralCriancaLocal: [''],
-      ativo: [true],
-      composicaoFamiliar: this.fb.group({})
-    });
-  }
+    form: FormGroup;
 
-  ngOnInit() {
-    if (this.dependente) {
-      this.form.patchValue(this.dependente);
+    constructor() {
+        this.form = this.fb.group({
+            id: [null],
+            nome: ['', [Validators.required, Validators.minLength(3)]],
+            dataNascimento: ['', [Validators.required]],
+            parentesco: ['', [Validators.required]],
+            ceinf: [''],
+            ceinfBairro: [''],
+            programaSaudePastoralCrianca: [''],
+            programaSaudePastoralCriancaLocal: [''],
+            ativo: [true],
+        });
     }
-  }
 
-  aoEnviar() {
-    if (this.form.invalid) return;
-    this.save.emit(this.form.value);
-  }
-  
-  aoCancelar() {
-    this.cancel.emit();
-  }
+    ngOnInit(): void {
+        this.preencherFormulario();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['dependente']) {
+            this.preencherFormulario();
+        }
+    }
+
+    private preencherFormulario(): void {
+        if (this.dependente) {
+            this.form.patchValue(this.dependente.toJSON());
+        } else {
+            this.form.reset({ ativo: true });
+        }
+    }
+
+    aoEnviar(): void {
+        if (this.form.invalid) {
+            this.form.markAllAsTouched();
+            this.notificacaoService.mostrarAviso('Preencha os campos obrigatórios do dependente.');
+            return;
+        }
+        this.save.emit(this.form.value);
+    }
+
+    aoCancelar(): void {
+        this.cancel.emit();
+    }
 }

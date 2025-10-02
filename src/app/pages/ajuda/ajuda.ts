@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MainMenuComponent } from '../../../../../shared/components/main-menu/main-menu';
+import { MainMenuComponent } from '../../shared'; 
 
 @Component({
   selector: 'app-ajuda',

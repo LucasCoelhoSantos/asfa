@@ -1,74 +1,81 @@
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, doc, docData, setDoc, updateDoc, query, where, orderBy, QueryConstraint, limit, getDocs } from '@angular/fire/firestore';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs';
+// src/app/infrastructure/repositories/usuario.firebase.repository.ts
+
+import { inject, Injectable } from '@angular/core';
+import { Firestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, CollectionReference, DocumentData, } from '@angular/fire/firestore';
+import { from, Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Usuario } from '../../domains/usuario/domain/entities/usuario.entity';
-import { UsuarioListFilters, UsuarioRepository } from '../../domains/usuario/domain/repositories/usuario.repository';
+import { UsuarioRepository, UsuarioListFilters } from '../../domains/usuario/domain/repositories/usuario.repository';
+import { SessaoService } from '../../core/services/sessao.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class UsuarioFirebaseRepository implements UsuarioRepository {
-  private firestore = inject(Firestore);
-  private readonly collectionName = 'usuarios';
-  private readonly collectionRef = collection(this.firestore, this.collectionName);
+    private firestore: Firestore = inject(Firestore);
+    private sessaoService = inject(SessaoService);
+    private collectionRef: CollectionReference<DocumentData>;
 
-  listar(filtros: UsuarioListFilters = {}): Observable<Usuario[]> {
-    const restricoes: QueryConstraint[] = [orderBy('nome')];
-
-    if (typeof filtros.ativo === 'boolean') {
-      restricoes.unshift(where('ativo', '==', filtros.ativo));
-    }
-    if (filtros.nome?.trim()) {
-      restricoes.push(where('nome', '>=', filtros.nome), where('nome', '<=', filtros.nome + '\uf8ff'));
-    }
-    if (filtros.email?.trim()) {
-      restricoes.push(where('email', '==', filtros.email));
+    constructor() {
+        this.collectionRef = collection(this.firestore, 'usuarios');
     }
 
-    const consulta = query(this.collectionRef, ...restricoes);
-    return collectionData(consulta, { idField: 'id' }).pipe(map(dados => dados.map(dado => this.converterParaUsuario(dado.id, dado))));
-  }
+    listar(filtros: UsuarioListFilters): Observable<Usuario[]> {
+        const q = query(this.collectionRef);
+        return from(getDocs(q)).pipe(
+            map(querySnapshot =>
+                querySnapshot.docs.map(doc => {
+                const dados = doc.data();
+                return Usuario.rehidratar({ ...dados, id: doc.id } as any);
+                })
+            )
+        );
+    }
 
-  obterPorId(id: string): Observable<Usuario | undefined> {
-    const ref = doc(this.firestore, this.collectionName, id);
-    return docData(ref).pipe(map(data => {
-      if(!data) return undefined;
-      return this.converterParaUsuario(id, data);
-    }));
-  }
+    obterPorId(id: string): Observable<Usuario | undefined> {
+        const docRef = doc(this.collectionRef, id);
+        return from(getDoc(docRef)).pipe(
+            map(snapshot => {
+                if (!snapshot.exists()) {
+                return undefined;
+                }
+                const dados = snapshot.data();
+                // Usa o método de fábrica para reconstruir a entidade a partir dos dados do Firestore
+                return Usuario.rehidratar({ ...dados, id: snapshot.id } as any);
+            })
+        );
+    }
 
-  obterPorEmail(email: string): Observable<Usuario | undefined> {
-    const consulta = query(this.collectionRef, where('email', '==', email), limit(1));
+    obterPorEmail(email: string): Observable<Usuario | undefined> {
+        const q = query(this.collectionRef, where('email', '==', email));
+        return from(getDocs(q)).pipe(
+            map(querySnapshot => {
+                if (querySnapshot.empty) {
+                return undefined;
+                }
+                const doc = querySnapshot.docs[0];
+                const dados = doc.data();
+                return Usuario.rehidratar({ ...dados, id: doc.id } as any);
+            })
+        );
+    }
 
-    return from(getDocs(consulta)).pipe(
-      map(snapshot => {
-        if (snapshot.empty) return undefined;
-        const doc = snapshot.docs[0];
-        return this.converterParaUsuario(doc.id, doc.data());
-      })
-    )
-  }
+    criar(usuario: Usuario): Observable<string> {
+        const docRef = doc(this.collectionRef); // Gera um novo ID automaticamente
+        const dados = usuario.toJSON();
+        // Remove o ID do objeto, pois ele já é a chave do documento
+        const { id, ...dataToSave } = dados;
 
-  criar(usuario: Usuario): Observable<string> {
-    const docRef = doc(this.firestore, this.collectionName, usuario.id);
-    const dados = usuario.toJSON();
-    delete (dados as any).id;
-    return from(setDoc(docRef, dados)).pipe(map(() => usuario.id));
-  }
+        return from(setDoc(docRef, dataToSave)).pipe(
+            map(() => docRef.id) // Retorna o novo ID gerado
+        );
+    }
 
-  atualizar(usuario: Usuario): Observable<void> {
-    const docRef = doc(this.firestore, this.collectionName, usuario.id);
-    const dados = usuario.toJSON();
-    delete (dados as any).id;
-    return from(updateDoc(docRef, { ...dados }));
-  }
+    atualizar(usuario: Usuario): Observable<void> {
+        const docRef = doc(this.collectionRef, usuario.id);
+        const dados = usuario.toJSON();
+        const { id, ...dataToUpdate } = dados;
 
-  private converterParaUsuario(id: string, data: any): Usuario {
-    return Usuario.criar({
-      id: id,
-      nome: data.nome,
-      email: data.email,
-      cargo: data.cargo,
-      ativo: data.ativo
-    });
-  }
+        return from(updateDoc(docRef, dataToUpdate));
+    }
 }

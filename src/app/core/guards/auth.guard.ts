@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { map, take } from 'rxjs';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { map, take, Observable } from 'rxjs';
 import { SessaoService } from '../services/sessao.service';
 
-export const AutenticacaoGuard: CanActivateFn = () => {
+export const AutenticacaoGuard: CanActivateFn = (): Observable<boolean | UrlTree> => {
   const sessaoService = inject(SessaoService);
   const router = inject(Router);
 

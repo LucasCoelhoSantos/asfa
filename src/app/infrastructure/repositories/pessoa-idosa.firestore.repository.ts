@@ -1,119 +1,98 @@
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, doc, docData, addDoc, updateDoc, query, where, orderBy, limit, startAfter, getDocs, QueryConstraint, DocumentSnapshot } from '@angular/fire/firestore';
-import { Observable, from, map } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { Firestore, collection, doc, getDoc, setDoc, updateDoc, addDoc, query, limit, startAfter, getDocs, getCountFromServer, CollectionReference, DocumentData, Timestamp } from '@angular/fire/firestore';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PessoaIdosa } from '../../domains/pessoa-idosa/domain/entities/pessoa-idosa.entity';
 import { PessoaIdosaRepository, PessoaIdosaListFilters, PessoaIdosaListPage } from '../../domains/pessoa-idosa/domain/repositories/pessoa-idosa.repository';
-import { Endereco } from '../../domains/pessoa-idosa/domain/value-objects/endereco.vo';
-import { ComposicaoFamiliar } from '../../domains/pessoa-idosa/domain/value-objects/composicao-familiar.vo';
-import { Anexo } from '../../domains/pessoa-idosa/domain/value-objects/anexo.vo';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class PessoaIdosaFirestoreRepository implements PessoaIdosaRepository {
-  private firestore = inject(Firestore);
-  private readonly collectionName = 'pessoasIdosas';
-  private readonly collectionRef = collection(this.firestore, this.collectionName);
+    private firestore: Firestore = inject(Firestore);
+    private collectionRef: CollectionReference<DocumentData>;
 
-  listar(filtros: PessoaIdosaListFilters): Observable<PessoaIdosa[]> {
-    const restricoes: QueryConstraint[] = [orderBy('nome')];
-    
-    if (typeof filtros.ativo === 'boolean') {
-      restricoes.unshift(where('ativo', '==', filtros.ativo));
-    }
-    if (filtros.nome?.trim()) {
-      restricoes.push(where('nome', '>=', filtros.nome), where('nome', '<=', filtros.nome + '\uf8ff'));
-    }
-    if (filtros.cpf?.trim()) {
-      restricoes.push(where('cpf', '==', filtros.cpf));
+    constructor() {
+        this.collectionRef = collection(this.firestore, 'pessoas-idosas');
     }
 
-    const consulta = query(this.collectionRef, ...restricoes);
-    return collectionData(consulta, { idField: 'id' }).pipe(map((itens: any[]) => itens.map(dado => this.converterParaPessoaIdosa(dado.id, dado))));
-  }
-
-  obterPorId(id: string): Observable<PessoaIdosa | undefined> {
-    const referenciaDocumento = doc(this.firestore, this.collectionName, id);
-    return docData(referenciaDocumento).pipe(map(documento => documento ? this.converterParaPessoaIdosa(id, documento) : undefined));
-  }
-
-  criar(pessoa: PessoaIdosa): Observable<string> {
-    const dados = pessoa.toJSON();
-    delete (dados as any).id;
-    return from(addDoc(this.collectionRef, dados)).pipe(map(ref => ref.id));
-  }
-
-  atualizar(pessoa: PessoaIdosa): Observable<void> {
-    const referenciaDocumento = doc(this.firestore, this.collectionName, pessoa.id);
-    const dados = pessoa.toJSON();
-    delete (dados as any).id;
-    return from(updateDoc(referenciaDocumento, dados));
-  }
-
-  async paginar(tamanho: number, cursor: DocumentSnapshot | null, filtros: PessoaIdosaListFilters): Promise<PessoaIdosaListPage> {
-    const restricoes = this.construirRestricoesConsulta(tamanho, cursor, filtros);
-    const consulta = query(this.collectionRef, ...restricoes);
-    const snapshot = await getDocs(consulta);
-    const documentos = snapshot.docs;
-    const temMais = documentos.length > tamanho;
-    const pessoas = (temMais ? documentos.slice(0, tamanho) : documentos).map(docSnapshot => this.converterParaPessoaIdosa(docSnapshot.id, docSnapshot.data()));
-
-    const proximoCursor = documentos.length > 0 ? documentos[documentos.length - 1] : null;
-
-    return { pessoas, cursor: proximoCursor, total: pessoas.length, temMais };
-  }
-
-  private construirRestricoesConsulta(tamanho: number, cursor: DocumentSnapshot | null, filtros: PessoaIdosaListFilters): QueryConstraint[] {
-    const restricoes: QueryConstraint[] = [orderBy('nome'), limit(tamanho + 1)];
-    if (typeof filtros.ativo === 'boolean') {
-      restricoes.unshift(where('ativo', '==', filtros.ativo));
+    // Função auxiliar para converter Timestamps do Firestore para Datas
+    private converterTimestampsParaDatas(data: any): any {
+        for (const key in data) {
+        if (data[key] instanceof Timestamp) {
+            data[key] = data[key].toDate();
+        } else if (typeof data[key] === 'object' && data[key] !== null) {
+            this.converterTimestampsParaDatas(data[key]);
+        }
+        }
+        return data;
     }
-    if (cursor) {
-      restricoes.push(startAfter(cursor));
-    }
-    if (filtros.nome?.trim()) {
-      restricoes.push(where('nome', '>=', filtros.nome), where('nome', '<=', filtros.nome + '\uf8ff'));
-    }
-    if (filtros.cpf?.trim()) {
-      restricoes.push(where('cpf', '==', filtros.cpf));
-    }
-    if (filtros.estadoCivil?.trim()) {
-      restricoes.push(where('estadoCivil', '==', filtros.estadoCivil));
-    }
-    return restricoes;
-  }
 
-  public converterParaPessoaIdosa(id: string, dados: any): PessoaIdosa {
-    return PessoaIdosa.criar({
-      id,
-      nome: dados.nome,
-      dataNascimento: this.converterData(dados.dataNascimento),
-      ativo: dados.ativo,
-      estadoCivil: dados.estadoCivil,
-      cpf: dados.cpf,
-      rg: dados.rg,
-      orgaoEmissor: dados.orgaoEmissor,
-      religiao: dados.religiao,
-      naturalidade: dados.naturalidade,
-      telefone: dados.telefone,
-      email: dados.email,
-      prontuarioSaude: dados.prontuarioSaude,
-      aposentadoConsegueSeManterComSuaRenda: dados.aposentadoConsegueSeManterComSuaRenda,
-      comoComplementa: dados.comoComplementa,
-      beneficio: dados.beneficio,
-      observacao: dados.observacao,
-      historicoFamiliarSocial: dados.historicoFamiliarSocial,
-      composicaoFamiliar: ComposicaoFamiliar.criar(dados.composicaoFamiliar || {}),
-      endereco: Endereco.criar(dados.endereco || {}),
-      dependentes: dados.dependentes || [],
-      anexos: Array.isArray(dados.anexos) ? dados.anexos.map((a: any) => Anexo.criar(a)) : []
-    });
-  }
+    listar(filtros: PessoaIdosaListFilters): Observable<PessoaIdosa[]> {
+        const q = query(this.collectionRef); // Adicionar filtros 'where' aqui
+        return from(getDocs(q)).pipe(
+            map(querySnapshot =>
+                querySnapshot.docs.map(doc => {
+                    let dados = this.converterTimestampsParaDatas(doc.data());
+                    return PessoaIdosa.rehidratar({ ...dados, id: doc.id });
+                })
+            )
+        );
+    }
 
-  private converterData(campoData: any): Date {
-    if (!campoData) return new Date();
-    if (campoData instanceof Date) return campoData;
-    if (campoData && typeof campoData.toDate === 'function') return campoData.toDate();
-    if (typeof campoData === 'string') { const d = new Date(campoData); return isNaN(d.getTime()) ? new Date() : d; }
-    if (typeof campoData === 'number') return new Date(campoData);
-    return new Date();
-  }
+    obterPorId(id: string): Observable<PessoaIdosa | undefined> {
+        const docRef = doc(this.collectionRef, id);
+        return from(getDoc(docRef)).pipe(
+            map(snapshot => {
+                if (!snapshot.exists()) {
+                    return undefined;
+                }
+                let dados = this.converterTimestampsParaDatas(snapshot.data());
+                // Usa o rehidratar para reconstruir a entidade rica
+                return PessoaIdosa.rehidratar({ ...dados, id: snapshot.id });
+            })
+        );
+    }
+
+    async paginar(tamanho: number, cursor: unknown | null, filtros: PessoaIdosaListFilters): Promise<PessoaIdosaListPage> {
+        const q = cursor
+            ? query(this.collectionRef, limit(tamanho), startAfter(cursor))
+            : query(this.collectionRef, limit(tamanho));
+
+        const querySnapshot = await getDocs(q);
+        const countSnapshot = await getCountFromServer(this.collectionRef);
+
+        const pessoas = querySnapshot.docs.map(doc => {
+            let dados = this.converterTimestampsParaDatas(doc.data());
+            return PessoaIdosa.rehidratar({ ...dados, id: doc.id });
+        });
+
+        const proximoCursor = querySnapshot.docs[querySnapshot.docs.length - 1] || null;
+
+        return {
+            pessoas,
+            cursor: proximoCursor,
+            total: countSnapshot.data().count,
+            temMais: querySnapshot.docs.length === tamanho,
+        };
+    }
+
+    criar(pessoa: PessoaIdosa): Observable<string> {
+        // Usa toJSON para obter um objeto simples para persistência
+        const dados = pessoa.toJSON();
+        const { id, ...dataToSave } = dados; // Remove o ID temporário
+
+        return from(addDoc(this.collectionRef, dataToSave)).pipe(
+            map(docRef => docRef.id)
+        );
+    }
+
+    atualizar(pessoa: PessoaIdosa): Observable<void> {
+        const docRef = doc(this.collectionRef, pessoa.id);
+        // Usa toJSON para obter um objeto simples para persistência
+        const dados = pessoa.toJSON();
+        const { id, ...dataToUpdate } = dados;
+
+        return from(setDoc(docRef, dataToUpdate));
+    }
 }

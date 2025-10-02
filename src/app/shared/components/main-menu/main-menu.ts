@@ -1,70 +1,37 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { AutenticacaoFacade } from '../../../domains/autenticacao/application/autenticacao.facade';
+import { Router, RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
+import { NotificacaoService } from '../../../core/services/notificacao.service';
+import { SessaoService } from '../../../core/services/sessao.service';
+import { AutenticacaoService } from '../../../core/services/autenticacao.service';
+import { UsuarioSessao } from '../../../core/domain/entities/usuario-sessao.entity';
+import { CargoUsuario } from '../../../domains/usuario/domain/value-objects/enums';
 
 @Component({
-  selector: 'app-main-menu',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './main-menu.html'
+    selector: 'app-main-menu',
+    standalone: true,
+    imports: [CommonModule, RouterModule],
+    templateUrl: './main-menu.html'
 })
 export class MainMenuComponent {
-  menuOpen = signal(false);
-  currentRoute = signal('');
+    private router = inject(Router);
+    private sessaoService = inject(SessaoService);
+    private autenticacaoService = inject(AutenticacaoService);
+    private notificacaoService = inject(NotificacaoService);
 
-  private authFacade = inject(AutenticacaoFacade);
-  private router = inject(Router);
+    usuario$: Observable<UsuarioSessao | null> = this.sessaoService.usuario$;
+    
+    readonly CargoUsuario = CargoUsuario;
 
-  user$ = this.authFacade.usuario$;
-  userWithRole$ = this.authFacade.usuarioComCargo$;
-
-  constructor() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.currentRoute.set(event.url);
-    });
-  }
-
-  navegar(path: string) {
-    this.router.navigate([path]);
-    this.menuOpen.set(false);
-  }
-
-  toggleMenu() {
-    this.menuOpen.update(open => !open);
-  }
-
-  closeMenu() {
-    this.menuOpen.set(false);
-  }
-
-  isActiveRoute(path: string): boolean {
-    return this.currentRoute() === path;
-  }
-
-  getUserInitials(email: string | null): string {
-    if (!email) return 'U';
-    const parts = email.split('@')[0].split('.');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+    sair(): void {
+        this.autenticacaoService.sair().subscribe({
+            next: () => {
+                this.router.navigate(['/login']);
+            },
+            error: () => {
+                this.notificacaoService.mostrarErro('Erro ao tentar sair do sistema.');
+            }
+        });
     }
-    return email[0].toUpperCase();
-  }
-
-  getUserDisplayName(email: string | null): string {
-    if (!email) return 'Usuário';
-    const name = email.split('@')[0];
-    return name.split('.').map(part => 
-      part.charAt(0).toUpperCase() + part.slice(1)
-    ).join(' ');
-  }
-
-  logout() {
-    this.authFacade.sair().subscribe(() => {
-      this.router.navigate(['/login']);
-    });
-  }
 }
