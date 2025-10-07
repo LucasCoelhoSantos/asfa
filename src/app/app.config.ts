@@ -20,21 +20,20 @@ import { STORAGE_PORT } from './shared/ports/storage.port';
 import { FirebaseStorageAdapter } from './infrastructure/storage/firebase-storage.adapter';
 
 import {
-  ListarPessoasIdosasUseCase,
+  ObterTodasPessoasIdosasUseCase,
   ObterPessoaIdosaPorIdUseCase,
   CriarPessoaIdosaUseCase,
   AtualizarPessoaIdosaUseCase,
   AtivarPessoaIdosaUseCase,
   InativarPessoaIdosaUseCase,
-  PaginarPessoasIdosasUseCase
-} from './domains/pessoa-idosa/application/use-cases';
+} from './domains/pessoa-idosa/application/use-cases/pessoa-idosa.use-cases';
 import {
   AtivarUsuarioUseCase,
   AtualizarPerfilUseCase,
   AtualizarUsuarioUseCase,
   CriarUsuarioUseCase,
   InativarUsuarioUseCase,
-  ListarUsuariosUseCase,
+  ObterTodosUsuariosUseCase,
   ObterUsuarioPorIdUseCase
 } from './domains/usuario/application/use-cases/usuario.use-cases';
 import { CEP_PORT } from './shared/ports/cep.port';
@@ -61,7 +60,7 @@ export const appConfig: ApplicationConfig = {
     { provide: CEP_PORT, useClass: ViaCepAdapter },
     
     // Provedores dos Casos de Uso - Usuario
-    ListarUsuariosUseCase,
+    ObterTodosUsuariosUseCase,
     ObterUsuarioPorIdUseCase,
     CriarUsuarioUseCase,
     AtualizarUsuarioUseCase,
@@ -70,12 +69,11 @@ export const appConfig: ApplicationConfig = {
     InativarUsuarioUseCase,
 
     // Provedores dos Casos de Uso - Pessoa Idosa
-    ListarPessoasIdosasUseCase,
+    ObterTodasPessoasIdosasUseCase,
     ObterPessoaIdosaPorIdUseCase,
     CriarPessoaIdosaUseCase,
     AtualizarPessoaIdosaUseCase,
     AtivarPessoaIdosaUseCase,
     InativarPessoaIdosaUseCase,
-    PaginarPessoasIdosasUseCase,
   ]
 };

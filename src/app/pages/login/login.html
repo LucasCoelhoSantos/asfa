@@ -20,9 +20,11 @@
                 [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
                 placeholder="Digite seu e-mail"
               />
-              <div class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-                E-mail obrigatório e válido.
-              </div>
+              @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                <div class="invalid-feedback">
+                  E-mail obrigatório e válido.
+                </div>
+              }
             </div>
             
             <div class="mb-4">
@@ -35,32 +37,34 @@
                 [class.is-invalid]="form.get('senha')?.invalid && form.get('senha')?.touched"
                 placeholder="Digite sua senha"
               />
-              <div class="invalid-feedback" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
-                Senha obrigatória (mínimo 6 caracteres).
-              </div>
+              @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+                <div class="invalid-feedback">
+                  Senha obrigatória (mínimo 6 caracteres).
+                </div>
+              }
             </div>
             
-            <button
-              type="submit"
-              class="btn btn-primary w-100 py-2 fw-semibold"
-              [disabled]="form.invalid || loading"
-            >
-              <span *ngIf="!loading">Entrar</span>
-              <span *ngIf="loading" class="d-flex align-items-center justify-content-center">
-                <div class="spinner-border spinner-border-sm me-2" role="status">
-                  <span class="visualmente oculto">Carregando...</span>
-                </div>
-                Entrando...
-              </span>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold" [disabled]="form.invalid || loading">
+              @if (!loading) {
+                <span>Entrar</span>
+              }
+              @if (loading) {
+                <span class="d-flex align-items-center justify-content-center">
+                  <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                  </div>
+                  Entrando...
+                </span>
+              }
             </button>
             
-            <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" (click)="irParaInicio()">
+            <button class="btn btn-secondary w-100 fw-semibold mt-3" (click)="irParaInicio()">
               <span>Voltar</span>
             </button>
 
-            <!--<div class="alert alert-danger mt-3" *ngIf="erro" role="alert">
-              {{ erro }}
-            </div>-->
+            <div class="w-100 py-2 mt-3 text-center">
+              <a href="#" class="link-secondary">Esqueci minha senha</a>
+            </div>
           </form>
         </div>
       </div>

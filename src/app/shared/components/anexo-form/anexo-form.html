@@ -1,29 +1,28 @@
 <form [formGroup]="form" (ngSubmit)="aoSalvar()">
-    <div class="modal-body">
-        <div class="mb-3">
-            <label for="categoria" class="form-label">Categoria *</label>
-            <select id="categoria" class="form-select" formControlName="categoria">
-                <option [ngValue]="null" disabled>Selecione uma categoria</option>
-                @for (categoria of categorias; track categoria.id) {
-                    <option [value]="categoria.id">{{ categoria.label }}</option>
-                }
-                <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.label }}</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="arquivo" class="form-label">Arquivo *</label>
-            <input type="file" id="arquivo" class="form-control" (change)="onFileSelected($event)">
-            <div class="form-text">Tamanho máximo: 5MB</div>
-        </div>
-
-        <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Arquivo *</label>
-            <input type="text" id="nome" class="form-control" formControlName="nome" placeholder="Será preenchido automaticamente">
-        </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
+      <select id="categoria" class="form-select" formControlName="categoria">
+        <option [ngValue]="null" disabled>Selecione uma categoria</option>
+        @for (categoria of categorias; track categoria.id) {
+          <option [value]="categoria.id">{{ categoria.label }}</option>
+        }
+      </select>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancelar</button>
-        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || !arquivoSelecionado">Salvar Anexo</button>
+
+    <div class="mb-3">
+      <label for="arquivo" class="form-label">Arquivo <span class="text-danger">*</span></label>
+      <input type="file" id="arquivo" class="form-control" (change)="onFileSelected($event)">
+      <div class="form-text">Tamanho máximo: 5MB</div>
     </div>
+
+    <div class="mb-3">
+      <label for="nome" class="form-label">Nome do Arquivo <span class="text-danger">*</span></label>
+      <input type="text" id="nome" class="form-control" formControlName="nome" placeholder="Será preenchido automaticamente">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancelar</button>
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid || !arquivoSelecionado">Salvar Anexo</button>
+  </div>
 </form>

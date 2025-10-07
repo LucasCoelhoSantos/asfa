@@ -20,7 +20,6 @@ export class AuthFirebaseAdapter implements AuthPort {
       },
       (erro) => subscriber.error(erro)
     );
-    // Função de limpeza para quando o Observable for desinscrito
     return () => unsubscriber();
   });
 

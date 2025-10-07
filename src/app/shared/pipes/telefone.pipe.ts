@@ -10,4 +10,4 @@ export class TelefonePipe implements PipeTransform {
     if (!value) return '';
     return MaskUtils.aplicaMascaraDeTelefone(value);
   }
-} 
+}

@@ -10,4 +10,4 @@ export class CpfPipe implements PipeTransform {
     if (!value) return '';
     return MaskUtils.aplicaMascaraDeCPF(value);
   }
-} 
+}

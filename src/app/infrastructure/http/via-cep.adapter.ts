@@ -4,9 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { CepPort, EnderecoDTO } from '../../shared/ports/cep.port';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ViaCepAdapter implements CepPort {
   private http = inject(HttpClient);
   private readonly API_URL = 'https://viacep.com.br/ws';
@@ -27,8 +25,7 @@ export class ViaCepAdapter implements CepPort {
           logradouro: response.logradouro,
           bairro: response.bairro,
           cidade: response.localidade,
-          estado: response.uf,
-          complemento: response.complemento
+          estado: response.uf
         };
       }),
       catchError(() => of(null))

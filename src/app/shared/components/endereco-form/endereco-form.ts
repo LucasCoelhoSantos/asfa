@@ -2,7 +2,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CEP_PORT, CepPort } from '../../ports/cep.port';
-import { MORADIAS_OPCOES } from '../../constants/app.constants';
+import { MORADIA_OPCOES } from '../../constants/app.constants';
 import { MaskDirective } from '../../directives/mask.directive';
 
 @Component({
@@ -19,7 +19,7 @@ export class EnderecoFormComponent implements OnInit {
   public cepLoading = false;
   public cepError: string | null = null;
 
-  public readonly moradiasOptions = MORADIAS_OPCOES;
+  public readonly moradiasOptions = MORADIA_OPCOES;
 
   ngOnInit(): void {
     if (!this.form) {

@@ -9,29 +9,29 @@ import { UsuarioSessao } from '../../../core/domain/entities/usuario-sessao.enti
 import { CargoUsuario } from '../../../domains/usuario/domain/value-objects/enums';
 
 @Component({
-    selector: 'app-main-menu',
-    standalone: true,
-    imports: [CommonModule, RouterModule],
-    templateUrl: './main-menu.html'
+  selector: 'app-main-menu',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './main-menu.html'
 })
 export class MainMenuComponent {
-    private router = inject(Router);
-    private sessaoService = inject(SessaoService);
-    private autenticacaoService = inject(AutenticacaoService);
-    private notificacaoService = inject(NotificacaoService);
+  private router = inject(Router);
+  private sessaoService = inject(SessaoService);
+  private autenticacaoService = inject(AutenticacaoService);
+  private notificacaoService = inject(NotificacaoService);
 
-    usuario$: Observable<UsuarioSessao | null> = this.sessaoService.usuario$;
-    
-    readonly CargoUsuario = CargoUsuario;
+  usuario$: Observable<UsuarioSessao | null> = this.sessaoService.usuario$;
+  
+  readonly CargoUsuario = CargoUsuario;
 
-    sair(): void {
-        this.autenticacaoService.sair().subscribe({
-            next: () => {
-                this.router.navigate(['/login']);
-            },
-            error: () => {
-                this.notificacaoService.mostrarErro('Erro ao tentar sair do sistema.');
-            }
-        });
-    }
+  sair(): void {
+    this.autenticacaoService.sair().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: () => {
+        this.notificacaoService.mostrarErro('Erro ao tentar sair do sistema.');
+      }
+    });
+  }
 }

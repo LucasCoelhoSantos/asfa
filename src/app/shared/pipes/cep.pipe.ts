@@ -10,4 +10,4 @@ export class CepPipe implements PipeTransform {
     if (!value) return '';
     return MaskUtils.aplicaMascaraDeCEP(value);
   }
-} 
+}

@@ -185,7 +185,7 @@ export class ServicoEmailTemplate {
               <div style="background-color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
                 <p><strong>Email:</strong> {{emailUsuario}}</p>
                 <p><strong>Data de Confirmação:</strong> {{dataConfirmacao}}</p>
-                <p><strong>Status:</strong> <span style="color: #198754; font-weight: bold;">Ativo</span></p>
+                <p><strong>Status:</strong> <span style="color: #198754; font-weight: bold;">Status</span></p>
               </div>
               
               <p>Agora você pode acessar o sistema com suas credenciais.</p>

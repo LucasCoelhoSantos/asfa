@@ -1,14 +1,6 @@
 import * as nodemailer from 'nodemailer';
 import { getFirestore } from 'firebase-admin/firestore';
-import { 
-  EmailData, 
-  EmailConfig, 
-  EmailNotification, 
-  EmailNotificationType, 
-  EmailStatus,
-  Collection,
-  EMAIL_CONFIG 
-} from '../types';
+import { EmailData, EmailConfig, EmailNotification, EmailNotificationType, EmailStatus, Collection, EMAIL_CONFIG } from '../types';
 import { ServicoEmailTemplate } from './email-template.service';
 
 export class ServicoEmail {

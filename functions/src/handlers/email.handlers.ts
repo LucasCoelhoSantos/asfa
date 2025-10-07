@@ -2,12 +2,7 @@ import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/fire
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { getFirestore } from 'firebase-admin/firestore';
 import { ServicoEmail } from '../services/email.service';
-import { 
-  EmailNotificationType, 
-  Collection,
-  PessoaIdosaData,
-  UsuarioData 
-} from '../types';
+import { EmailNotificationType, Collection, PessoaIdosaData, UsuarioData } from '../types';
 
 const db = getFirestore();
 const servicoEmail = new ServicoEmail();
@@ -39,8 +34,9 @@ export const onPessoaIdosaCreatedEmail = onDocumentCreated(
       // Preparar dados para o template
       const dadosTemplate = {
         nomePessoa: dadosPessoa.nome || 'Não informado',
-        dataNascimento: dadosPessoa.dataNascimento ? 
-          new Date(dadosPessoa.dataNascimento).toLocaleDateString('pt-BR') : 'Não informado',
+        dataNascimento: dadosPessoa.dataNascimento
+          ? new Date(dadosPessoa.dataNascimento).toLocaleDateString('pt-BR')
+          : 'Não informado',
         usuarioResponsavel: usuarioResponsavel.nome || usuarioResponsavel.email,
         dataCadastro: new Date().toLocaleDateString('pt-BR')
       };

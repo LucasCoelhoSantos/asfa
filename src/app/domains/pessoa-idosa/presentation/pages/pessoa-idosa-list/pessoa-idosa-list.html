@@ -2,75 +2,262 @@
 
 <div class="container-fluid py-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h4 mb-0">Gestão de Pessoas Idosas</h1>
+    <h1 class="h4 mb-0 fw-bold text-primary">Pessoas Idosas Cadastradas</h1>
     <a routerLink="/pessoa-idosa/novo" class="btn btn-primary">
-      <i class="bi bi-plus-circle me-1"></i> Novo Cadastro
+      <i class="bi bi-plus-circle me-1"></i> Adicionar
     </a>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-light">
+    <h3 class="h5 mb-0 fw-semibold">Filtros de Pesquisa</h3>
+  </div>
+
+  <form class="card-body" [formGroup]="form" (ngSubmit)="buscarPaginado(1)">
+    <div class="mb-4">
+      <h4 class="h6 fw-semibold text-primary mb-3">Informações Básicas</h4>
+      <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Nome</label>
+          <input type="text" class="form-control" placeholder="Nome" formControlName="nome" />
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Data de Nascimento</label>
+          <input type="date" class="form-control" formControlName="dataNascimento" />
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Estado Civil</label>
+          <select class="form-select" formControlName="estadoCivil">
+            <option value="">Todos</option>
+            @for (estadoCivil of estadoCivilOpcoes; track estadoCivil) {
+              <option [value]="estadoCivil">{{ estadoCivil }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">CPF</label>
+          <input type="text" class="form-control" placeholder="000.000.000-00" appMask="cpf" formControlName="cpf" />
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">RG</label>
+          <input type="text" class="form-control" placeholder="00.000.000-0" appMask="rg" formControlName="rg" />
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">CEP</label>
+          <input type="text" class="form-control" placeholder="00000-000" appMask="cep" formControlName="cep" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filtros Avançados -->
+    <div class="mb-4">
+      <h4 class="h6 fw-semibold text-primary mb-3">Informações Adicionais</h4>
+      <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="filtroAlfabetizado" role="switch" formControlName="alfabetizado" />
+            <label class="form-check-label" for="filtroAlfabetizado">Alfabetizado</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="filtroEstudaAtualmente" role="switch" formControlName="estudaAtualmente"  />
+            <label class="form-check-label" for="filtroEstudaAtualmente">Estuda Atualmente</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Nível/Série Atual</label>
+          <select class="form-select" formControlName="nivelSerieAtual">
+            <option value="">Todos</option>
+            @for (nivel of escolaridadeOpcoes; track nivel) {
+              <option [value]="nivel">{{ nivel }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Curso Técnico/Formação</label>
+          <select class="form-select" formControlName="cursoFormacao">
+            <option value="">Todos</option>
+            @for (curso of cursosFormacaoOpcoes; track curso) {
+              <option [value]="curso">{{ curso }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Benefício</label>
+          <select class="form-select" formControlName="beneficio">
+            <option value="">Todos</option>
+            @for (beneficio of beneficioOpcoes; track beneficio) {
+              <option [value]="beneficio">{{ beneficio }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Situação Ocupacional</label>
+          <select class="form-select" formControlName="situacaoOcupacional">
+            <option value="">Todos</option>
+            @for (situacao of situacaoOcupacionalOpcoes; track situacao) {
+              <option [value]="situacao">{{ situacao }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Problema de Saúde</label>
+          <select class="form-select" formControlName="problemaDeSaude">
+            <option value="">Todos</option>
+            @for (problema of problemaDeSaudeOpcoes; track problema) {
+              <option [value]="problema">{{ problema }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Aposentado</label>
+          <select class="form-select" formControlName="aposentado">
+            <option value="">Todos</option>
+            @for (aposentado of aposentadoOpcoes; track aposentado) {
+              <option [value]="aposentado">{{ aposentado }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Moradia</label>
+          <select class="form-select" formControlName="moradia">
+            <option value="">Todos</option>
+            @for (moradia of moradiaOpcoes; track moradia) {
+              <option [value]="moradia">{{ moradia }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Deficiência</label>
+          <select class="form-select" formControlName="deficiencia">
+            <option value="">Todos</option>
+            @for (deficiencia of deficienciaOpcoes; track deficiencia) {
+              <option [value]="deficiencia">{{ deficiencia }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <label class="form-label fw-semibold">Status</label>
+          <select class="form-select" formControlName="ativo">
+            <option value="">Todos</option>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mb-4">
+      <div class="d-flex gap-4 mt-3">
+        <button type="submit" class="btn btn-primary w-100" (click)="buscarPaginado(1)">
+          <i class="bi bi-search me-2"></i>
+          Buscar
+        </button>
+        <button type="button" (click)="limparFiltros()" class="btn btn-outline-secondary w-100">
+          <i class="bi bi-trash me-2"></i>
+          Limpar Filtros
+        </button>
+        <button type="button" (click)="exportarPdf()" class="btn btn-outline-success w-100">
+          <i class="bi bi-file-earmark-pdf me-2"></i>
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div class="card-body card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col text-nowrap">Nome</th>
+            <th scope="col text-nowrap">CPF</th>
+            <th scope="col text-nowrap">Telefone</th>
+            <th scope="col text-nowrap">Data de Nascimento</th>
+            <th scope="col text-nowrap">Status</th>
+            <th scope="col text-nowrap">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (page?.pessoasIdosas; as pessoasIdosas) {
+            @for (pessoa of pessoasIdosas; track pessoa.id) {
             <tr>
-              <th scope="col">Nome</th>
-              <th scope="col">CPF</th>
-              <th scope="col">Telefone</th>
-              <th scope="col">Data de Nascimento</th>
-              <th scope="col">Status</th>
-              <th scope="col" class="text-end">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngIf="page$ | async as page; else loading">
-              <tr *ngFor="let pessoa of page.pessoas">
-                <td>{{ pessoa.nome }}</td>
-                <td>{{ pessoa.cpf | cpf }}</td>
-                <td>{{ pessoa.telefone | telefone }}</td>
-                <td>{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
-                <td>
-                  <span class="badge" [ngClass]="{'bg-success': pessoa.ativo, 'bg-danger': !pessoa.ativo}">
-                    {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <a [routerLink]="['/pessoa-idosa', pessoa.id]" class="btn btn-sm btn-outline-info me-2" title="Visualizar">
-                    <i class="bi bi-eye"></i>
-                  </a>
-                  <a [routerLink]="['/pessoa-idosa', pessoa.id, 'editar']" class="btn btn-sm btn-outline-primary me-2" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                  </a>
-                  <button *ngIf="pessoa.ativo" class="btn btn-sm btn-outline-danger" (click)="inativar(pessoa.id)" title="Inativar">
+              <td class="text-nowrap">{{ pessoa.nome }}</td>
+              <td class="text-nowrap">{{ pessoa.cpf | cpf }}</td>
+              <td class="text-nowrap">{{ pessoa.telefone | telefone }}</td>
+              <td class="text-nowrap">{{ pessoa.dataNascimento | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <span class="badge" [ngClass]="{'bg-success': pessoa.ativo, 'bg-danger': !pessoa.ativo}">
+                  {{ pessoa.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td class="text-end text-nowrap">
+                <a [routerLink]="['/pessoa-idosa', pessoa.id, 'visualizar']" class="btn btn-sm btn-outline-info me-2" title="Visualizar">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a [routerLink]="['/pessoa-idosa', pessoa.id, 'editar']" class="btn btn-sm btn-outline-primary me-2" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                @if (pessoa.ativo) {
+                  <button class="btn btn-sm btn-outline-danger" (click)="solicitarInativar(pessoa.id)" title="Inativar">
                     <i class="bi bi-lock"></i>
                   </button>
-                  <button *ngIf="!pessoa.ativo" class="btn btn-sm btn-outline-success" (click)="ativar(pessoa.id)" title="Ativar">
+                }
+                @if (!pessoa.ativo) {
+                  <button class="btn btn-sm btn-outline-success" (click)="solicitarAtivar(pessoa.id)" title="Ativar">
                     <i class="bi bi-unlock"></i>
                   </button>
-                </td>
-              </tr>
-              <tr *ngIf="page.pessoas.length === 0">
+                }
+              </td>
+            </tr>
+            }
+            @if (pessoasIdosas.length === 0) {
+              <tr>
                 <td colspan="6" class="text-center text-muted py-4">Nenhum registro encontrado.</td>
               </tr>
-            </ng-container>
-            <ng-template #loading>
-              <tr>
-                <td colspan="6" class="text-center py-4">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Carregando...</span>
-                  </div>
-                </td>
-              </tr>
-            </ng-template>
-          </tbody>
-        </table>
-      </div>
-
-      <nav *ngIf="(page$ | async) as page" class="d-flex justify-content-end mt-3" aria-label="Paginação">
-        <button class="btn btn-primary" [disabled]="!page.temMais" (click)="carregarProximaPagina(page.cursor)">
-          Carregar Mais
-        </button>
-      </nav>
+            }
+          } @else {
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Carregando...</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
+
+    <nav class="d-flex justify-content-between align-items-center mt-3" aria-label="Paginação">
+      <div>
+        @if (page) {
+          <span class="text-muted">Página {{ page.paginaAtual }} — {{ page.total }} resultados</span>
+        }
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline-secondary" [disabled]="page?.paginaAtual === 1" (click)="buscarPaginado(page!.paginaAtual - 1)">Anterior</button>
+        <button type="button" class="btn btn-outline-secondary" [disabled]="(page?.paginaAtual || 1) * (page?.quantidadePorPagina || 10) >= (page?.total || 0)" (click)="buscarPaginado(page!.paginaAtual + 1)">Próxima</button>
+      </div>
+    </nav>
   </div>
 </div>
+
+<app-modal
+  [mostrar]="mostrarModalAtivar"
+  [titulo]="'Ativar Usuário'"
+  [mensagem]="'Tem certeza que deseja ativar esta pessoa idosa?'"
+  [confirmarTexto]="'Ativar'"
+  (confirmar)="ativar()"
+  (cancelar)="cancelarModal()">
+</app-modal>
+
+<app-modal
+  [mostrar]="mostrarModalInativar"
+  [titulo]="'Inativar Usuário'"
+  [mensagem]="'Tem certeza que deseja inativar esta pessoa idosa?'"
+  [confirmarTexto]="'Inativar'"
+  (confirmar)="inativar()"
+  (cancelar)="cancelarModal()">
+</app-modal>

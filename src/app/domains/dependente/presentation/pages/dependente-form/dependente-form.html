@@ -5,12 +5,11 @@
   
   <div class="card-body p-4">
     <form [formGroup]="form" (ngSubmit)="aoEnviar()">
-      <!-- Informações Básicas -->
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Básicas</h4>
         <div class="row g-3">
           <div class="col-12 col-md-6">
-            <label for="nome" class="form-label fw-semibold">Nome Completo *</label>
+            <label for="nome" class="form-label fw-semibold">Nome Completo <span class="text-danger">*</span></label>
             <input
               id="nome"
               type="text"
@@ -19,13 +18,15 @@
               placeholder="Digite o nome completo"
               [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="form.get('nome')?.invalid && form.get('nome')?.touched">
-              Nome obrigatório.
-            </div>
+            @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+              <div class="invalid-feedback">
+                Nome obrigatório.
+              </div>
+            }
           </div>
           
           <div class="col-12 col-md-6">
-            <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento *</label>
+            <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento <span class="text-danger">*</span></label>
             <input
               id="dataNascimento"
               type="date"
@@ -33,13 +34,15 @@
               formControlName="dataNascimento"
               [class.is-invalid]="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
-              Data obrigatória.
-            </div>
+            @if (form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched) {
+              <div class="invalid-feedback">
+                Data obrigatória.
+              </div>
+            }
           </div>
           
           <div class="col-12 col-md-6">
-            <label for="parentesco" class="form-label fw-semibold">Parentesco *</label>
+            <label for="parentesco" class="form-label fw-semibold">Parentesco <span class="text-danger">*</span></label>
             <input
               id="parentesco"
               type="text"
@@ -48,14 +51,15 @@
               placeholder="Ex: Filho, Neto, etc."
               [class.is-invalid]="form.get('parentesco')?.invalid && form.get('parentesco')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="form.get('parentesco')?.invalid && form.get('parentesco')?.touched">
-              Campo obrigatório.
-            </div>
+            @if (form.get('parentesco')?.invalid && form.get('parentesco')?.touched) {
+              <div class="invalid-feedback">
+                Campo obrigatório.
+              </div>
+            }
           </div>
         </div>
       </div>
-      
-      <!-- Informações Educacionais -->
+
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Educacionais</h4>
         <div class="row g-3">
@@ -82,8 +86,7 @@
           </div>
         </div>
       </div>
-      
-      <!-- Programa de Saúde -->
+
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Programa de Saúde</h4>
         <div class="row g-3">
@@ -110,8 +113,7 @@
           </div>
         </div>
       </div>
-      
-      <!-- Status -->
+
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Status</h4>
         <div class="form-check">
@@ -121,13 +123,10 @@
             id="ativo"
             formControlName="ativo"
           />
-          <label class="form-check-label fw-semibold" for="ativo">
-            Ativo
-          </label>
+          <label class="form-check-label fw-semibold" for="ativo">Status</label>
         </div>
       </div>
-      
-      <!-- Ações do formulário -->
+
       <div class="d-flex gap-2 justify-content-end pt-3 border-top">
         <button type="button" class="btn btn-outline-secondary" (click)="aoCancelar()">
           <i class="bi bi-x-circle me-1"></i>

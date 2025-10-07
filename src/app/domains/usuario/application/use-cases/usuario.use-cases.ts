@@ -1,14 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { lastValueFrom, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { USUARIO_REPOSITORY, UsuarioListFilters } from '../../domain/repositories/usuario.repository';
-import { Usuario, CriarUsuarioProps, AtualizarDadosAdminProps, AtualizarPerfilProps } from '../../domain/entities/usuario.entity';
+import { USUARIO_REPOSITORY, UsuarioListFiltros, UsuarioListaPaginada } from '../../domain/repositories/usuario.repository';
+import { Usuario, CriarUsuarioProps, AtualizarUsuarioProps, AtualizarPerfilProps } from '../../domain/entities/usuario.entity';
 
 @Injectable({ providedIn: 'root' })
-export class ListarUsuariosUseCase {
+export class ObterTodosUsuariosUseCase {
   private repository = inject(USUARIO_REPOSITORY);
-  execute(filtros: UsuarioListFilters): Observable<Usuario[]> {
-    return this.repository.listar(filtros);
+  execute(filtros: UsuarioListFiltros): Observable<Usuario[]> {
+    return this.repository.obterTodos(filtros);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class ObterTodosUsuariosPaginadoUseCase {
+  private repository = inject(USUARIO_REPOSITORY);
+  execute(pagina: number, quantidadePorPagina: number, filtros?: UsuarioListFiltros): Promise<UsuarioListaPaginada> {
+    return this.repository.obterTodosPaginado(pagina, quantidadePorPagina, filtros);
   }
 }
 
@@ -32,32 +40,14 @@ export class CriarUsuarioUseCase {
 @Injectable({ providedIn: 'root' })
 export class AtualizarUsuarioUseCase {
   private repository = inject(USUARIO_REPOSITORY);
-  execute(id: string, props: AtualizarDadosAdminProps): Promise<void> {
+  execute(id: string, props: AtualizarUsuarioProps): Promise<void> {
     return lastValueFrom(
       this.repository.obterPorId(id).pipe(
         switchMap(usuario => {
           if (!usuario) {
             throw new Error('Usuário não encontrado.');
           }
-          usuario.atualizarDadosAdministrativos(props);
-          return this.repository.atualizar(usuario);
-        })
-      )
-    );
-  }
-}
-
-@Injectable({ providedIn: 'root' })
-export class AtualizarPerfilUseCase {
-  private repository = inject(USUARIO_REPOSITORY);
-  execute(id: string, props: AtualizarPerfilProps): Promise<void> {
-    return lastValueFrom(
-      this.repository.obterPorId(id).pipe(
-        switchMap(usuario => {
-          if (!usuario) {
-            throw new Error('Usuário não encontrado.');
-          }
-          usuario.atualizarPerfil(props);
+          usuario.atualizarUsuario(props);
           return this.repository.atualizar(usuario);
         })
       )
@@ -76,6 +66,24 @@ export class AtivarUsuarioUseCase {
             throw new Error('Usuário não encontrado.');
           }
           usuario.ativar();
+          return this.repository.atualizar(usuario);
+        })
+      )
+    );
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class AtualizarPerfilUseCase {
+  private repository = inject(USUARIO_REPOSITORY);
+  execute(id: string, props: AtualizarPerfilProps): Promise<void> {
+    return lastValueFrom(
+      this.repository.obterPorId(id).pipe(
+        switchMap(usuario => {
+          if (!usuario) {
+            throw new Error('Usuário não encontrado.');
+          }
+          usuario.atualizarPerfil(props);
           return this.repository.atualizar(usuario);
         })
       )

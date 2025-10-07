@@ -1,74 +1,160 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
 import { MainMenuComponent } from '../../../../../shared/components/main-menu/main-menu';
 import { NotificacaoService } from '../../../../../core/services/notificacao.service';
 import { PessoaIdosaFacade } from '../../../application/pessoa-idosa.facade';
-import { PessoaIdosaListFilters, PessoaIdosaListPage } from '../../../domain/repositories/pessoa-idosa.repository';
-import { CpfPipe } from '../../../../../shared';
+import { PessoaIdosaFiltros, PessoaIdosaListaPaginada } from '../../../domain/repositories/pessoa-idosa.repository';
+import { CpfPipe, ModalComponent } from '../../../../../shared';
 import { TelefonePipe } from '../../../../../shared';
-
+import {
+  ESTADO_CIVIL_OPCOES,
+  ESCOLARIDADE_OPCOES,
+  TIPO_FORMACAO_PROFISSIONAL_OPCOES,
+  BENEFICIO_OPCOES,
+  SITUACAO_OCUPACIONAL_OPCOES,
+  PROBLEMA_DE_SAUDE_OPCOES,
+  APOSENTADO_OPCOES,
+  MORADIA_OPCOES,
+  DEFICIENCIA_OPCOES,
+} from '../../../../../shared';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { PessoaIdosa } from '../../../domain/entities/pessoa-idosa.entity';
-import { Router } from '@angular/router';
-import { PdfService } from '../../../../../shared/services/pdf.service';
-import { 
-    ESTADO_CIVIL_OPCOES, 
-    MORADIAS_OPCOES,
-    BENEFICIOS_OPCOES,
-    RENDAS_OPCOES,
-    SITUACOES_OCUPACIONAIS_OPCOES,
-    APOSENTADO_OPCOES,
-    DEFICIENCIA_OPCOES,
-    ESCOLARIDADE_OPCOES,
-    TIPO_FORMACAO_PROFISSIONAL_OPCOES,
-    PROBLEMA_DE_SAUDE_OPCOES
-} from '../../../../../shared/constants/app.constants';
-const PAGE_SIZE_OPTIONS = [20, 50, 100, -1];
 
 @Component({
-    selector: 'app-pessoa-idosa-list',
-    standalone: true,
-    imports: [CommonModule, RouterModule, MainMenuComponent, CpfPipe, TelefonePipe],
-    templateUrl: './pessoa-idosa-list.html'
+  selector: 'app-pessoa-idosa-list',
+  standalone: true,
+  imports: [CommonModule, RouterModule, MainMenuComponent, CpfPipe, TelefonePipe, ModalComponent, ReactiveFormsModule],
+  templateUrl: './pessoa-idosa-list.html'
 })
 export class PessoaIdosaListComponent implements OnInit {
-    private facade = inject(PessoaIdosaFacade);
-    private notificacaoService = inject(NotificacaoService);
-    page$: Observable<PessoaIdosaListPage> = this.facade.page$;
-    private readonly TAMANHO_PAGINA = 10;
+  private facade = inject(PessoaIdosaFacade);
+  private notificacaoService = inject(NotificacaoService);
+  private fb = inject(FormBuilder);
+  
+  paginaAtual = 1;
+  quantidadePorPagina = 10;
+  page?: PessoaIdosaListaPaginada;
 
-    private pdfService = inject(PdfService);
+  estadoCivilOpcoes = ESTADO_CIVIL_OPCOES;
+  escolaridadeOpcoes = ESCOLARIDADE_OPCOES;
+  cursosFormacaoOpcoes = TIPO_FORMACAO_PROFISSIONAL_OPCOES;
+  beneficioOpcoes = BENEFICIO_OPCOES;
+  situacaoOcupacionalOpcoes = SITUACAO_OCUPACIONAL_OPCOES;
+  problemaDeSaudeOpcoes = PROBLEMA_DE_SAUDE_OPCOES;
+  aposentadoOpcoes = APOSENTADO_OPCOES;
+  moradiaOpcoes = MORADIA_OPCOES;
+  deficienciaOpcoes = DEFICIENCIA_OPCOES;
 
-    ngOnInit(): void {
-        this.carregarProximaPagina();
+  mostrarModalInativar = false;
+  mostrarModalAtivar = false;
+  pessoaIdosaId: string = '';
+  form!: FormGroup;
+  
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      nome: [''],
+      dataNascimento: [''],
+      estadoCivil: [''],
+      cpf: [''],
+      rg: [''],
+      cep: [''],
+      alfabetizado: [''],
+      estudaAtualmente: [''],
+      nivelSerieAtual: [''],
+      cursoFormacao: [''],
+      beneficio: [''],
+      situacaoOcupacional: [''],
+      problemaDeSaude: [''],
+      aposentado: [''],
+      moradia: [''],
+      deficiencia: [''],
+      ativo: ['']
+    });
+    this.buscarPaginado(1);
+  }
+
+  private montarFiltros(): PessoaIdosaFiltros {
+    const v = this.form.value as any;
+    const filtros: PessoaIdosaFiltros = {};
+    if (v.nome) filtros.nome = v.nome;
+    if (v.dataNascimento) filtros.dataNascimento = v.dataNascimento;
+    if (v.estadoCivil) filtros.estadoCivil = v.estadoCivil;
+    if (v.cpf) filtros.cpf = v.cpf;
+    if (v.rg) filtros.rg = v.rg;
+    if (v.cep) filtros.cep = v.cep;
+    if (v.alfabetizado !== '') filtros.alfabetizado = !!v.alfabetizado;
+    if (v.estudaAtualmente !== '') filtros.estudaAtualmente = !!v.estudaAtualmente;
+    if (v.nivelSerieAtual) filtros.nivelSerieAtual = v.nivelSerieAtual;
+    if (v.cursoFormacao) filtros.cursoFormacao = v.cursoFormacao;
+    if (v.beneficio) filtros.beneficio = v.beneficio;
+    if (v.situacaoOcupacional) filtros.situacaoOcupacional = v.situacaoOcupacional;
+    if (v.problemaDeSaude) filtros.problemaDeSaude = v.problemaDeSaude;
+    if (v.aposentado) filtros.aposentado = v.aposentado;
+    if (v.moradia) filtros.moradia = v.moradia;
+    if (v.deficiencia) filtros.deficiencia = v.deficiencia;
+    if (v.ativo) filtros.ativo = v.ativo;
+    return filtros;
+  }
+
+  limparFiltros(): void {
+    this.form.reset({
+      nome: '', dataNascimento: '', estadoCivil: '', cpf: '', rg: '', cep: '',
+      alfabetizado: '', estudaAtualmente: '', nivelSerieAtual: '', beneficio: '',
+      situacaoOcupacional: '', problemaDeSaude: '', aposentado: '', moradia: '',
+      deficiencia: '', ativo: ''
+    });
+    this.buscarPaginado(1);
+  }
+
+  async buscarPaginado(pagina: number): Promise<void> {
+    this.paginaAtual = pagina;
+    const filtros = this.montarFiltros();
+    this.page = await this.facade.obterTodosPaginado(this.paginaAtual, this.quantidadePorPagina, filtros);
+  }
+
+  exportarPdf(): void {
+    if (this.page?.pessoasIdosas.length == 0) {
+      this.notificacaoService.mostrarErro('Nenhuma pessoa idosa encontrada para relatório.');
+      return;
     }
+    this.facade.gerarRelatorioListaPdf(this.page?.pessoasIdosas as PessoaIdosa[]);
+  }
 
-    carregarProximaPagina(cursor: unknown | null = null): void {
-        this.facade.carregarPagina(this.TAMANHO_PAGINA, cursor, {});
-    }
+  solicitarInativar(id: string) {
+    this.mostrarModalInativar = true;
+    this.pessoaIdosaId = id;
+  }
 
-    async ativar(id: string): Promise<void> {
-        if (confirm('Tem certeza que deseja ativar este registro?')) {
-            try {
-                await this.facade.ativar(id);
-                this.notificacaoService.mostrarSucesso('Registro ativado com sucesso.');
-                this.carregarProximaPagina();
-            } catch (erro) {
-                this.notificacaoService.mostrarErro('Falha ao ativar o registro.');
-            }
-        }
+  async inativar(): Promise<void> {
+    try {
+      await this.facade.inativar(this.pessoaIdosaId);
+      this.notificacaoService.mostrarSucesso('Pessoa idosa inativada com sucesso.');
+    this.buscarPaginado(1);
+    } catch (error) {
+      this.notificacaoService.mostrarErro('Falha ao inativar a pessoa idosa.');
     }
+    this.mostrarModalInativar = false;
+  }
 
-    async inativar(id: string): Promise<void> {
-        if (confirm('Tem certeza que deseja inativar este registro?')) {
-            try {
-                await this.facade.inativar(id);
-                this.notificacaoService.mostrarSucesso('Registro inativado com sucesso.');
-                this.carregarProximaPagina();
-            } catch (erro) {
-                this.notificacaoService.mostrarErro('Falha ao inativar o registro.');
-            }
-        }
+  solicitarAtivar(id: string) {
+    this.mostrarModalAtivar = true;
+    this.pessoaIdosaId = id;
+  }
+
+  async ativar(): Promise<void> {
+    try {
+      await this.facade.ativar(this.pessoaIdosaId);
+      this.notificacaoService.mostrarSucesso('Pessoa idosa ativado com sucesso.');
+      this.buscarPaginado(1);
+    } catch (error) {
+      this.notificacaoService.mostrarErro('Falha ao ativar a pessoa idosa.');
     }
+    this.mostrarModalAtivar = false;
+  }
+
+  cancelarModal() {
+    this.mostrarModalAtivar = false;
+    this.mostrarModalInativar = false;
+  }
 }

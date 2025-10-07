@@ -1,110 +1,110 @@
 export enum Beneficio {
-    Nao = 'Não',
-    BeneficioDePrestacaoContinuadaIdoso = 'Benefício de Prestação Continuada - Idoso',
-    BeneficioDePrestacaoContinuadaPcD = 'Benefício de Prestação Continuada - PcD',
-    ProgramaBolsaFamilia = 'Programa Bolsa Família',
-    PreJovem = 'Pré-Jovem',
-    PasseSocial = 'Passe Social',
-    Outro = 'Outro'
+  NAO = 'Não',
+  BENEFICIO_DE_PRESTACAO_CONTINUADA_IDOSO = 'Benefício de Prestação Continuada - Idoso',
+  BENEFICIO_DE_PRESTACAO_CONTINUADA_PCD = 'Benefício de Prestação Continuada - PcD',
+  PROGRAMA_BOLSA_FAMILIA = 'Programa Bolsa Família',
+  PRE_JOVEM = 'Pré-Jovem',
+  PASSE_SOCIAL = 'Passe Social',
+  OUTRO = 'Outro'
 }
 
 export enum Renda {
-    SemRenda = 'Sem Renda',
-    Ate1SalarioMinimo = 'Até 1 Salário Mínimo',
-    Ate2SalariosMinimos = 'Até 2 Salários Mínimos',
-    AcimaDe2SalariosMinimos = 'Acima de 2 Salários Mínimos'
+  SEM_RENDA = 'Sem Renda',
+  ATE_1_SALARIO_MINIMO = 'Até 1 Salário Mínimo',
+  ATE_2_SALARIOS_MINIMOS = 'Até 2 Salários Mínimos',
+  ACIMA_DE_2_SALARIOS_MINIMOS = 'Acima de 2 Salários Mínimos'
 }
 
 export enum SituacaoOcupacional {
-    AssalariadoCarteiraAssinadaOuFuncionarioPublico = 'Assalariado (Carteira Assinada) ou Funcionário Público',
-    AssalariadoSemCarteiraAssinada = 'Assalariado (Sem Carteira Assinada)',
-    Aposentado = 'Aposentado',
-    Pensionista = 'Pensionista',
-    Diarista = 'Diarista',
-    Autonomo = 'Autônomo',
-    Aprendiz = 'Aprendiz',
-    TrabalhoInformal = 'Trabalho Informal',
-    Desempregado = 'Desempregado',
-    Outro = 'Outro'
+  ASSALARIADO_CARTEIRA_ASSINADA_OU_FUNCIONARIO_PUBLICO = 'Assalariado (Carteira Assinada) ou Funcionário Público',
+  ASSALARIADO_SEM_CARTEIRA_ASSINADA = 'Assalariado (Sem Carteira Assinada)',
+  APOSENTADO = 'Aposentado',
+  PENSIONISTA = 'Pensionista',
+  DIARISTA = 'Diarista',
+  AUTONOMO = 'Autônomo',
+  APRENDIZ = 'Aprendiz',
+  TRABALHO_INFORMAL = 'Trabalho Informal',
+  DESEMPREGADO = 'Desempregado',
+  OUTRO = 'Outro'
 }
 
 export enum Aposentado {
-    Nao = 'Não',
-    TempoDeServico = 'Tempo de Serviço',
-    Proporcional = 'Proporcional',
-    Invalidez = 'Invalidez',
-    Funrural = 'Funrural',
-    Reserva = 'Reserva',
-    Outro = 'Outro'
+  NAO = 'Não',
+  TEMPO_DE_SERVICO = 'Tempo de Serviço',
+  PROPORCINAL = 'Proporcional',
+  INVALIDEZ = 'Invalidez',
+  FUNRURAL = 'Funrural',
+  RESERVA = 'Reserva',
+  OUTRO = 'Outro'
 }
 
 export enum Deficiencia {
-    Nao = 'Não',
-    Auditiva = 'Auditiva',
-    Visual = 'Visual',
-    Mental = 'Mental',
-    Fisica = 'Física',
-    Multiplas = 'Múltiplas',
-    Outra = 'Outra'
+  NAO = 'Não',
+  AUDITIVA = 'Auditiva',
+  VISUAL = 'Visual',
+  MENTAL = 'Mental',
+  FISICA = 'Física',
+  MULTILPAS = 'Múltiplas',
+  OUTRA = 'Outra'
 }
 
 export enum Escolaridade {
-    EducacaoInfantil = 'Educação Infantil',
-    EnsinoFundamentalCompleto = 'Ensino Fundamental Completo',
-    EnsinoFundamentalIncompleto = 'Ensino Fundamental Incompleto',
-    EnsinoMedioCompleto = 'Ensino Médio Completo',
-    EnsinoMedioIncompleto = 'Ensino Médio Incompleto',
-    SuperiorCompleto = 'Superior Completo',
-    SuperiorIncompleto = 'Superior Incompleto'
+  EDUCACAO_INFANTIL = 'Educação Infantil',
+  ENSINO_FUNDAMENTAL_COMPLETO = 'Ensino Fundamental Completo',
+  ENSINO_FUNDAMENTAL_INCOMPLETO = 'Ensino Fundamental Incompleto',
+  ENSINO_MEDIO_COMPLETO = 'Ensino Médio Completo',
+  ENSINO_MEDIO_INCOMPLETO = 'Ensino Médio Incompleto',
+  SUPERIOR_COMPLETO = 'Superior Completo',
+  SUPERIOR_INCOMPLETO = 'Superior Incompleto'
 }
 
 export enum TipoFormacaoProfissional {
-    Nao = 'Não',
-    Tecnico = 'Técnico',
-    MOVA = 'MOVA',
-    EJA = 'EJA',
-    Outro = 'Outro'
+  NAO = 'Não',
+  TECNICO = 'Técnico',
+  MOVA = 'MOVA',
+  EJA = 'EJA',
+  OUTRO = 'Outro'
 }
 
 export enum ProblemaDeSaude {
-    Nao = 'Não',
-    Diabetes = 'Diabetes',
-    Colesterol = 'Colesterol',
-    Hipertensao = 'Hipertensão',
-    Renal = 'Renal',
-    Cardiaca = 'Cardíaca',
-    Osteoporose = 'Osteoporose',
-    Artrose = 'Artrose',
-    Coluna = 'Coluna',
-    Epilepsia = 'Epilepsia',
-    HIV = 'HIV',
-    Hanseniase = 'Hanseníase',
-    Alcoolatra = 'Alcoólatra',
-    DependenteQuimico = 'Dependente Químico',
-    Outro = 'Outro'
+  NAO = 'Não',
+  DIABETES = 'Diabetes',
+  COLESTEROL = 'Colesterol',
+  HIPERTENSAO = 'Hipertensão',
+  RENAL = 'Renal',
+  CARDIACA = 'Cardíaca',
+  OSTEOPOROSE = 'Osteoporose',
+  ARTROSE = 'Artrose',
+  COLUNA = 'Coluna',
+  EPILEPSIA = 'Epilepsia',
+  HIV = 'HIV',
+  HANSENIASE = 'Hanseníase',
+  ALCOOLATRA = 'Alcoólatra',
+  DEPENDENTE_QUIMICO = 'Dependente Químico',
+  OUTRO = 'Outro'
 }
 
 export enum Moradia {
-    Propria = 'Própria',
-    Alugada = 'Alugada',
-    Cedida = 'Cedida',
-    Institucionalizada = 'Institucionalizada',
-    Outro = 'Outro'
+  PROPRIA = 'Própria',
+  ALUGADA = 'Alugada',
+  CEDIDA = 'Cedida',
+  INSTITUCIONALIZADA = 'Institucionalizada',
+  OUTRO = 'Outro'
 }
 
 export enum EstadoCivil {
-    Solteiro = 'Solteiro(a)',
-    Casado = 'Casado(a)',
-    Divorciado = 'Divorciado(a)',
-    Viuvo = 'Viúvo(a)'
+  SOLTEIRO = 'Solteiro(a)',
+  CASADO = 'Casado(a)',
+  DIVORCIADO = 'Divorciado(a)',
+  VIUVO = 'Viúvo(a)'
 }
 
 export enum CategoriaAnexo {
-    FOTO_PERFIL = 1,
-    CPF = 2,
-    RG = 3,
-    COMPROVANTE_ENDERECO = 4,
-    CARTAO_SUS = 5,
-    CADASTRO_NIS = 6,
-    TERMO_AUTORIZACAO = 7
+  FOTO_PERFIL = 1,
+  CPF = 2,
+  RG = 3,
+  COMPROVANTE_ENDERECO = 4,
+  CARTAO_SUS = 5,
+  CADASTRO_NIS = 6,
+  TERMO_AUTORIZACAO = 7
 }

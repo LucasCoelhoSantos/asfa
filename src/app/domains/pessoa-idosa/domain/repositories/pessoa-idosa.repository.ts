@@ -1,30 +1,41 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PessoaIdosa } from '../entities/pessoa-idosa.entity';
+import { Aposentado, Beneficio, Deficiencia, Escolaridade, TipoFormacaoProfissional, Moradia, ProblemaDeSaude, SituacaoOcupacional } from '../value-objects/enums';
 
-export interface PessoaIdosaListFilters {
+export interface PessoaIdosaFiltros {
   nome?: string;
-  cpf?: string;
-  estadoCivil?: string;
-  ativo?: boolean;
   dataNascimento?: string;
+  estadoCivil?: string;
+  cpf?: string;
   rg?: string;
   cep?: string;
+  alfabetizado?: boolean;
+  estudaAtualmente?: boolean;
+  nivelSerieAtual?: Escolaridade;
+  cursoFormacao?: TipoFormacaoProfissional;
+  beneficio?: Beneficio;
+  situacaoOcupacional?: SituacaoOcupacional;
+  problemaDeSaude?: ProblemaDeSaude;
+  aposentado?: Aposentado;
+  moradia?: Moradia;
+  deficiencia?: Deficiencia;
+  ativo?: 'ativo' | 'inativo';
 }
 
-export interface PessoaIdosaListPage {
-  pessoas: PessoaIdosa[];
-  cursor: unknown | null;
+export interface PessoaIdosaListaPaginada {
+  pessoasIdosas: PessoaIdosa[];
+  paginaAtual: number;
+  quantidadePorPagina: number;
   total: number;
-  temMais: boolean;
 }
 
 export const PESSOA_IDOSA_REPOSITORY = new InjectionToken<PessoaIdosaRepository>('PESSOA_IDOSA_REPOSITORY');
 
 export interface PessoaIdosaRepository {
-  listar(filtros: PessoaIdosaListFilters): Observable<PessoaIdosa[]>;
+  obterTodos(filtros?: PessoaIdosaFiltros): Observable<PessoaIdosa[]>;
+  obterTodosPaginado(pagina: number, quantidadePorPagina: number, filtros?: PessoaIdosaFiltros): Promise<PessoaIdosaListaPaginada>;
   obterPorId(id: string): Observable<PessoaIdosa | undefined>;
   criar(pessoa: PessoaIdosa): Observable<string>;
   atualizar(pessoa: PessoaIdosa): Observable<void>;
-  paginar(tamanho: number, cursor: unknown | null, filtros: PessoaIdosaListFilters): Promise<PessoaIdosaListPage>;
 }

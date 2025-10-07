@@ -4,9 +4,7 @@ import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { StoragePort, UploadResultado } from '../../shared/ports/storage.port';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class FirebaseStorageAdapter implements StoragePort {
   private storage: Storage = inject(Storage);
 

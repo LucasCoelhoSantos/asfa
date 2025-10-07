@@ -16,7 +16,7 @@ export interface RateLimitData {
 
 export interface UsuarioData {
   email?: string;
-  ativo?: boolean;
+  status?: boolean;
   createdBy?: string;
   updatedBy?: string;
   [key: string]: any;
@@ -24,7 +24,7 @@ export interface UsuarioData {
 
 export interface PessoaIdosaData {
   anexos?: AnexoData[];
-  ativo?: boolean;
+  status?: boolean;
   createdBy?: string;
   updatedBy?: string;
   [key: string]: any;
@@ -115,8 +115,8 @@ export enum Collection {
   PESSOAS_IDOSAS = 'pessoas-idosas',
   AUDITS = 'audits',
   METRICS = 'metrics',
-  RATE_LIMITS = 'rate_limits',
-  EMAIL_NOTIFICATIONS = 'email_notifications',
+  RATE_LIMITS = 'rate-limits',
+  EMAIL_NOTIFICATIONS = 'email-notifications',
   BACKUPS = 'backups'
 }
 

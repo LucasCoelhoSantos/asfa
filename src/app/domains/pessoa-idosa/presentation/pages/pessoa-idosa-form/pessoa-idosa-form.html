@@ -3,119 +3,259 @@
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10 col-xl-8">
-      <form *ngIf="form" [formGroup]="form" (ngSubmit)="aoSalvar()">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="h5 mb-0 fw-semibold">
-              {{ isEditMode ? 'Editar Cadastro' : 'Novo Cadastro de Pessoa Idosa' }}
-            </h2>
-            <button type="button" class="btn btn-sm btn-light" (click)="voltar()">
-              <i class="bi bi-arrow-left"></i> Voltar
-            </button>
-          </div>
-
-          <div class="card-body p-4">
-            <fieldset class="mb-4">
-              <legend class="h6 border-bottom pb-2 mb-3">Dados Pessoais</legend>
-              <div class="row g-3">
-                <div class="col-12">
-                  <label for="nome" class="form-label">Nome Completo *</label>
-                  <input type="text" id="nome" class="form-control" formControlName="nome" [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched">
+      @if (form) {
+        <form [formGroup]="form" (ngSubmit)="aoSalvar()">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h2 class="h5 mb-0 fw-semibold">
+                {{ isEditMode ? 'Editar Cadastro' : 'Novo Cadastro de Pessoa Idosa' }}
+              </h2>
+              <button type="button" class="btn btn-sm btn-light" (click)="voltar()">
+                <i class="bi bi-caret-left-fill"></i> Voltar
+              </button>
+            </div>
+  
+            <div class="card-body p-4">
+              <fieldset class="mb-4">
+                <legend class="h3 border-bottom text-primary pb-2 mb-3">Dados Pessoais</legend>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label for="nome" class="form-label fw-semibold">Nome Completo <span class="text-danger">*</span></label>
+                    <input type="text" id="nome" class="form-control" formControlName="nome" [class.is-invalid]="form.get('nome')?.invalid && form.get('nome')?.touched" placeholder="Digite o nome completo">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento <span class="text-danger">*</span></label>
+                    <input type="date" id="dataNascimento" class="form-control" formControlName="dataNascimento" [class.is-invalid]="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="estadoCivil" class="form-label fw-semibold">Estado Civil <span class="text-danger">*</span></label>
+                    <select id="estadoCivil" class="form-select" formControlName="estadoCivil" [class.is-invalid]="form.get('estadoCivil')?.invalid && form.get('estadoCivil')?.touched" >
+                      <option value="">Selecione...</option>
+                      @for (estadoCivil of estadoCivilOpcoes; track estadoCivil) {
+                        <option [value]="estadoCivil">{{ estadoCivil }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="cpf" class="form-label fw-semibold">CPF <span class="text-danger">*</span></label>
+                    <input type="text" id="cpf" class="form-control" formControlName="cpf" [class.is-invalid]="form.get('cpf')?.invalid && form.get('cpf')?.touched" placeholder="000.000.000-00">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="rg" class="form-label fw-semibold">RG <span class="text-danger">*</span></label>
+                    <input type="text" id="rg" class="form-control" formControlName="rg" [class.is-invalid]="form.get('rg')?.invalid && form.get('rg')?.touched" placeholder="00.000.000-00">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="orgaoEmissor" class="form-label fw-semibold">Órgão Emissor <span class="text-danger">*</span></label>
+                    <input type="text" id="orgaoEmissor" class="form-control" formControlName="orgaoEmissor" [class.is-invalid]="form.get('orgaoEmissor')?.invalid && form.get('orgaoEmissor')?.touched" placeholder="Ex.: SSP, DETRAN">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="naturalidade" class="form-label fw-semibold">Naturalidade <span class="text-danger">*</span></label>
+                    <input type="text" id="naturalidade" class="form-control" formControlName="naturalidade" [class.is-invalid]="form.get('naturalidade')?.invalid && form.get('naturalidade')?.touched" placeholder="Digite a naturalidade">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="telefone" class="form-label fw-semibold">Telefone/Celular <span class="text-danger">*</span></label>
+                    <input type="text" id="telefone" class="form-control" formControlName="telefone" [class.is-invalid]="form.get('telefone')?.invalid && form.get('telefone')?.touched" placeholder="(99) 99999-9999">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="email" class="form-label fw-semibold">E-mail</label>
+                    <input type="email" id="email" class="form-control" formControlName="email" [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched" placeholder="email@email.com">
+                  </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="dataNascimento" class="form-label">Data de Nascimento *</label>
-                  <input type="date" id="dataNascimento" class="form-control" formControlName="dataNascimento" [class.is-invalid]="form.get('dataNascimento')?.invalid && form.get('dataNascimento')?.touched">
-                </div>
-                <div class="col-md-6">
-                  <label for="estadoCivil" class="form-label">Estado Civil *</label>
-                  <input type="text" id="estadoCivil" class="form-control" formControlName="estadoCivil" [class.is-invalid]="form.get('estadoCivil')?.invalid && form.get('estadoCivil')?.touched">
-                </div>
-                <div class="col-md-4">
-                  <label for="cpf" class="form-label">CPF *</label>
-                  <input type="text" id="cpf" class="form-control" formControlName="cpf" [class.is-invalid]="form.get('cpf')?.invalid && form.get('cpf')?.touched">
-                </div>
-                <div class="col-md-4">
-                  <label for="rg" class="form-label">RG *</label>
-                  <input type="text" id="rg" class="form-control" formControlName="rg" [class.is-invalid]="form.get('rg')?.invalid && form.get('rg')?.touched">
-                </div>
-                <div class="col-md-4">
-                  <label for="orgaoEmissor" class="form-label">Órgão Emissor *</label>
-                  <input type="text" id="orgaoEmissor" class="form-control" formControlName="orgaoEmissor" [class.is-invalid]="form.get('orgaoEmissor')?.invalid && form.get('orgaoEmissor')?.touched">
-                </div>
-                <div class="col-md-6">
-                  <label for="naturalidade" class="form-label">Naturalidade</label>
-                  <input type="text" id="naturalidade" class="form-control" formControlName="naturalidade">
-                </div>
-                <div class="col-md-6">
-                  <label for="religiao" class="form-label">Religião</label>
-                  <input type="text" id="religiao" class="form-control" formControlName="religiao">
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset class="mb-4">
-              <legend class="h6 border-bottom pb-2 mb-3">Contato</legend>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label for="telefone" class="form-label">Telefone *</label>
-                  <input type="text" id="telefone" class="form-control" formControlName="telefone" [class.is-invalid]="form.get('telefone')?.invalid && form.get('telefone')?.touched">
-                </div>
-                <div class="col-md-6">
-                  <label for="email" class="form-label">E-mail</label>
-                  <input type="email" id="email" class="form-control" formControlName="email" [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset class="mb-4" formGroupName="endereco">
-              <legend class="h6 border-bottom pb-2 mb-3">Endereço *</legend>
-              <app-endereco-form></app-endereco-form>
-            </fieldset>
-
-            <fieldset>
-              <legend class="h6 border-bottom pb-2 mb-3">Informações Adicionais</legend>
-              <div class="row g-3">
-                 <div class="col-12">
-                   <label for="prontuarioSaude" class="form-label">Prontuário de Saúde</label>
-                   <textarea id="prontuarioSaude" class="form-control" formControlName="prontuarioSaude" rows="3"></textarea>
-                 </div>
-                 <div class="col-md-6">
-                   <label for="beneficio" class="form-label">Benefício</label>
-                   <input type="text" id="beneficio" class="form-control" formControlName="beneficio">
-                 </div>
-                 <div class="col-md-6 d-flex align-items-center pt-3">
+              </fieldset>
+              
+              <fieldset class="mb-4">
+                <legend class="h3 border-bottom text-primary pb-2 mb-3">Informações Adicionais</legend>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="prontuarioSaude" class="form-label fw-semibold">Prontuário de Saúde <span class="text-danger">*</span></label>
+                    <input type="text" id="prontuarioSaude" class="form-control" formControlName="prontuarioSaude" [class.is-invalid]="form.get('prontuarioSaude')?.invalid && form.get('prontuarioSaude')?.touched" placeholder="Digite o prontuario">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="religiao" class="form-label fw-semibold">Religião <span class="text-danger">*</span></label>
+                    <input type="text" id="religiao" class="form-control" formControlName="religiao" [class.is-invalid]="form.get('religiao')?.invalid && form.get('religiao')?.touched" placeholder="Digite a religião">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="situacaoOcupacional" class="form-label fw-semibold">Situação Ocupacional <span class="text-danger">*</span></label>
+                    <select id="situacaoOcupacional" class="form-select" formControlName="situacaoOcupacional" [class.is-invalid]="form.get('situacaoOcupacional')?.invalid && form.get('situacaoOcupacional')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (situacaoOcupacional of situacaoOcupacionalOpcoes; track situacaoOcupacional) {
+                        <option [value]="situacaoOcupacional">{{ situacaoOcupacional }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="aposentado" class="form-label fw-semibold">É aposentado? <span class="text-danger">*</span></label>
+                    <select id="aposentado" class="form-select" formControlName="aposentado" [class.is-invalid]="form.get('aposentado')?.invalid && form.get('aposentado')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (aposentado of aposentadoOpcoes; track aposentado) {
+                        <option [value]="aposentado">{{ aposentado }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="renda" class="form-label fw-semibold">Renda <span class="text-danger">*</span></label>
+                    <select id="renda" class="form-select" formControlName="renda" [class.is-invalid]="form.get('renda')?.invalid && form.get('renda')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (renda of rendaOpcoes; track renda) {
+                        <option [value]="renda">{{ renda }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center pt-3">
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="aposentadoConsegueSeManterComSuaRenda" formControlName="aposentadoConsegueSeManterComSuaRenda">
-                      <label class="form-check-label" for="aposentadoConsegueSeManterComSuaRenda">Consegue se manter com a renda?</label>
+                      <input type="checkbox" id="aposentadoConsegueSeManterComSuaRenda" class="form-check-input" formControlName="aposentadoConsegueSeManterComSuaRenda" role="switch">
+                      <label for="aposentadoConsegueSeManterComSuaRenda" class="form-check-label">Consegue se manter com a renda? <span class="text-danger">*</span></label>
                     </div>
-                 </div>
-                 <div class="col-12">
-                   <label for="comoComplementa" class="form-label">Como complementa a renda?</label>
-                   <input type="text" id="comoComplementa" class="form-control" formControlName="comoComplementa">
-                 </div>
-                 <div class="col-12">
-                   <label for="historicoFamiliarSocial" class="form-label">Histórico Familiar e Social</label>
-                   <textarea id="historicoFamiliarSocial" class="form-control" formControlName="historicoFamiliarSocial" rows="3"></textarea>
-                 </div>
-                 <div class="col-12">
-                   <label for="observacao" class="form-label">Observações</label>
-                   <textarea id="observacao" class="form-control" formControlName="observacao" rows="3"></textarea>
-                 </div>
-              </div>
-            </fieldset>
+                  </div>
+                  <div class="col-12">
+                    <label for="comoComplementa" class="form-label fw-semibold">Como complementa a renda?</label>
+                    <textarea type="text" id="comoComplementa" class="form-control" formControlName="comoComplementa" rows="3" placeholder="Descreva como complementa a renda"></textarea>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="beneficio" class="form-label fw-semibold">Recebe algum benefício? <span class="text-danger">*</span></label>
+                    <select id="beneficio" class="form-select" formControlName="beneficio" [class.is-invalid]="form.get('beneficio')?.invalid && form.get('beneficio')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (beneficio of beneficioOpcoes; track beneficio) {
+                        <option [value]="beneficio">{{ beneficio }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center pt-3">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="alfabetizado" class="form-check-input" formControlName="alfabetizado" role="switch">
+                      <label for="alfabetizado" class="form-check-label">É alfabetizado? <span class="text-danger">*</span></label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="nivelSerieAtualConcluido" class="form-label fw-semibold">Nível e Série Atual e Concluído <span class="text-danger">*</span></label>
+                    <select id="nivelSerieAtualConcluido" class="form-select" formControlName="nivelSerieAtualConcluido" [class.is-invalid]="form.get('nivelSerieAtualConcluido')?.invalid && form.get('nivelSerieAtualConcluido')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (nivelSerieAtualConcluido of nivelSerieAtualConcluidoOpcoes; track nivelSerieAtualConcluido) {
+                        <option [value]="nivelSerieAtualConcluido">{{ nivelSerieAtualConcluido }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="cursosTecnicoFormacaoProfissional" class="form-label fw-semibold">Curso Técnico e Formação Profissional <span class="text-danger">*</span></label>
+                    <select id="cursosTecnicoFormacaoProfissional" class="form-select" formControlName="cursosTecnicoFormacaoProfissional" [class.is-invalid]="form.get('cursosTecnicoFormacaoProfissional')?.invalid && form.get('cursosTecnicoFormacaoProfissional')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (cursosTecnicoFormacaoProfissional of cursosTecnicoFormacaoProfissionalOpcoes; track cursosTecnicoFormacaoProfissional) {
+                        <option [value]="cursosTecnicoFormacaoProfissional">{{ cursosTecnicoFormacaoProfissional }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-center pt-3">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="estudaAtualmente" class="form-check-input" formControlName="estudaAtualmente" role="switch">
+                      <label for="estudaAtualmente" class="form-check-label">Estuda atualmente? <span class="text-danger">*</span></label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="deficiencia" class="form-label fw-semibold">Possui alguma deficiência? <span class="text-danger">*</span></label>
+                    <select id="deficiencia" class="form-select" formControlName="deficiencia" [class.is-invalid]="form.get('deficiencia')?.invalid && form.get('deficiencia')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (deficiencia of deficienciaOpcoes; track deficiencia) {
+                        <option [value]="deficiencia">{{ deficiencia }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="problemaDeSaude" class="form-label fw-semibold">Possui algum problema de saúde? <span class="text-danger">*</span></label>
+                    <select id="problemaDeSaude" class="form-select" formControlName="problemaDeSaude" [class.is-invalid]="form.get('problemaDeSaude')?.invalid && form.get('problemaDeSaude')?.touched">
+                      <option value="">Selecione...</option>
+                      @for (problemaDeSaude of problemaDeSaudeOcpoes; track problemaDeSaude) {
+                        <option [value]="problemaDeSaude">{{ problemaDeSaude }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="fazAlgumTratamento" class="form-check-input" formControlName="fazAlgumTratamento" role="switch">
+                      <label for="fazAlgumTratamento" class="form-check-label">Faz algum tratamento? <span class="text-danger">*</span></label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label for="fazAlgumTratamentoOnde" class="form-check-label fw-semibold">Onde faz o tratamento?</label>
+                    <input type="text" id="fazAlgumTratamentoOnde" class="form-control" formControlName="fazAlgumTratamentoOnde" placeholder="Digite onde faz o tratamento">
+                  </div>
+                  <div class="col-12">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="usaMedicamentoControlado" class="form-check-input" formControlName="usaMedicamentoControlado" role="switch">
+                      <label for="usaMedicamentoControlado" class="form-check-label">Usa medicamento controlado? <span class="text-danger">*</span></label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-check form-switch">
+                      <input type="checkbox" id="usaRecursosUbsLocal" class="form-check-input" formControlName="usaRecursosUbsLocal" role="switch">
+                      <label for="usaRecursosUbsLocal" class="form-check-label">Usa recursos da UBS local? <span class="text-danger">*</span></label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label for="trabalhoPastoralOuSocial" class="form-label fw-semibold">Faz algum trabalho pastoral ou social na sua Igreja ou no seu bairro? <span class="text-danger">*</span></label>
+                    <textarea type="text" id="trabalhoPastoralOuSocial" class="form-control" formControlName="trabalhoPastoralOuSocial" rows="3" [class.is-invalid]="form.get('trabalhoPastoralOuSocial')?.invalid && form.get('trabalhoPastoralOuSocial')?.touched" placeholder="Descreva o trabalho pastoral ou social"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <label for="atividadeNaComunidadeSagradaFamilia" class="form-labe fw-semibold">Desenvolve alguma atividade na Comunidade Sagrada Família? <span class="text-danger">*</span></label>
+                    <textarea type="text" id="atividadeNaComunidadeSagradaFamilia" class="form-control" formControlName="atividadeNaComunidadeSagradaFamilia" rows="3" [class.is-invalid]="form.get('atividadeNaComunidadeSagradaFamilia')?.invalid && form.get('atividadeNaComunidadeSagradaFamilia')?.touched" placeholder="Descreva a atividade na comunidade"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <label for="trabalhoVoluntario" class="form-label fw-semibold">Deseja desenvolver algum trabalho voluntário? <span class="text-danger">*</span></label>
+                    <textarea type="text" id="trabalhoVoluntario" class="form-control" formControlName="trabalhoVoluntario" rows="3" [class.is-invalid]="form.get('trabalhoVoluntario')?.invalid && form.get('trabalhoVoluntario')?.touched" placeholder="Descreva o trabalho voluntário desejado"></textarea>
+                  </div>
+                   <div class="col-12">
+                    <label for="trabalhoVoluntarioOnde" class="form-label fw-semibold">Onde gostaria de desenvolver o trabalho voluntário?</label>
+                    <input type="text" id="trabalhoVoluntarioOnde" class="form-control" formControlName="trabalhoVoluntarioOnde" placeholder="Digite onde gostaria de trabalhar">
+                  </div>
+                  <div class="col-12">
+                    <label for="historicoFamiliarSocial" class="form-label fw-semibold">Histórico Familiar e Social</label>
+                    <textarea id="historicoFamiliarSocial" class="form-control" formControlName="historicoFamiliarSocial" rows="3" placeholder="Descreva o histórico familiar e social"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <label for="observacao" class="form-label fw-semibold">Observações</label>
+                    <textarea id="observacao" class="form-control" formControlName="observacao" rows="3" placeholder="Observações adicionais"></textarea>
+                  </div>
+                </div>
+              </fieldset>
+              
+              <fieldset class="mb-4" formGroupName="endereco">
+                <legend class="h3 border-bottom text-primary pb-2 mb-3">Endereço</legend>
+                <app-endereco-form [form]="enderecoForm"></app-endereco-form>
+              </fieldset>
 
-          </div>
+              <fieldset class="mb-4" formGroupName="dependentes">
+                <legend class="h3 border-bottom text-primary pb-2 mb-3">Dependentes</legend>
+                <button type="button" class="btn btn-success" (click)="adicionarDependente()">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  Adicionar
+                </button>
+                @if (mostrarDependenteForm) {
+                  <app-dependente-form [form]="dependenteForm"></app-dependente-form>
+                }
+              </fieldset>
 
-          <div class="card-footer d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary" (click)="voltar()">
-              <i class="bi bi-x-circle me-1"></i> Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-              <i class="bi bi-check-circle me-1"></i> Salvar
-            </button>
+              <fieldset class="mb-4" formGroupName="anexos">
+                <legend class="h3 border-bottom text-primary pb-2 mb-3">Anexos</legend>
+                <button type="button" class="btn btn-success" (click)="adicionarAnexo()">
+                  <i class="bi bi-cloud-arrow-up-fill me-1"></i>
+                  Adicionar
+                </button>
+                @if (mostrarAnexoForm) {
+                  <app-anexo-form [form]="anexoForm"></app-anexo-form>
+                }
+              </fieldset>
+            </div>
+  
+            <div class="card-footer d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" (click)="voltar()">
+                <i class="bi bi-x-circle me-1"></i> Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+                <i class="bi bi-check-circle me-1"></i> Salvar
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      }
     </div>
   </div>
 </div>

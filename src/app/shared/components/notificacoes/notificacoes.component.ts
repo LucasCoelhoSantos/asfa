@@ -8,23 +8,24 @@ import { NotificacaoService } from '../../../core/services/notificacao.service';
   imports: [CommonModule],
   template: `
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
-      <div 
-        *ngFor="let notificacao of notificacoes()"
-        class="toast show"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        (click)="removeNotificacao(notificacao.id)"
-        style="cursor: pointer; min-width: 300px; max-width: 400px;"
-      >
-        <div class="toast-header" [class]="'bg-' + getBootstrapClass(notificacao.tipo) + ' text-white'">
-          <strong class="me-auto">{{ getNotificationTitle(notificacao.tipo) }}</strong>
-          <button type="button" class="btn-close btn-close-white" (click)="removeNotificacao(notificacao.id)" aria-label="Fechar"></button>
+      @for (notificacao of notificacoes(); track notificacao) {
+        <div 
+          class="toast show"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          (click)="removeNotificacao(notificacao.id)"
+          style="cursor: pointer; min-width: 300px; max-width: 400px;"
+        >
+          <div class="toast-header" [class]="'bg-' + getBootstrapClass(notificacao.tipo) + ' text-white'">
+            <strong class="me-auto">{{ getNotificationTitle(notificacao.tipo) }}</strong>
+            <button type="button" class="btn-close btn-close-white" (click)="removeNotificacao(notificacao.id)" aria-label="Fechar"></button>
+          </div>
+          <div class="toast-body">
+            {{ notificacao.mensagem }}
+          </div>
         </div>
-        <div class="toast-body">
-          {{ notificacao.mensagem }}
-        </div>
-      </div>
+      }
     </div>
   `,
   styles: [`

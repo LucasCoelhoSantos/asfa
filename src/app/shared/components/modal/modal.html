@@ -16,5 +16,7 @@
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show" *ngIf="mostrar"></div>
+  @if (mostrar) {
+    <div class="modal-backdrop fade show"></div>
+  }
 </ng-container>

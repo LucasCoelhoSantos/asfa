@@ -13,7 +13,7 @@ import {
   EstadoCivil
 } from '../../domains/pessoa-idosa/domain/value-objects/enums';
 
-export const CATEGORIAS_ANEXO_INFO = {
+export const CATEGORIA_ANEXO_INFO = {
   [CategoriaAnexo.FOTO_PERFIL]: { label: 'Foto de Perfil', icon: 'bi-person-circle', class: 'bg-primary' },
   [CategoriaAnexo.CPF]: { label: 'CPF', icon: 'bi-card-text', class: 'bg-info'  },
   [CategoriaAnexo.RG]: { label: 'RG', icon: 'bi-person-vcard', class: 'bg-info' },
@@ -23,19 +23,38 @@ export const CATEGORIAS_ANEXO_INFO = {
   [CategoriaAnexo.TERMO_AUTORIZACAO]: { label: 'Termo Autorização', icon: 'bi-pen', class: 'bg-dark' }
 } as const;
 
-export const CATEGORIAS_ANEXO_LISTA = Object.entries(CATEGORIAS_ANEXO_INFO).map(([key, value]) => ({
+export const CATEGORIA_ANEXO_LISTA = Object.entries(CATEGORIA_ANEXO_INFO).map(([key, value]) => ({
   id: Number(key) as CategoriaAnexo,
   ...value
 }));
 
-export const CARGOS_USUARIO_OPCOES = Object.values(CargoUsuario);
+export const CARGO_USUARIO_INFO = {
+  [CargoUsuario.Usuario]: { label: CargoUsuario.Usuario, icon: 'bi-person', class: 'bg-secondary' },
+  [CargoUsuario.Administrador]: { label: CargoUsuario.Administrador, icon: 'bi-shield-lock', class: 'bg-warning text-dark' }
+} as const;
+
+export const CARGO_USUARIO_LISTA = Object.entries(CARGO_USUARIO_INFO).map(([key, value]) => ({
+  id: key as CargoUsuario,
+  ...value
+}));
+
 export const ESTADO_CIVIL_OPCOES = Object.values(EstadoCivil);
-export const MORADIAS_OPCOES = Object.values(Moradia);
-export const BENEFICIOS_OPCOES = Object.values(Beneficio);
-export const RENDAS_OPCOES = Object.values(Renda);
-export const SITUACOES_OCUPACIONAIS_OPCOES = Object.values(SituacaoOcupacional);
+export const MORADIA_OPCOES = Object.values(Moradia);
+export const BENEFICIO_OPCOES = Object.values(Beneficio);
+export const RENDA_OPCOES = Object.values(Renda);
+export const SITUACAO_OCUPACIONAL_OPCOES = Object.values(SituacaoOcupacional);
 export const APOSENTADO_OPCOES = Object.values(Aposentado);
 export const DEFICIENCIA_OPCOES = Object.values(Deficiencia);
 export const ESCOLARIDADE_OPCOES = Object.values(Escolaridade);
 export const TIPO_FORMACAO_PROFISSIONAL_OPCOES = Object.values(TipoFormacaoProfissional);
 export const PROBLEMA_DE_SAUDE_OPCOES = Object.values(ProblemaDeSaude);
+
+export const STATUS_OPCOES = [
+  { id: true, label: 'Ativo' },
+  { id: false, label: 'Inativo' }
+];
+
+export const BOOLEAN_OPCOES = [
+  { id: true, label: 'Sim' },
+  { id: false, label: 'Não' }
+];

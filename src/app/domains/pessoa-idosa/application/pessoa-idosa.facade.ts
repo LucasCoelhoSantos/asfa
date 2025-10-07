@@ -1,32 +1,36 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PessoaIdosa, CriarPessoaIdosaProps, AtualizarPessoaIdosaProps } from '../domain/entities/pessoa-idosa.entity';
-import { PessoaIdosaListFilters, PessoaIdosaListPage } from '../domain/repositories/pessoa-idosa.repository';
+import { PessoaIdosaFiltros } from '../domain/repositories/pessoa-idosa.repository';
 import {
-  ListarPessoasIdosasUseCase,
+  ObterTodasPessoasIdosasUseCase,
   ObterPessoaIdosaPorIdUseCase,
   CriarPessoaIdosaUseCase,
   AtualizarPessoaIdosaUseCase,
   AtivarPessoaIdosaUseCase,
   InativarPessoaIdosaUseCase,
-  PaginarPessoasIdosasUseCase
-} from './use-cases';
+  ObterTodasPessoasIdosasPaginadoUseCase
+} from './use-cases/pessoa-idosa.use-cases';
+import { PdfService } from '../../../shared/services/pdf.service';
+import { formatDate } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class PessoaIdosaFacade {
-  private readonly listarUC = inject(ListarPessoasIdosasUseCase);
+  private readonly obterTodosUC = inject(ObterTodasPessoasIdosasUseCase);
+  private readonly obterTodosPaginadoUC = inject(ObterTodasPessoasIdosasPaginadoUseCase);
   private readonly obterPorIdUC = inject(ObterPessoaIdosaPorIdUseCase);
   private readonly criarUC = inject(CriarPessoaIdosaUseCase);
   private readonly atualizarUC = inject(AtualizarPessoaIdosaUseCase);
   private readonly ativarUC = inject(AtivarPessoaIdosaUseCase);
   private readonly inativarUC = inject(InativarPessoaIdosaUseCase);
-  private readonly paginarUC = inject(PaginarPessoasIdosasUseCase);
+  private readonly pdfService = inject(PdfService);
 
-  private readonly pageSubject = new BehaviorSubject<PessoaIdosaListPage>({ pessoas: [], cursor: null, total: 0, temMais: false });
-  readonly page$ = this.pageSubject.asObservable();
+  obterTodos(filtros?: PessoaIdosaFiltros): Observable<PessoaIdosa[]> {
+    return this.obterTodosUC.execute(filtros);
+  }
 
-  listar(filtros: PessoaIdosaListFilters): Observable<PessoaIdosa[]> {
-    return this.listarUC.execute(filtros);
+  obterTodosPaginado(pagina: number, quantidadePorPagina: number, filtros?: PessoaIdosaFiltros) {
+    return this.obterTodosPaginadoUC.execute(pagina, quantidadePorPagina, filtros);
   }
 
   obterPorId(id: string): Observable<PessoaIdosa | undefined> {
@@ -49,8 +53,42 @@ export class PessoaIdosaFacade {
     await this.inativarUC.execute(id);
   }
 
-  async carregarPagina(tamanho: number, cursor: unknown | null, filtros: PessoaIdosaListFilters): Promise<void> {
-    const page = await this.paginarUC.execute(tamanho, cursor, filtros);
-    this.pageSubject.next(page);
+  gerarRelatorioListaPdf(pessoasIdosas: PessoaIdosa[]): void {
+    const head = [['Nome', 'Data Nasc.', 'Estado Civíl', 'CPF', 'RG', 'CEP', 'Status' ]];
+    const body = pessoasIdosas.map(p => [
+      p.nome,
+      formatDate(p.dataNascimento, 'dd/MM/yyyy', 'pt-BR'),
+      p.estadoCivil,
+      p.cpf,
+      p.rg,
+      p.endereco.cep,
+      p.ativo ? 'Ativo' : 'Inativo'
+    ]);
+
+    this.pdfService.gerarPdfTabela('Relatório de Pessoas Idosas', 'relatorio-pessoas-idosas', head, body);
+  }
+
+  gerarRelatorioPdf(pessoaIdosa: PessoaIdosa): void {
+    console.log(pessoaIdosa);
+    const nomeArquivo = `relatorio-${pessoaIdosa.nome.toLowerCase().replace(/\s/g, '-')}.pdf`;
+    const enderecoCompleto = `${pessoaIdosa.endereco.logradouro}, ${pessoaIdosa.endereco.numero} - ${pessoaIdosa.endereco.bairro}, ${pessoaIdosa.endereco.cidade}/${pessoaIdosa.endereco.estado}`;
+
+    this.pdfService.gerarPdf({
+      titulo: 'Relatório de Pessoa Idosa',
+      nomeArquivo: nomeArquivo,
+      head: [['Campo', 'Informação']],
+      body: [
+        ['Nome', pessoaIdosa.nome],
+        ['Data de Nascimento', formatDate(pessoaIdosa.dataNascimento, 'dd/MM/yyyy', 'pt-BR')],
+        ['CPF', pessoaIdosa.cpf],
+        ['RG', pessoaIdosa.rg],
+        ['Telefone', pessoaIdosa.telefone],
+        ['Email', pessoaIdosa.email || 'Não informado'],
+        ['Estado Civil', pessoaIdosa.estadoCivil],
+        ['Naturalidade', pessoaIdosa.naturalidade],
+        ['Endereço', enderecoCompleto],
+        // Adicione outros campos conforme necessário
+      ]
+    });
   }
 }

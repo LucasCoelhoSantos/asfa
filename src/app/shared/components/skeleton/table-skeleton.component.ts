@@ -45,23 +45,25 @@ import { SkeletonComponent } from './skeleton.component';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of rowsArray" class="align-middle">
-                <td>
-                  <app-skeleton type="text" width="90%"></app-skeleton>
-                </td>
-                <td>
-                  <app-skeleton type="text" width="70%"></app-skeleton>
-                </td>
-                <td>
-                  <app-skeleton type="text" width="50%"></app-skeleton>
-                </td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <app-skeleton type="text" width="80px" height="32px"></app-skeleton>
-                    <app-skeleton type="text" width="80px" height="32px"></app-skeleton>
-                  </div>
-                </td>
-              </tr>
+              @for (item of rowsArray; track item) {
+                <tr class="align-middle">
+                  <td>
+                    <app-skeleton type="text" width="90%"></app-skeleton>
+                  </td>
+                  <td>
+                    <app-skeleton type="text" width="70%"></app-skeleton>
+                  </td>
+                  <td>
+                    <app-skeleton type="text" width="50%"></app-skeleton>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <app-skeleton type="text" width="80px" height="32px"></app-skeleton>
+                      <app-skeleton type="text" width="80px" height="32px"></app-skeleton>
+                    </div>
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
