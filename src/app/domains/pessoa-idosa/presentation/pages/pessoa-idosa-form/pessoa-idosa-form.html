@@ -222,27 +222,129 @@
                 <app-endereco-form [form]="enderecoForm"></app-endereco-form>
               </fieldset>
 
-              <fieldset class="mb-4" formGroupName="dependentes">
+              <fieldset class="mb-4">
                 <legend class="h3 border-bottom text-primary pb-2 mb-3">Dependentes</legend>
+                @if (dependentesAdicionados.length > 0) {
+                  <div class="mb-3">
+                    <div class="table-responsive">
+                      <table class="table table-sm">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Nome</th>
+                            <th>Parentesco</th>
+                            <th>Data Nascimento</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (dependente of dependentesAdicionados; track trackByIndex($index)) {
+                            <tr>
+                              <td>{{ dependente.nome }}</td>
+                              <td>{{ dependente.parentesco }}</td>
+                              <td>{{ dependente.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                              <td>
+                                <span class="badge" [ngClass]="{'text-bg-success': dependente.ativo, 'text-bg-danger': !dependente.ativo}">
+                                  {{ dependente.ativo ? 'Ativo' : 'Inativo' }}
+                                </span>
+                              </td>
+                              <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary" (click)="editarDependente($index)">
+                                  <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removerDependente($index)">
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+
                 <button type="button" class="btn btn-success" (click)="adicionarDependente()">
-                  <i class="bi bi-plus-circle me-1"></i>
-                  Adicionar
+                  <i class="bi bi-plus-circle me-1"></i> Adicionar
                 </button>
+
+                <div class="modal fade" [class.show]="mostrarDependenteForm" [style.display]="mostrarDependenteForm ? 'block' : 'none'" tabindex="-1" role="dialog">
+                  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                          <i class="bi bi-person-plus me-2"></i>
+                          Dependente
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" (click)="onDependenteCancelado()" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <app-dependente-form 
+                          [dependente]="selectedDependente || undefined"
+                          (save)="onDependenteSalvo($event)"
+                          (cancel)="onDependenteCancelado()">
+                        </app-dependente-form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 @if (mostrarDependenteForm) {
-                  <app-dependente-form [form]="dependenteForm"></app-dependente-form>
+                  <div class="modal-backdrop fade show"></div>
                 }
               </fieldset>
 
-              <fieldset class="mb-4" formGroupName="anexos">
+              <fieldset class="mb-4">
                 <legend class="h3 border-bottom text-primary pb-2 mb-3">Anexos</legend>
+                @if (anexosAdicionados.length > 0) {
+                  <div class="mb-3">
+                    <app-anexo-list 
+                      [itens]="anexosAdicionados" 
+                      [categoriasInfo]="categoriasAnexoInfo"
+                      [thumbSize]="50"
+                      (editar)="editarAnexo($event); arquivoEdicaoInput.click()"
+                      (remover)="removerAnexo($event)">
+                    </app-anexo-list>
+                  </div>
+                }
+
                 <button type="button" class="btn btn-success" (click)="adicionarAnexo()">
-                  <i class="bi bi-cloud-arrow-up-fill me-1"></i>
-                  Adicionar
+                  <i class="bi bi-cloud-arrow-up-fill me-1"></i> Adicionar
                 </button>
+
+                <!-- Modal para Anexo -->
+                <div class="modal fade" [class.show]="mostrarAnexoForm" [style.display]="mostrarAnexoForm ? 'block' : 'none'" tabindex="-1" role="dialog">
+                  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                          <i class="bi bi-paperclip me-2"></i>
+                          Anexo
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" (click)="onAnexoCancelado()" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <app-anexo-form 
+                            [anexosExistentes]="anexosAdicionados"
+                            [maxSizeMb]="5"
+                            [allowedTypes]="['.pdf','.jpg','.jpeg','.png','.gif']"
+                            [multiple]="false"
+                            (filesSelected)="onAnexosSelecionados($event)"
+                            (save)="onAnexoSalvo($event)"
+                            (cancel)="onAnexoCancelado()">
+                        </app-anexo-form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 @if (mostrarAnexoForm) {
-                  <app-anexo-form [form]="anexoForm"></app-anexo-form>
+                  <div class="modal-backdrop fade show"></div>
                 }
               </fieldset>
+
+              <!-- input oculto para edição direta de anexo -->
+              <input type="file" #arquivoEdicaoInput style="display:none" (change)="onArquivoEditado($event)" accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx" />
             </div>
   
             <div class="card-footer d-flex justify-content-end gap-2">
@@ -259,3 +361,4 @@
     </div>
   </div>
 </div>
+

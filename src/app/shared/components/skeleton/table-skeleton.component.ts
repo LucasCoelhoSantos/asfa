@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SkeletonComponent } from './skeleton.component';
 
@@ -74,7 +74,8 @@ import { SkeletonComponent } from './skeleton.component';
     .skeleton-title {
       flex: 1;
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TableSkeletonComponent {
   @Input() rows: number = 5;

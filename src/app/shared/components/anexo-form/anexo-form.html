@@ -1,28 +1,51 @@
-<form [formGroup]="form" (ngSubmit)="aoSalvar()">
-  <div class="modal-body">
-    <div class="mb-3">
-      <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
-      <select id="categoria" class="form-select" formControlName="categoria">
-        <option [ngValue]="null" disabled>Selecione uma categoria</option>
-        @for (categoria of categorias; track categoria.id) {
-          <option [value]="categoria.id">{{ categoria.label }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label for="arquivo" class="form-label">Arquivo <span class="text-danger">*</span></label>
-      <input type="file" id="arquivo" class="form-control" (change)="onFileSelected($event)">
-      <div class="form-text">Tamanho máximo: 5MB</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="nome" class="form-label">Nome do Arquivo <span class="text-danger">*</span></label>
-      <input type="text" id="nome" class="form-control" formControlName="nome" placeholder="Será preenchido automaticamente">
+<div class="modal-body">
+  <div class="mb-3">
+    <h6 class="text-muted mb-3">Selecione a categoria do documento:</h6>
+    <div class="row g-3">
+      @for (categoria of categorias; track categoria.id) {
+        <div class="col-4">
+          <div class="card h-100 border-2 cursor-pointer" 
+               [class.border-primary]="categoriaSelecionada === categoria.id"
+               [class.bg-light]="categoriaSelecionada === categoria.id"
+               [class.border-success]="categoriaJaPreenchida(categoria.id)"
+               [class.bg-success-subtle]="categoriaJaPreenchida(categoria.id)"
+               (click)="selecionarCategoria(categoria.id)"
+               style="cursor: pointer; transition: all 0.2s ease;">
+            <div class="card-body text-center p-3">
+              <div class="mb-2">
+                <i [class]="categoria.icon + ' fs-2'" 
+                   [class.text-primary]="categoriaSelecionada === categoria.id"
+                   [class.text-success]="categoriaJaPreenchida(categoria.id)"
+                   [class.text-muted]="!categoriaSelecionada && !categoriaJaPreenchida(categoria.id)"></i>
+              </div>
+              <h6 class="card-title mb-0 small fw-semibold"
+                  [class.text-primary]="categoriaSelecionada === categoria.id"
+                  [class.text-success]="categoriaJaPreenchida(categoria.id)"
+                  [class.text-muted]="!categoriaSelecionada && !categoriaJaPreenchida(categoria.id)">
+                {{ categoria.label }}
+              </h6>
+              @if (categoriaJaPreenchida(categoria.id)) {
+                <small class="text-success">
+                  <i class="bi bi-check-circle-fill me-1"></i>Já preenchido
+                </small>
+              }
+            </div>
+          </div>
+        </div>
+      }
     </div>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="cancel.emit()">Cancelar</button>
-    <button type="submit" class="btn btn-primary" [disabled]="form.invalid || !arquivoSelecionado">Salvar Anexo</button>
-  </div>
-</form>
+
+  <input type="file" id="arquivo" #fileInput style="display: none;" (change)="onFileSelected($event)" [accept]="acceptAttr" [multiple]="multiple">
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="cancel.emit()">
+    <i class="bi bi-x-circle me-1"></i> Cancelar
+  </button>
+  @if (categoriaSelecionada && arquivoSelecionado) {
+    <button type="button" class="btn btn-primary" (click)="aoSalvar()">
+      <i class="bi bi-check-circle me-1"></i> Salvar
+    </button>
+  }
+</div>

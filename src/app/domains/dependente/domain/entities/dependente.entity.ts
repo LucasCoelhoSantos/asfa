@@ -78,6 +78,7 @@ export class Dependente {
     return new Dependente({
       ...props,
       nome: Nome.criar(props.nome),
+      composicaoFamiliar: ComposicaoFamiliar.rehidratar(props.composicaoFamiliar),
     });
   }
 
@@ -92,7 +93,7 @@ export class Dependente {
   public get programaSaudePastoralCriancaLocal(): string { return this._programaSaudePastoralCriancaLocal; }
   public get composicaoFamiliar(): ComposicaoFamiliar { return this._composicaoFamiliar; }
 
-  public toJSON(): DependenteProps {
+  public toJSON() {
     return {
       id: this.id,
       ativo: this.ativo,
@@ -103,7 +104,7 @@ export class Dependente {
       ceinfBairro: this.ceinfBairro,
       programaSaudePastoralCrianca: this.programaSaudePastoralCrianca,
       programaSaudePastoralCriancaLocal: this.programaSaudePastoralCriancaLocal,
-      composicaoFamiliar: this.composicaoFamiliar
+      composicaoFamiliar: this.composicaoFamiliar.toJSON()
     };
   }
 }

@@ -33,7 +33,7 @@ export interface PessoaIdosaListaPaginada {
 export const PESSOA_IDOSA_REPOSITORY = new InjectionToken<PessoaIdosaRepository>('PESSOA_IDOSA_REPOSITORY');
 
 export interface PessoaIdosaRepository {
-  obterTodos(filtros?: PessoaIdosaFiltros): Observable<PessoaIdosa[]>;
+  obterTodos(): Observable<PessoaIdosa[]>;
   obterTodosPaginado(pagina: number, quantidadePorPagina: number, filtros?: PessoaIdosaFiltros): Promise<PessoaIdosaListaPaginada>;
   obterPorId(id: string): Observable<PessoaIdosa | undefined>;
   criar(pessoa: PessoaIdosa): Observable<string>;

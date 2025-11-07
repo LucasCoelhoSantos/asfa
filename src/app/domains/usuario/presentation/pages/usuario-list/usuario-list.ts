@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -17,7 +17,8 @@ import { UsuarioListFiltros } from '../../../domain/repositories/usuario.reposit
   selector: 'app-usuario-list',
   standalone: true,
   imports: [CommonModule, RouterModule, MainMenuComponent, ModalComponent, ReactiveFormsModule],
-  templateUrl: './usuario-list.html'
+  templateUrl: './usuario-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsuarioListComponent implements OnInit {
   private facade = inject(UsuarioFacade);
@@ -39,23 +40,23 @@ export class UsuarioListComponent implements OnInit {
       nome: [''],
       email: [''],
       cargo: [''],
-      status: ['']
+      ativo: ['']
     });
     this.buscarPaginado(1);
   }
 
   private montarFiltros(): UsuarioListFiltros {
-    const valores = this.form.value as { nome: string; email: string; cargo: string; status: string };
+    const valores = this.form.value as { nome: string; email: string; cargo: string; ativo: string };
     const filtros: UsuarioListFiltros = {};
     if (valores.nome) filtros.nome = valores.nome;
     if (valores.email) filtros.email = valores.email;
     if (valores.cargo !== '') filtros.cargo = (Number(valores.cargo) as unknown) as CargoUsuario;
-    if (valores.status !== '') filtros.status = valores.status === '1';
+    if (valores.ativo !== '') filtros.ativo = valores.ativo === '1';
     return filtros;
   }
 
   limparFiltros(): void {
-    this.form.reset({ nome: '', email: '', cargo: '', status: '' });
+    this.form.reset({ nome: '', email: '', cargo: '', ativo: '' });
     this.buscarPaginado(1);
   }
 

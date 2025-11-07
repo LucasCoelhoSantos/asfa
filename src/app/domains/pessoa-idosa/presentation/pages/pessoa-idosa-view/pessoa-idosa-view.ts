@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Observable, switchMap, firstValueFrom, filter, take } from 'rxjs';
@@ -11,12 +11,14 @@ import { RgPipe } from '../../../../../shared/pipes/rg.pipe';
 import { CepPipe } from '../../../../../shared/pipes/cep.pipe';
 import { CATEGORIA_ANEXO_INFO } from '../../../../../shared/constants/app.constants';
 import { NotificacaoService } from '../../../../../core/services/notificacao.service';
+import { ImageThumbnailComponent } from '../../../../../shared/components/image-thumbnail/image-thumbnail';
 
 @Component({
   selector: 'app-pessoa-idosa-view',
   standalone: true,
-  imports: [CommonModule, RouterModule, MainMenuComponent, CpfPipe, TelefonePipe, RgPipe, CepPipe],
-  templateUrl: './pessoa-idosa-view.html'
+  imports: [CommonModule, RouterModule, MainMenuComponent, CpfPipe, TelefonePipe, RgPipe, CepPipe, ImageThumbnailComponent],
+  templateUrl: './pessoa-idosa-view.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PessoaIdosaViewPage implements OnInit {
   private router = inject(Router);
@@ -43,7 +45,7 @@ export class PessoaIdosaViewPage implements OnInit {
   }
 
   editar(pessoaIdosaId: string): void {
-    this.router.navigate(['/pessoa-idosa/editar', pessoaIdosaId]);
+    this.router.navigate(['/pessoa-idosa', pessoaIdosaId, 'editar']);
   }
 
   async exportarPdf() {
@@ -61,5 +63,13 @@ export class PessoaIdosaViewPage implements OnInit {
 
   voltar(): void {
     this.location.back();
+  }
+
+  trackByDependente(index: number, dependente: any): string | number {
+    return dependente?.id ?? index;
+  }
+
+  trackByAnexo(index: number, anexo: any): string | number {
+    return anexo?.url ?? `${anexo?.categoria}-${index}`;
   }
 }

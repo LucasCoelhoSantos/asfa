@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NotificacaoService } from '../../../core/services/notificacao.service';
@@ -11,25 +11,30 @@ import { AnexoProps } from '../../../domains/pessoa-idosa/domain/value-objects/a
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './anexo-form.html',
-  styleUrls: ['./anexo-form.scss']
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AnexoFormComponent {
   @Input() form!: FormGroup;
+  @Input() anexosExistentes: AnexoProps[] = [];
+  @Input() maxSizeMb: number = 5; // tamanho máximo padrão em MB
+  @Input() allowedTypes: string[] = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.doc', '.docx', '.xls', '.xlsx'];
+  @Input() multiple: boolean = false;
+  @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
   private fb = inject(FormBuilder);
   private notificacaoService = inject(NotificacaoService);
 
   @Input() anexo?: AnexoProps;
   @Output() save = new EventEmitter<AnexoProps>();
   @Output() cancel = new EventEmitter<void>();
+  @Output() filesSelected = new EventEmitter<File[]>();
 
   categorias = CATEGORIA_ANEXO_LISTA;
   arquivoSelecionado: File | null = null;
+  categoriaSelecionada: CategoriaAnexo | null = null;
   
   constructor() {
     this.form = this.fb.group({
-      nome: ['', [Validators.required]],
       categoria: [null, [Validators.required]],
-      // URL e Path não são campos de formulário, são gerados no upload
     });
   }
 
@@ -39,22 +44,50 @@ export class AnexoFormComponent {
     }
   }
 
+  selecionarCategoria(categoriaId: CategoriaAnexo): void {
+    this.categoriaSelecionada = categoriaId;
+    this.form.patchValue({ categoria: categoriaId });
+    
+    // Abre automaticamente o seletor de arquivo (sem acessar document diretamente)
+    this.fileInputRef?.nativeElement.click();
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        this.notificacaoService.mostrarErro('O arquivo não pode exceder 5MB.');
-        return;
-      }
-      this.arquivoSelecionado = file;
-      this.form.patchValue({ nome: file.name });
+    if (!input.files || input.files.length === 0) return;
+
+    const files = Array.from(input.files);
+    const maxBytes = this.maxSizeMb * 1024 * 1024;
+
+    const invalid = files.find(f => f.size > maxBytes);
+    if (invalid) {
+      this.notificacaoService.mostrarErro(`O arquivo "${invalid.name}" excede ${this.maxSizeMb}MB.`);
+      return;
+    }
+
+    // Mantém compatibilidade: seleciona o primeiro para fluxo atual
+    this.arquivoSelecionado = files[0] ?? null;
+
+    // Emite lista completa para novos consumidores
+    this.filesSelected.emit(files);
+
+    // Fluxo atual: salva automaticamente após selecionar (single)
+    if (this.arquivoSelecionado) {
+      this.aoSalvar();
     }
   }
 
+  categoriaJaPreenchida(categoriaId: CategoriaAnexo): boolean {
+    return this.anexosExistentes.some(anexo => anexo.categoria === categoriaId);
+  }
+
+  obterCategoriaSelecionada() {
+    return this.categorias.find(cat => cat.id === this.categoriaSelecionada);
+  }
+
   aoSalvar(): void {
-    if (this.form.invalid) {
-      this.notificacaoService.mostrarAviso('Preencha todos os campos do anexo.');
+    if (!this.categoriaSelecionada) {
+      this.notificacaoService.mostrarAviso('Selecione uma categoria.');
       return;
     }
     if (!this.arquivoSelecionado) {
@@ -63,10 +96,13 @@ export class AnexoFormComponent {
     }
 
     const anexoProps: Partial<AnexoProps> = {
-      nome: this.form.value.nome,
-      categoria: this.form.value.categoria as CategoriaAnexo,
+      categoria: this.categoriaSelecionada,
     };
 
     this.save.emit({ ...anexoProps, file: this.arquivoSelecionado } as any);
+  }
+
+  get acceptAttr(): string {
+    return this.allowedTypes.join(',');
   }
 }

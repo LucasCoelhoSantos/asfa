@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
-import { UsuarioListComponent } from './pages/usuario-list/usuario-list';
-import { UsuarioFormComponent } from './pages/usuario-form/usuario-form';
 
 export const USUARIO_ROUTES: Routes = [
-  { path: '', component: UsuarioListComponent },
-  { path: 'novo', component: UsuarioFormComponent },
-  { path: ':id/editar', component: UsuarioFormComponent }
+  { path: '', loadComponent: () => import('./pages/usuario-list/usuario-list').then(m => m.UsuarioListComponent) },
+  { path: 'novo', loadComponent: () => import('./pages/usuario-form/usuario-form').then(m => m.UsuarioFormComponent) },
+  { path: ':id/editar', loadComponent: () => import('./pages/usuario-form/usuario-form').then(m => m.UsuarioFormComponent) }
 ];

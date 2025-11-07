@@ -12,6 +12,19 @@ export interface PdfConfig {
   body: any[][];
 }
 
+export interface PdfSecaoConfig {
+  titulo?: string;
+  head: string[][];
+  body: any[][];
+  novaPagina?: boolean;
+}
+
+export interface PdfComSecoesConfig {
+  nomeArquivo: string;
+  titulo: string;
+  secoes: PdfSecaoConfig[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class PdfService {
   async gerarPdfTabela(titulo: string, nomeArquivo: string, head: string[][], body: any[][]): Promise<void> {
@@ -59,6 +72,38 @@ export class PdfService {
       theme: 'striped',
       headStyles: { fillColor: [22, 160, 133] },
     });
+
+    doc.save(config.nomeArquivo);
+  }
+
+  gerarPdfComSecoes(config: PdfComSecoesConfig): void {
+    const doc = new jsPDF();
+    const tema = TEMA_PDF;
+    doc.setFontSize(18);
+    doc.text(config.titulo, tema.margemPadrao, 22);
+
+    let startY = 30;
+    for (const [idx, secao] of config.secoes.entries()) {
+      if (idx > 0 && secao.novaPagina) {
+        doc.addPage();
+        startY = 20;
+      }
+      if (secao.titulo) {
+        doc.setFontSize(14);
+        doc.text(secao.titulo, tema.margemPadrao, startY);
+        startY += 8;
+      }
+      autoTable(doc, {
+        startY,
+        head: secao.head,
+        body: secao.body,
+        theme: 'striped',
+        headStyles: { fillColor: [22, 160, 133] },
+      });
+
+      // @ts-ignore
+      startY = (doc.lastAutoTable?.finalY || startY) + 10;
+    }
 
     doc.save(config.nomeArquivo);
   }

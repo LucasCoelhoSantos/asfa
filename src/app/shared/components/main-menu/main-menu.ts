@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificacaoService } from '../../../core/services/notificacao.service';
 import { SessaoService } from '../../../core/services/sessao.service';
 import { AutenticacaoService } from '../../../core/services/autenticacao.service';
@@ -12,7 +13,8 @@ import { CargoUsuario } from '../../../domains/usuario/domain/value-objects/enum
   selector: 'app-main-menu',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './main-menu.html'
+  templateUrl: './main-menu.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainMenuComponent {
   private router = inject(Router);
@@ -25,7 +27,10 @@ export class MainMenuComponent {
   readonly CargoUsuario = CargoUsuario;
 
   sair(): void {
-    this.autenticacaoService.sair().subscribe({
+    this.autenticacaoService
+      .sair()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
       next: () => {
         this.router.navigate(['/login']);
       },

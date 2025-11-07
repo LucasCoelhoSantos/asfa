@@ -7,7 +7,7 @@ export interface UsuarioListFiltros {
   nome?: string;
   email?: string;
   cargo?: CargoUsuario;
-  status?: boolean;
+  ativo?: boolean;
 }
 
 export interface UsuarioListaPaginada {
@@ -20,7 +20,7 @@ export interface UsuarioListaPaginada {
 export const USUARIO_REPOSITORY = new InjectionToken<UsuarioRepository>('USUARIO_REPOSITORY');
 
 export abstract class UsuarioRepository {
-  abstract obterTodos(filtros: UsuarioListFiltros): Observable<Usuario[]>;
+  abstract obterTodos(): Observable<Usuario[]>;
   abstract obterTodosPaginado(pagina: number, quantidadePorPagina: number, filtros?: UsuarioListFiltros): Promise<UsuarioListaPaginada>;
   abstract obterPorId(id: string): Observable<Usuario | undefined>;
   abstract obterPorEmail(email: string): Observable<Usuario | undefined>;

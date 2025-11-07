@@ -1,4 +1,5 @@
 export interface ComposicaoFamiliarProps {
+  estadoCivil: string;
   alfabetizado: boolean;
   estudaAtualmente: boolean;
   nivelSerieAtualConcluido: string;
@@ -20,6 +21,7 @@ export interface ComposicaoFamiliarProps {
 }
 
 export class ComposicaoFamiliar {
+  readonly estadoCivil: string;
   readonly alfabetizado: boolean;
   readonly estudaAtualmente: boolean;
   readonly nivelSerieAtualConcluido: string;
@@ -40,6 +42,7 @@ export class ComposicaoFamiliar {
   readonly trabalhoVoluntarioOnde: string;
 
   private constructor(props: ComposicaoFamiliarProps) {
+    this.estadoCivil = props.estadoCivil;
     this.alfabetizado = props.alfabetizado;
     this.estudaAtualmente = props.estudaAtualmente;
     this.nivelSerieAtualConcluido = props.nivelSerieAtualConcluido;
@@ -72,6 +75,7 @@ export class ComposicaoFamiliar {
 
   public toJSON() {
     return {
+      estadoCivil: this.estadoCivil,
       alfabetizado: this.alfabetizado,
       estudaAtualmente: this.estudaAtualmente,
       nivelSerieAtualConcluido: this.nivelSerieAtualConcluido,

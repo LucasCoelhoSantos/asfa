@@ -24,8 +24,8 @@ export class UsuarioFacade {
   private readonly ativarUC = inject(AtivarUsuarioUseCase);
   private readonly inativarUC = inject(InativarUsuarioUseCase);
 
-  obterTodos(filtros: UsuarioListFiltros): Observable<Usuario[]> {
-    return this.obterTodosUC.execute(filtros);
+  obterTodos(): Observable<Usuario[]> {
+    return this.obterTodosUC.execute();
   }
 
   obterTodosPaginado(pagina: number, quantidadePorPagina: number, filtros?: UsuarioListFiltros): Promise<UsuarioListaPaginada> {

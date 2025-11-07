@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { EnvironmentInjector, Injectable, inject, runInInjectionContext } from '@angular/core';
 import { Auth, onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from '@angular/fire/auth';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -7,18 +7,21 @@ import { AuthPort, Credenciais, Identidade } from '../../core/ports/auth.port';
 @Injectable()
 export class AuthFirebaseAdapter implements AuthPort {
   private auth = inject(Auth);
+  private environmentInjector = inject(EnvironmentInjector);
 
   readonly identidade$: Observable<Identidade | null> = new Observable((subscriber) => {
-    const unsubscriber = onAuthStateChanged(
-      this.auth,
-      (firebaseUser: User | null) => {
-        if (firebaseUser) {
-          subscriber.next({ uid: firebaseUser.uid });
-        } else {
-          subscriber.next(null);
-        }
-      },
-      (erro) => subscriber.error(erro)
+    const unsubscriber = runInInjectionContext(this.environmentInjector, () =>
+      onAuthStateChanged(
+        this.auth,
+        (firebaseUser: User | null) => {
+          if (firebaseUser) {
+            subscriber.next({ uid: firebaseUser.uid });
+          } else {
+            subscriber.next(null);
+          }
+        },
+        (erro) => subscriber.error(erro)
+      )
     );
     return () => unsubscriber();
   });

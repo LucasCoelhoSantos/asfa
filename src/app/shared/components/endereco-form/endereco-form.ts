@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CEP_PORT, CepPort } from '../../ports/cep.port';
@@ -10,6 +10,7 @@ import { MaskDirective } from '../../directives/mask.directive';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MaskDirective],
   templateUrl: './endereco-form.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnderecoFormComponent implements OnInit {
   @Input() form!: FormGroup;

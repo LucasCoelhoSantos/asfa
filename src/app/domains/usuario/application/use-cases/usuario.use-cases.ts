@@ -7,8 +7,8 @@ import { Usuario, CriarUsuarioProps, AtualizarUsuarioProps, AtualizarPerfilProps
 @Injectable({ providedIn: 'root' })
 export class ObterTodosUsuariosUseCase {
   private repository = inject(USUARIO_REPOSITORY);
-  execute(filtros: UsuarioListFiltros): Observable<Usuario[]> {
-    return this.repository.obterTodos(filtros);
+  execute(): Observable<Usuario[]> {
+    return this.repository.obterTodos();
   }
 }
 

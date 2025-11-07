@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { first } from 'rxjs/operators';
 
 import { MainMenuComponent } from '../../../../../shared/components/main-menu/main-menu';
@@ -18,7 +19,8 @@ import { CARGO_USUARIO_LISTA } from '../../../../../shared';
   selector: 'app-usuario-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MainMenuComponent],
-  templateUrl: './usuario-form.html'
+  templateUrl: './usuario-form.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsuarioFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -51,7 +53,7 @@ export class UsuarioFormComponent implements OnInit {
   }
 
   private verificarModoEdicao(): void {
-    this.route.url.subscribe(segments => {
+    this.route.url.pipe(takeUntilDestroyed()).subscribe(segments => {
       this.eModoPerfil = segments.some(s => s.path === 'perfil');
     });
 
@@ -59,7 +61,7 @@ export class UsuarioFormComponent implements OnInit {
       ? this.sessaoService.usuario$.pipe(map(u => u?.id))
       : this.route.paramMap.pipe(map(params => params.get('id')));
 
-    id$.pipe(first()).subscribe(id => {
+    id$.pipe(first(), takeUntilDestroyed()).subscribe(id => {
       if (id) {
         this.eModoEdicao = true;
         this.usuarioId = id;
@@ -73,7 +75,7 @@ export class UsuarioFormComponent implements OnInit {
   }
 
   private carregarDadosUsuario(id: string): void {
-    this.facade.obterPorId(id).pipe(first()).subscribe(usuario => {
+    this.facade.obterPorId(id).pipe(first(), takeUntilDestroyed()).subscribe(usuario => {
       if (usuario) {
         this.form.patchValue({
           nome: usuario.nome,

@@ -1,0 +1,46 @@
+<div class="row g-3">
+  @for (anexo of itens; track trackByIndex($index)) {
+    <div class="col-6 col-md-4 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body p-2">
+          <div class="d-flex align-items-start gap-3">
+            <div class="flex-shrink-0">
+              <app-image-thumbnail 
+                [file]="anexo.file" 
+                [url]="anexo.url" 
+                [size]="thumbSize" 
+                [alt]="categoriasInfo[anexo.categoria].label || 'Documento'">
+              </app-image-thumbnail>
+            </div>
+            
+            <div class="flex-grow-1">
+              <h6 class="card-title mb-1 small fw-semibold">
+                <i class="{{ categoriasInfo[anexo.categoria].icon || 'bi bi-file' }} me-1" aria-hidden="true"></i>
+                {{ categoriasInfo[anexo.categoria].label || 'Categoria desconhecida' }}
+              </h6>
+              <div class="d-flex gap-1">
+                @if (anexo.url) {
+                  <a [href]="anexo.url" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm"
+                     [attr.aria-label]="'Visualizar ' + (categoriasInfo[anexo.categoria].label || 'documento')"
+                     [attr.title]="'Visualizar ' + (categoriasInfo[anexo.categoria].label || 'documento')">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                  </a>
+                  <button type="button" class="btn btn-outline-success btn-sm" (click)="editar.emit($index)"
+                          [attr.aria-label]="'Editar ' + (categoriasInfo[anexo.categoria].label || 'documento')"
+                          [attr.title]="'Editar ' + (categoriasInfo[anexo.categoria].label || 'documento')">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                  </button>
+                }
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="remover.emit($index)"
+                        [attr.aria-label]="'Remover ' + (categoriasInfo[anexo.categoria].label || 'documento')"
+                        [attr.title]="'Remover ' + (categoriasInfo[anexo.categoria].label || 'documento')">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

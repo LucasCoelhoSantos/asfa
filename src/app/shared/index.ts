@@ -17,3 +17,5 @@ export * from './components/skeleton/skeleton.component';
 export * from './components/skeleton/table-skeleton.component';
 export * from './components/endereco-form/endereco-form';
 export * from './components/anexo-form/anexo-form';
+export * from './components/anexo-list/anexo-list';
+export * from './components/image-thumbnail/image-thumbnail';

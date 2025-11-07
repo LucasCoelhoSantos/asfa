@@ -1,8 +1,4 @@
 <div class="card border-0 shadow-sm">
-  <div class="card-header bg-primary text-white">
-    <h3 class="card-title mb-0 fs-5 fw-semibold">{{ dependente ? 'Editar' : 'Novo' }} Dependente</h3>
-  </div>
-  
   <div class="card-body p-4">
     <form [formGroup]="form" (ngSubmit)="aoEnviar()">
       <div class="mb-4">
@@ -24,7 +20,6 @@
               </div>
             }
           </div>
-          
           <div class="col-12 col-md-6">
             <label for="dataNascimento" class="form-label fw-semibold">Data de Nascimento <span class="text-danger">*</span></label>
             <input
@@ -40,7 +35,6 @@
               </div>
             }
           </div>
-          
           <div class="col-12 col-md-6">
             <label for="parentesco" class="form-label fw-semibold">Parentesco <span class="text-danger">*</span></label>
             <input
@@ -59,7 +53,17 @@
           </div>
         </div>
       </div>
-
+      <div class="mb-4">
+        <div class="col-12 col-md-6">
+          <label for="estadoCivil" class="form-label fw-semibold">Estado Civíl <span class="text-danger">*</span></label>
+          <select id="estadoCivil" class="form-select" formControlName="estadoCivil" [class.is-invalid]="form.get('estadoCivil')?.invalid && form.get('estadoCivil')?.touched">
+            <option value="">Selecione...</option>
+            @for (estadoCivil of estadoCivilOpcoes; track estadoCivil) {
+              <option [value]="estadoCivil">{{ estadoCivil }}</option>
+            }
+          </select>
+        </div>
+      </div>
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Informações Educacionais</h4>
         <div class="row g-3">
@@ -73,7 +77,6 @@
               placeholder="Nome da instituição"
             />
           </div>
-          
           <div class="col-12 col-md-6">
             <label for="ceinfBairro" class="form-label fw-semibold">CEINF Bairro</label>
             <input
@@ -86,7 +89,6 @@
           </div>
         </div>
       </div>
-
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Programa de Saúde</h4>
         <div class="row g-3">
@@ -100,7 +102,6 @@
               placeholder="Nome do programa"
             />
           </div>
-          
           <div class="col-12 col-md-6">
             <label for="programaSaudePastoralCriancaLocal" class="form-label fw-semibold">Local do Programa</label>
             <input
@@ -113,17 +114,138 @@
           </div>
         </div>
       </div>
-
+      <div class="mb-4">
+        <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Composição Familiar</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="alfabetizado" formControlName="alfabetizado" role="switch">
+              <label class="form-check-label fw-semibold" for="alfabetizado">É alfabetizado?</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="estudaAtualmente" formControlName="estudaAtualmente" role="switch">
+              <label class="form-check-label fw-semibold" for="estudaAtualmente">Estuda atualmente?</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="nivelSerieAtualConcluido" class="form-label fw-semibold">Nível/Série Atual Concluído <span class="text-danger">*</span></label>
+            <select id="nivelSerieAtualConcluido" class="form-select" formControlName="nivelSerieAtualConcluido" [class.is-invalid]="form.get('nivelSerieAtualConcluido')?.invalid && form.get('nivelSerieAtualConcluido')?.touched">
+              <option value="">Selecione...</option>
+              @for (nivel of nivelSerieAtualConcluidoOpcoes; track nivel) {
+                <option [value]="nivel">{{ nivel }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="cursosTecnicoFormacaoProfissional" class="form-label fw-semibold">Curso Técnico/Formação Profissional <span class="text-danger">*</span></label>
+            <select id="cursosTecnicoFormacaoProfissional" class="form-select" formControlName="cursosTecnicoFormacaoProfissional" [class.is-invalid]="form.get('cursosTecnicoFormacaoProfissional')?.invalid && form.get('cursosTecnicoFormacaoProfissional')?.touched">
+              <option value="">Selecione...</option>
+              @for (curso of cursosTecnicoFormacaoProfissionalOpcoes; track curso) {
+                <option [value]="curso">{{ curso }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="situacaoOcupacional" class="form-label fw-semibold">Situação Ocupacional <span class="text-danger">*</span></label>
+            <select id="situacaoOcupacional" class="form-select" formControlName="situacaoOcupacional" [class.is-invalid]="form.get('situacaoOcupacional')?.invalid && form.get('situacaoOcupacional')?.touched">
+              <option value="">Selecione...</option>
+              @for (situacao of situacaoOcupacionalOpcoes; track situacao) {
+                <option [value]="situacao">{{ situacao }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="renda" class="form-label fw-semibold">Renda <span class="text-danger">*</span></label>
+            <select id="renda" class="form-select" formControlName="renda" [class.is-invalid]="form.get('renda')?.invalid && form.get('renda')?.touched">
+              <option value="">Selecione...</option>
+              @for (renda of rendaOpcoes; track renda) {
+                <option [value]="renda">{{ renda }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="aposentado" class="form-label fw-semibold">É aposentado? <span class="text-danger">*</span></label>
+            <select id="aposentado" class="form-select" formControlName="aposentado" [class.is-invalid]="form.get('aposentado')?.invalid && form.get('aposentado')?.touched">
+              <option value="">Selecione...</option>
+              @for (aposentado of aposentadoOpcoes; track aposentado) {
+                <option [value]="aposentado">{{ aposentado }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="beneficio" class="form-label fw-semibold">Recebe algum benefício? <span class="text-danger">*</span></label>
+            <select id="beneficio" class="form-select" formControlName="beneficio" [class.is-invalid]="form.get('beneficio')?.invalid && form.get('beneficio')?.touched">
+              <option value="">Selecione...</option>
+              @for (beneficio of beneficioOpcoes; track beneficio) {
+                <option [value]="beneficio">{{ beneficio }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="deficiencia" class="form-label fw-semibold">Possui alguma deficiência? <span class="text-danger">*</span></label>
+            <select id="deficiencia" class="form-select" formControlName="deficiencia" [class.is-invalid]="form.get('deficiencia')?.invalid && form.get('deficiencia')?.touched">
+              <option value="">Selecione...</option>
+              @for (deficiencia of deficienciaOpcoes; track deficiencia) {
+                <option [value]="deficiencia">{{ deficiencia }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="problemaDeSaude" class="form-label fw-semibold">Possui algum problema de saúde? <span class="text-danger">*</span></label>
+            <select id="problemaDeSaude" class="form-select" formControlName="problemaDeSaude" [class.is-invalid]="form.get('problemaDeSaude')?.invalid && form.get('problemaDeSaude')?.touched">
+              <option value="">Selecione...</option>
+              @for (problema of problemaDeSaudeOpcoes; track problema) {
+                <option [value]="problema">{{ problema }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="fazAlgumTratamento" formControlName="fazAlgumTratamento" role="switch">
+              <label class="form-check-label fw-semibold" for="fazAlgumTratamento">Faz algum tratamento?</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="fazAlgumTratamentoOnde" class="form-label fw-semibold">Onde faz o tratamento?</label>
+            <input id="fazAlgumTratamentoOnde" type="text" class="form-control" formControlName="fazAlgumTratamentoOnde" placeholder="Digite onde faz o tratamento">
+          </div>
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="usaMedicamentoControlado" formControlName="usaMedicamentoControlado" role="switch">
+              <label class="form-check-label fw-semibold" for="usaMedicamentoControlado">Usa medicamento controlado?</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="usaRecursosUbsLocal" formControlName="usaRecursosUbsLocal" role="switch">
+              <label class="form-check-label fw-semibold" for="usaRecursosUbsLocal">Usa recursos da UBS local?</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label for="trabalhoPastoralOuSocial" class="form-label fw-semibold">Faz algum trabalho pastoral ou social? <span class="text-danger">*</span></label>
+            <textarea id="trabalhoPastoralOuSocial" class="form-control" formControlName="trabalhoPastoralOuSocial" rows="3" [class.is-invalid]="form.get('trabalhoPastoralOuSocial')?.invalid && form.get('trabalhoPastoralOuSocial')?.touched" placeholder="Descreva o trabalho pastoral ou social"></textarea>
+          </div>
+          <div class="col-12">
+            <label for="atividadeNaComunidadeSagradaFamilia" class="form-label fw-semibold">Desenvolve alguma atividade na Comunidade Sagrada Família? <span class="text-danger">*</span></label>
+            <textarea id="atividadeNaComunidadeSagradaFamilia" class="form-control" formControlName="atividadeNaComunidadeSagradaFamilia" rows="3" [class.is-invalid]="form.get('atividadeNaComunidadeSagradaFamilia')?.invalid && form.get('atividadeNaComunidadeSagradaFamilia')?.touched" placeholder="Descreva a atividade na comunidade"></textarea>
+          </div>
+          <div class="col-12">
+            <label for="trabalhoVoluntario" class="form-label fw-semibold">Deseja desenvolver algum trabalho voluntário? <span class="text-danger">*</span></label>
+            <textarea id="trabalhoVoluntario" class="form-control" formControlName="trabalhoVoluntario" rows="3" [class.is-invalid]="form.get('trabalhoVoluntario')?.invalid && form.get('trabalhoVoluntario')?.touched" placeholder="Descreva o trabalho voluntário desejado"></textarea>
+          </div>
+          <div class="col-12">
+            <label for="trabalhoVoluntarioOnde" class="form-label fw-semibold">Onde gostaria de desenvolver o trabalho voluntário?</label>
+            <input id="trabalhoVoluntarioOnde" type="text" class="form-control" formControlName="trabalhoVoluntarioOnde" placeholder="Digite onde gostaria de trabalhar">
+          </div>
+        </div>
+      </div>
       <div class="mb-4">
         <h4 class="border-bottom border-2 border-primary pb-2 mb-3 fw-semibold text-primary">Status</h4>
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="ativo"
-            formControlName="ativo"
-          />
-          <label class="form-check-label fw-semibold" for="ativo">Status</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="ativo" formControlName="ativo" role="switch">
+          <label class="form-check-label fw-semibold" for="ativo">Ativo</label>
         </div>
       </div>
 

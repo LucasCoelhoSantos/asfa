@@ -23,7 +23,6 @@ export interface CriarPessoaIdosaProps {
   ativo?: boolean;
   nome: string;
   dataNascimento: Date;
-  estadoCivil: string;
   cpf: string;
   rg: string;
   orgaoEmissor: string;
@@ -51,7 +50,6 @@ export class PessoaIdosa {
   private _ativo: boolean;
   private _nome: Nome;
   private _dataNascimento: Date;
-  private _estadoCivil: string;
   private _cpf: CPF;
   private _rg: RG;
   private _orgaoEmissor: string;
@@ -76,7 +74,6 @@ export class PessoaIdosa {
     ativo: boolean;
     nome: Nome;
     dataNascimento: Date;
-    estadoCivil: string;
     cpf: CPF;
     rg: RG;
     orgaoEmissor: string;
@@ -100,7 +97,6 @@ export class PessoaIdosa {
     this._ativo = props.ativo;
     this._nome = props.nome;
     this._dataNascimento = props.dataNascimento;
-    this._estadoCivil = props.estadoCivil;
     this._cpf = props.cpf;
     this._rg = props.rg;
     this._orgaoEmissor = props.orgaoEmissor;
@@ -122,7 +118,7 @@ export class PessoaIdosa {
 
   private static validarCamposObrigatorios(props: CriarPessoaIdosaProps): void {
     const camposObrigatorios: (keyof CriarPessoaIdosaProps)[] = [
-      'nome', 'dataNascimento', 'estadoCivil', 'cpf', 'rg', 'orgaoEmissor', 'telefone', 'naturalidade', 'endereco', 'telefone', 'email', 'prontuarioSaude',
+      'nome', 'dataNascimento', 'cpf', 'rg', 'orgaoEmissor', 'telefone', 'naturalidade', 'endereco', 'telefone', 'email', 'prontuarioSaude',
       'aposentadoConsegueSeManterComSuaRenda', 'beneficio', 'composicaoFamiliar'
     ];
     for (const campo of camposObrigatorios) {
@@ -141,7 +137,6 @@ export class PessoaIdosa {
       ativo: props.ativo ?? true,
       nome: Nome.criar(props.nome),
       dataNascimento: props.dataNascimento,
-      estadoCivil: props.estadoCivil,
       cpf: CPF.criar(props.cpf),
       rg: RG.criar(props.rg),
       orgaoEmissor: props.orgaoEmissor,
@@ -155,10 +150,10 @@ export class PessoaIdosa {
       beneficio: props.beneficio,
       observacao: props.observacao || '',
       historicoFamiliarSocial: props.historicoFamiliarSocial || '',
-      composicaoFamiliar: props.composicaoFamiliar,
-      endereco: props.endereco,
+      composicaoFamiliar: ComposicaoFamiliar.criar(props.composicaoFamiliar),
+      endereco: Endereco.criar(props.endereco),
       dependentes: (props.dependentes || []).map(depProps => Dependente.criar(depProps)),
-      anexos: props.anexos || [],
+      anexos: (props.anexos || []).map(aneProps => Anexo.criar(aneProps))
     });
   }
 
@@ -172,7 +167,7 @@ export class PessoaIdosa {
       telefone: Telefone.criar(props.telefone),
       composicaoFamiliar: ComposicaoFamiliar.rehidratar(props.composicaoFamiliar),
       endereco: Endereco.rehidratar(props.endereco),
-      dependentes: (props.dependente || []).map((d: any) => Dependente.rehidratar(d)),
+      dependentes: (props.dependentes || []).map((d: any) => Dependente.rehidratar(d)),
       anexos: (props.anexos || []).map((a: any) => Anexo.rehidratar(a))
     });
   }
@@ -190,7 +185,6 @@ export class PessoaIdosa {
     
     this._nome = Nome.criar(props.nome);
     this._dataNascimento = props.dataNascimento;
-    this._estadoCivil = props.estadoCivil;
     this._cpf = CPF.criar(props.cpf);
     this._rg = RG.criar(props.rg);
     this._orgaoEmissor = props.orgaoEmissor;
@@ -204,8 +198,8 @@ export class PessoaIdosa {
     this._beneficio = props.beneficio;
     this._observacao = props.observacao || '';
     this._historicoFamiliarSocial = props.historicoFamiliarSocial || '';
-    this._composicaoFamiliar = props.composicaoFamiliar;
-    this._endereco = props.endereco;
+    this._composicaoFamiliar = ComposicaoFamiliar.criar(props.composicaoFamiliar);
+    this._endereco = Endereco.criar(props.endereco);
     this._dependentes = (props.dependentes || []).map(depProps => Dependente.criar(depProps));
     this._anexos = props.anexos ?? this._anexos;
   }
@@ -215,7 +209,6 @@ export class PessoaIdosa {
   public get ativo(): boolean { return this._ativo; }
   public get nome(): string { return this._nome.valor; }
   public get dataNascimento(): Date { return this._dataNascimento; }
-  public get estadoCivil(): string { return this._estadoCivil; }
   public get cpf(): string { return this._cpf.valor; }
   public get rg(): string { return this._rg.valor; }
   public get orgaoEmissor(): string { return this._orgaoEmissor; }
@@ -241,7 +234,6 @@ export class PessoaIdosa {
       ativo: this.ativo,
       nome: this.nome,
       dataNascimento: this.dataNascimento,
-      estadoCivil: this.estadoCivil,
       cpf: this.cpf,
       rg: this.rg,
       orgaoEmissor: this.orgaoEmissor,
@@ -257,8 +249,12 @@ export class PessoaIdosa {
       historicoFamiliarSocial: this.historicoFamiliarSocial,
       composicaoFamiliar: this.composicaoFamiliar.toJSON(),
       endereco: this.endereco.toJSON(),
-      dependentes: this.dependentes.map(dependente => dependente.toJSON),
-      anexos: this.anexos.map(anexo => anexo.toJSON()),
+      dependentes: this.dependentes.map((dependente: any) =>
+        typeof dependente?.toJSON === 'function' ? dependente.toJSON() : dependente
+      ),
+      anexos: this.anexos.map((anexo: any) =>
+        typeof anexo?.toJSON === 'function' ? anexo.toJSON() : anexo
+      ),
     };
   }
 }

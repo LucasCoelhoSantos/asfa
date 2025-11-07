@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificacaoService } from '../../../core/services/notificacao.service';
 
@@ -61,6 +61,8 @@ import { NotificacaoService } from '../../../core/services/notificacao.service';
       background-color: #0dcaf0 !important;
     }
   `]
+  ,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NotificacoesComponent {
   notificacaoService = inject(NotificacaoService);

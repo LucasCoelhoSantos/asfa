@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { DependenteFormComponent } from './pages/dependente-form/dependente-form'; 
 
 export const DEPENDENTE_ROUTES: Routes = [
-  { path: 'novo', component: DependenteFormComponent },
-  { path: ':id/editar', component: DependenteFormComponent }
+  { path: 'novo', loadComponent: () => import('./pages/dependente-form/dependente-form').then(m => m.DependenteFormComponent) },
+  { path: ':id/editar', loadComponent: () => import('./pages/dependente-form/dependente-form').then(m => m.DependenteFormComponent) }
 ];

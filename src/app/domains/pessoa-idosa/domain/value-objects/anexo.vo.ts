@@ -5,46 +5,55 @@ export interface AnexoProps {
   categoria: CategoriaAnexo;
   url: string;
   path: string;
-  nome: string;
 }
 
 export class Anexo {
   readonly categoria: CategoriaAnexo;
   readonly url: string;
   readonly path: string;
-  readonly nome: string;
 
   private constructor(props: AnexoProps) {
     if (!props.categoria) throw new CampoObrigatorioErro('Anexo: categoria')
     if (!props.url) throw new CampoObrigatorioErro('Anexo: url')
     if (!props.path) throw new CampoObrigatorioErro('Anexo: path')
-    if (!props.nome) throw new CampoObrigatorioErro('Anexo: nome')
 
     this.categoria = props.categoria;
     this.url = props.url;
     this.path = props.path;
-    this.nome = props.nome;
     Object.freeze(this);
   }
 
   public static criar(props: AnexoProps): Anexo {
     const categoriasValidas = Object.values(CategoriaAnexo).map(Number).filter(v => !isNaN(v));
-    if (!categoriasValidas.includes(props.categoria)) {
+    const categoriaNormalizada = typeof (props as any).categoria === 'string'
+    ? Number((props as any).categoria)
+    : (props as any).categoria;
+    
+    if (!categoriasValidas.includes(categoriaNormalizada)) {
       throw new Error(`Categoria de anexo inválida: ${props.categoria}`);
     }
-    return new Anexo(props);
+    
+    return new Anexo({
+      ...props,
+      categoria: categoriaNormalizada as CategoriaAnexo
+    });
   }
 
   public static rehidratar(props: AnexoProps): Anexo {
-    return new Anexo(props);
+    const categoriaNormalizada = typeof (props as any).categoria === 'string'
+      ? Number((props as any).categoria)
+      : (props as any).categoria;
+    return new Anexo({
+      ...props,
+      categoria: categoriaNormalizada as CategoriaAnexo
+    });
   }
 
   public toJSON() {
     return {
       categoria: this.categoria,
       url: this.url,
-      path: this.path,
-      nome: this.nome
+      path: this.path
     };
   }
 }

@@ -7,8 +7,8 @@ import { PessoaIdosaFiltros, PessoaIdosaListaPaginada, PESSOA_IDOSA_REPOSITORY }
 @Injectable({ providedIn: 'root' })
 export class ObterTodasPessoasIdosasUseCase {
   private repository = inject(PESSOA_IDOSA_REPOSITORY);
-  execute(filtros?: PessoaIdosaFiltros): Observable<PessoaIdosa[]> {
-    return this.repository.obterTodos(filtros);
+  execute(): Observable<PessoaIdosa[]> {
+    return this.repository.obterTodos();
   }
 }
 

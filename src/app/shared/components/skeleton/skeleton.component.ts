@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -53,7 +53,8 @@ import { CommonModule } from '@angular/common';
         background-position: -200% 0;
       }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SkeletonComponent {
   @Input() type: 'text' | 'title' | 'avatar' | 'card' | 'table-row' = 'text';

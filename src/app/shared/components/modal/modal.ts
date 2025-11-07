@@ -1,11 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './modal.html'
+  templateUrl: './modal.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalComponent {
   @Input() mostrar: boolean = false;
